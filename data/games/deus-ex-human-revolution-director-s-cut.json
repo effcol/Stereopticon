@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "Undocumented AMD HD3D support. Skybox at wrong depth, check iZ3D Shader Fix."
     }
-  ]
+  ],
+  "steam_app_id": "238010"
 }

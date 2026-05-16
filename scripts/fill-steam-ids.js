@@ -42,17 +42,33 @@ function head(url) {
     });
 }
 
+// Throttled fetch — wait between requests + exponential backoff on 403/429.
+let lastFetchAt = 0;
+const MIN_DELAY_MS = 1500;
+async function throttledGet(url) {
+    const wait = Math.max(0, MIN_DELAY_MS - (Date.now() - lastFetchAt));
+    if (wait > 0) await new Promise(r => setTimeout(r, wait));
+    lastFetchAt = Date.now();
+    return get(url);
+}
+
 async function searchSteam(title) {
-    const url  = `https://store.steampowered.com/search/?category1=998&term=${encodeURIComponent(title)}`;
-    const html = await get(url);
-    // Pick the first non-soundtrack non-DLC search row. Steam embeds the appid
-    // on each .search_result_row as data-ds-appid.
+    const url = `https://store.steampowered.com/search/?category1=998&term=${encodeURIComponent(title)}`;
+    let html  = '';
+    let delay = 5000;
+    for (let attempt = 0; attempt < 4; ++attempt) {
+        html = await throttledGet(url);
+        // Empty body / 403 page → back off and retry.
+        if (html && /<title>[^<]+<\/title>/i.test(html) && !/Access Denied|429 Too Many Requests/i.test(html)) break;
+        console.log(`      ratelimited / empty — sleeping ${delay/1000}s and retrying…`);
+        await new Promise(r => setTimeout(r, delay));
+        delay *= 2;
+    }
     const re = /<a[^>]*?data-ds-appid="(\d+)"[^>]*?>([\s\S]*?)<\/a>/g;
     let m;
     while ((m = re.exec(html)) !== null) {
         const id   = m[1];
         const body = m[2];
-        // Skip soundtracks / OSTs / DLC.
         if (/soundtrack|OST\b|original score/i.test(body)) continue;
         return id;
     }

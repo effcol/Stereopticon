@@ -41,5 +41,6 @@
       "cons": "See notes for the specific issues.",
       "notes": "Needs 3D Vision shader fixes. `3D Vision` not showing in `Graphics` menu. `-stereo 1` command line argument."
     }
-  ]
+  ],
+  "steam_app_id": "204100"
 }

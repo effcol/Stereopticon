@@ -40,12 +40,17 @@ function findVireioBinaries() {
 }
 
 async function applyConfig(ctx) {
-    const { fix, gameContext } = ctx;
+    const { fix, gameContext, headtracking } = ctx;
     const result = { success: true, applied: [], errors: [], warnings: [] };
 
-    if (!fix || fix.type !== 'vireio') {
-        return result;
-    }
+    // Two trigger conditions:
+    //   1) The stereo fix is a Vireio fix → full stereo + HT pipeline
+    //   2) The HT Fix is 'vireio' but the stereo fix is something else
+    //      (Geo-11 / wiz3D / etc.) → HT-only mode, just the FreeTrackTracker
+    //      plugin emitting OpenTrack UDP, no stereo injection from Vireio.
+    const isStereoFix = fix?.type === 'vireio';
+    const isHtOnly    = headtracking?.method === 'vireio' && !isStereoFix;
+    if (!isStereoFix && !isHtOnly) return result;
 
     const binaries = findVireioBinaries();
     if (!binaries) {
@@ -57,20 +62,36 @@ async function applyConfig(ctx) {
         return result;
     }
 
-    // Resolve workspace .aqu path (relative paths are joined to the engine dir).
-    let workspacePath = fix.vireio_workspace || null;
+    // Resolve workspace .aqu path. For the stereo-fix path we use the
+    // game-specific workspace declared in the fix; for HT-only we use a
+    // dedicated headtrack-only workspace shipped with the engine.
+    let workspacePath = null;
+    if (isStereoFix) {
+        workspacePath = fix.vireio_workspace || null;
+    } else if (isHtOnly) {
+        // Engine ships a FreeTrackTracker-only workspace at Profiles/HeadTrackingOnly.aqu.
+        // Engine-side TODO: build/maintain that workspace (currently absent in v4 builds).
+        workspacePath = 'Profiles/HeadTrackingOnly.aqu';
+    }
     if (workspacePath && !path.isAbsolute(workspacePath)) {
         workspacePath = path.join(binaries.dir, workspacePath);
     }
     if (workspacePath && !fs.existsSync(workspacePath)) {
-        result.warnings.push(`Vireio workspace not found at ${workspacePath} — falling back to interactive launch.`);
+        if (isHtOnly) {
+            result.warnings.push(
+                'Vireio HT-only workspace not yet bundled — Inicio launched interactively. ' +
+                'Pick "FreeTrackTracker → OpenTrack UDP" plugins in the New Project window.'
+            );
+        } else {
+            result.warnings.push(`Vireio workspace not found at ${workspacePath} — falling back to interactive launch.`);
+        }
         workspacePath = null;
     }
 
     const args = [];
     if (workspacePath)         args.push('--workspace', workspacePath);
     if (gameContext?.exeName)  args.push('--target',    gameContext.exeName);
-    if (workspacePath)         args.push('--autorun');  // only safe to autorun when we have a workspace
+    if (workspacePath)         args.push('--autorun');
 
     try {
         const child = spawn(binaries.inicio, args, {
@@ -83,10 +104,11 @@ async function applyConfig(ctx) {
             console.error('[vireio adapter] Inicio spawn error:', err);
         });
         child.unref();
+        const modeLabel = isHtOnly ? 'HT-only' : 'stereo';
         result.applied.push(
             workspacePath
-                ? `Inicio.exe autorun (${binaries.build}) — workspace="${path.basename(workspacePath)}", target="${gameContext?.exeName || '?'}"`
-                : `Inicio.exe launched (${binaries.build}) — interactive mode`
+                ? `Inicio.exe autorun (${binaries.build}, ${modeLabel}) — workspace="${path.basename(workspacePath)}", target="${gameContext?.exeName || '?'}"`
+                : `Inicio.exe launched (${binaries.build}, ${modeLabel}) — interactive mode`
         );
     } catch (e) {
         result.success = false;
@@ -108,4 +130,8 @@ module.exports = {
     id:   'vireio',
     name: 'Vireio Perception',
     applyConfig,
+    // Self-skips when neither stereo-vireio nor ht-only-vireio triggers fire,
+    // so it's safe to invoke every launch. Lets HT-only mode run alongside a
+    // Geo-11 / wiz3D / etc. stereo fix without needing to be in pipeline.steps.
+    alwaysRun: true,
 };

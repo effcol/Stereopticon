@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "DX11 output only."
     }
-  ]
+  ],
+  "steam_app_id": "200390"
 }

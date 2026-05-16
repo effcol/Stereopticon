@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "Play with depth set low. Needs higher depth shader fix and issues with Simulated Reality output."
     }
-  ]
+  ],
+  "steam_app_id": "435970"
 }

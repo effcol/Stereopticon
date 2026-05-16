@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "Can't see weapon in hand."
     }
-  ]
+  ],
+  "steam_app_id": "286690"
 }

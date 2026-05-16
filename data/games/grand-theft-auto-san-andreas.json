@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": ""
     }
-  ]
+  ],
+  "steam_app_id": "3240220"
 }

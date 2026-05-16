@@ -42,5 +42,6 @@
       "cons": "Older driver lineage — DX9 / DX11 only. Some shader effects may render at screen depth.",
       "notes": "Profile maps to Vireio v3 rule file 'stanley.xml'. Architecture: 32bit."
     }
-  ]
+  ],
+  "steam_app_id": "221910"
 }

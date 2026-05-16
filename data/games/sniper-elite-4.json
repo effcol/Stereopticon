@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "DX11 only. DX12 doens't seem to trigger HD3D stereo. [Depth Map Reprojection](https://www.pcgamingwiki.com/wiki/Glossary:Native_3D#Depth_Map_Reprojection)."
     }
-  ]
+  ],
+  "steam_app_id": "312660"
 }

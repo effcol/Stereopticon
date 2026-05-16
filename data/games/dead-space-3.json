@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "Needs HUD Shader fix."
     }
-  ]
+  ],
+  "steam_app_id": "1238060"
 }

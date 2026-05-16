@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "Game supports 3D Vision Direct Mode and HD3D."
     }
-  ]
+  ],
+  "steam_app_id": "203140"
 }

@@ -41,5 +41,6 @@
       "cons": "See notes for the specific issues.",
       "notes": "Single player only. Partially works on DX9 with Tiberian Technologies patch, but needs shaderfix."
     }
-  ]
+  ],
+  "steam_app_id": "2229870"
 }

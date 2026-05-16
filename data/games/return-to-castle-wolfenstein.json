@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "User-confirmed working build. Enable the game's native stereo3D in console. See the 3D/VR Compatibility Database for setup."
     }
-  ]
+  ],
+  "steam_app_id": "9010"
 }

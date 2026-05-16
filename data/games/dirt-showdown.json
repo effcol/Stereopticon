@@ -41,5 +41,6 @@
       "cons": "See notes for the specific issues.",
       "notes": "`hardware_settings_config.xml` needs `stereo enabled=\"true\"`. Only top half of Half SBS visible."
     }
-  ]
+  ],
+  "steam_app_id": "2350280"
 }

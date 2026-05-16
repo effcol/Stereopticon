@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "Needs shadow and water shader fix"
     }
-  ]
+  ],
+  "steam_app_id": "6860"
 }

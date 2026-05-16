@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "May need convergance and seperation adjusting for best settings."
     }
-  ]
+  ],
+  "steam_app_id": "1328350"
 }

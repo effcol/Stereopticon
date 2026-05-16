@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "Artifacts when paused."
     }
-  ]
+  ],
+  "steam_app_id": "1995520"
 }

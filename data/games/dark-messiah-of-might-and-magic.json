@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "Might need to use [Mod Launcher](https://steamcommunity.com/sharedfiles/filedetails/?id=3378556750)."
     }
-  ]
+  ],
+  "steam_app_id": "2100"
 }

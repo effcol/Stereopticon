@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "Not working in SR Weave outpuut, working in other 3D outputs."
     }
-  ]
+  ],
+  "steam_app_id": "429660"
 }

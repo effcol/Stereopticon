@@ -41,5 +41,6 @@
       "cons": "Has an iZ3D profile but no maintainer test report yet — your mileage may vary.",
       "notes": "Check [3D/VR Compatibility Database](https://airtable.com/appByPZJsOQSVGDID/shrAfMuGs1IOIEpRT?uMgeK=recYlJ9YTgmF7wMc5) to enable the game's native stereo 3D."
     }
-  ]
+  ],
+  "steam_app_id": "250900"
 }

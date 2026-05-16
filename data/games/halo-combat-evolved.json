@@ -41,5 +41,6 @@
       "cons": "Crashes or fails to enter stereo. Listed for future testing.",
       "notes": "Crashes on load."
     }
-  ]
+  ],
+  "steam_app_id": "976730"
 }

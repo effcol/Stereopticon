@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "Might need to implement more 3D Vison features and shader fixes."
     }
-  ]
+  ],
+  "steam_app_id": "209120"
 }

@@ -41,5 +41,6 @@
       "cons": "Has an iZ3D profile but no maintainer test report yet — your mileage may vary.",
       "notes": "Targets \"Sims2EP1.exe\", might just be expansion pack or all of The Sims 2."
     }
-  ]
+  ],
+  "steam_app_id": "2537590"
 }

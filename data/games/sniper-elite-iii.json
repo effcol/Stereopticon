@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "`customersupportlogging` beta branch only. [Depth Map Reprojection](https://www.pcgamingwiki.com/wiki/Glossary:Native_3D#Depth_Map_Reprojection)."
     }
-  ]
+  ],
+  "steam_app_id": "238090"
 }

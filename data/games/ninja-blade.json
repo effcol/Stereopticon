@@ -41,5 +41,6 @@
       "cons": "Crashes or fails to enter stereo. Listed for future testing.",
       "notes": "Black screen on AMD."
     }
-  ]
+  ],
+  "steam_app_id": "304050"
 }

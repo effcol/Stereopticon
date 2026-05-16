@@ -41,5 +41,6 @@
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "Needs sprite depth shader fix, use [Geo-11 Fix instead](https://helixmod.blogspot.com/2026/05/blazblue-calamity-trigger-dx11.html)."
     }
-  ]
+  ],
+  "steam_app_id": "263300"
 }
