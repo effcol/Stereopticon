@@ -171,11 +171,74 @@ async function installLoopMod(fix, gamePath, onProgress = () => {}) {
     return result;
 }
 
+// OWML (Outer Wilds Mod Loader) — mod-loader infrastructure for Outer Wilds.
+// Located at %APPDATA%\OuterWildsModManager\OWML\ when installed via OWMM.
+// Loop's Outer Wilds head-tracking mod requires it.
+function owmlRoot() {
+    return path.join(os.homedir(), 'AppData', 'Roaming', 'OuterWildsModManager', 'OWML');
+}
+
+function isOWMLInstalled() {
+    // OWML.Launcher.exe is the canonical marker — present in every OWML release.
+    return fs.existsSync(path.join(owmlRoot(), 'OWML.Launcher.exe'));
+}
+
+async function installOWML(onProgress = () => {}) {
+    const result = { success: true, applied: [], errors: [], warnings: [] };
+    if (isOWMLInstalled()) {
+        result.applied.push('OWML already installed (skipping)');
+        return result;
+    }
+
+    onProgress(10, 'Fetching latest OWML release…');
+    let asset;
+    try {
+        const release = await fetchJson('https://api.github.com/repos/ow-mods/owml/releases/latest');
+        asset = release.assets?.find(a => /^OWML\.zip$/i.test(a.name))
+             || release.assets?.find(a => /\.zip$/i.test(a.name));
+        if (!asset) throw new Error('no .zip asset in latest OWML release');
+    } catch (e) {
+        result.success = false;
+        result.errors.push(`Could not resolve OWML release: ${e.message}`);
+        return result;
+    }
+
+    const cacheDir = path.join(LOOP_CACHE, '_owml');
+    ensureDir(cacheDir);
+    const zipPath = path.join(cacheDir, asset.name);
+    if (!fs.existsSync(zipPath)) {
+        onProgress(40, `Downloading OWML ${asset.name}…`);
+        try {
+            await downloadTo(asset.browser_download_url, zipPath);
+        } catch (e) {
+            result.success = false;
+            result.errors.push(`OWML download failed: ${e.message}`);
+            return result;
+        }
+    }
+    result.applied.push(`OWML release fetched: ${asset.name}`);
+
+    const target = owmlRoot();
+    ensureDir(target);
+    onProgress(80, `Extracting OWML to ${target}…`);
+    try {
+        await extractZip(zipPath, target);
+        ensureDir(path.join(target, 'Mods'));   // mod manifest directory
+        result.applied.push(`OWML installed at ${target}`);
+    } catch (e) {
+        result.success = false;
+        result.errors.push(`OWML extract failed: ${e.message}`);
+        return result;
+    }
+
+    onProgress(100, 'OWML installed.');
+    return result;
+}
+
 /**
- * Install an OWML-based Loop mod (Outer Wilds). OWML mods are extracted
- * into %APPDATA%\OuterWildsModManager\OWML\Mods\<uniqueName>\, not into
- * the game folder. The release ZIP contains a manifest.json + the mod DLL,
- * which we copy in directly.
+ * Install an OWML-based Loop mod (Outer Wilds). Auto-installs OWML first if
+ * it's not detected. The Loop mod ZIP contains a manifest.json + DLL, copied
+ * into %APPDATA%\OuterWildsModManager\OWML\Mods\<uniqueName>\.
  */
 async function installLoopModOWML(fix, onProgress = () => {}) {
     const result = { success: true, applied: [], errors: [], warnings: [] };
@@ -213,15 +276,22 @@ async function installLoopModOWML(fix, onProgress = () => {}) {
     }
     result.applied.push(`Loop mod release: ${asset.tag}`);
 
-    const owmlModsDir = path.join(os.homedir(), 'AppData', 'Roaming', 'OuterWildsModManager', 'OWML', 'Mods');
-    if (!fs.existsSync(owmlModsDir)) {
-        result.success = false;
-        result.errors.push(
-            `OWML mods folder not found at ${owmlModsDir}. ` +
-            'Install OWML (Outer Wilds Mod Manager) first — it sets up this folder.'
-        );
-        return result;
+    // Auto-install OWML if missing — user shouldn't need to run OWMM separately.
+    if (!isOWMLInstalled()) {
+        onProgress(50, 'OWML not detected — installing now…');
+        const owml = await installOWML(onProgress);
+        result.applied.push(...owml.applied);
+        result.warnings.push(...owml.warnings);
+        if (!owml.success) {
+            result.success = false;
+            result.errors.push(...owml.errors);
+            return result;
+        }
+    } else {
+        result.applied.push('OWML detected (using existing install)');
     }
+    const owmlModsDir = path.join(owmlRoot(), 'Mods');
+    ensureDir(owmlModsDir);
 
     const targetDir = path.join(owmlModsDir, fix.owml_unique_name);
     ensureDir(targetDir);
@@ -243,4 +313,6 @@ async function installLoopModOWML(fix, onProgress = () => {}) {
 module.exports = {
     installLoopMod,
     installLoopModOWML,
+    installOWML,
+    isOWMLInstalled,
 };
