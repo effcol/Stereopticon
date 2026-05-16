@@ -1,0 +1,25 @@
+; vireio-ht.ini — drops next to game.exe alongside the renamed d3d9.dll.
+; All keys are optional; omit any line to keep the default.
+
+udp_port = 4242
+
+; Axis inversions (0 = off, 1 = on)
+invert_yaw   = 0
+invert_pitch = 0
+invert_roll  = 0
+invert_x     = 0
+invert_y     = 0
+invert_z     = 0
+
+; Sensitivities (multipliers, 1.0 = pass-through)
+yaw_sensitivity      = 1.0
+pitch_sensitivity    = 1.0
+roll_sensitivity     = 1.0
+position_sensitivity = 1.0
+
+; Small noise floor on rotation axes, in degrees
+yaw_deadzone_deg   = 0.5
+pitch_deadzone_deg = 0.5
+
+; 6DOF positional translation. Set 0 for 3DOF rotation-only.
+apply_position = 1

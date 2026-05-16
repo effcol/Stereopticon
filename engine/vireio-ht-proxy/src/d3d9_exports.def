@@ -1,0 +1,9 @@
+; Module-definition file for vireio-ht.dll when masquerading as d3d9.dll.
+; Only Direct3DCreate9 / Direct3DCreate9Ex are reachable from games; the
+; other d3d9.dll exports are either internal or DXVA-related which our
+; head-tracking proxy doesn't need to intercept.
+LIBRARY     "vireio-ht"
+
+EXPORTS
+    Direct3DCreate9    @1
+    Direct3DCreate9Ex  @2

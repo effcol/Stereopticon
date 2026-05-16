@@ -20,6 +20,47 @@ const path  = require('path');
 const fs    = require('fs');
 const { spawn } = require('child_process');
 
+// Resolve + install the standalone HT proxy DLL into the game folder.
+// Looks for the prebuilt vireio-ht.dll under engine/vireio-ht-proxy/build/
+// (Release first, Debug fallback). Drops it into the game folder as the
+// d3d9.dll proxy, alongside a default vireio-ht.ini.
+async function installVireioHtProxy(gameContext) {
+    const r = { success: true, applied: [], errors: [], warnings: [] };
+    if (!gameContext?.gamePath) {
+        r.success = false;
+        r.errors.push('vireio HT-only: no gamePath in context');
+        return r;
+    }
+    const projectRoot = path.join(__dirname, '..', '..');
+    const proxyCandidates = [
+        path.join(projectRoot, 'engine', 'vireio-ht-proxy', 'build', 'Release', 'vireio-ht.dll'),
+        path.join(projectRoot, 'engine', 'vireio-ht-proxy', 'build', 'Debug',   'vireio-ht.dll'),
+        path.join(projectRoot, 'engine', 'vireio-ht-proxy', 'build', 'vireio-ht.dll'),
+    ];
+    const dll = proxyCandidates.find(fs.existsSync);
+    if (!dll) {
+        r.warnings.push(
+            'Vireio HT proxy DLL not built. Run `cmake -S engine/vireio-ht-proxy -B engine/vireio-ht-proxy/build -A Win32 && cmake --build engine/vireio-ht-proxy/build --config Release` first. Skipping HT-only deploy.'
+        );
+        return r;
+    }
+    const targetDll = path.join(gameContext.gamePath, 'd3d9.dll');
+    const targetIni = path.join(gameContext.gamePath, 'vireio-ht.ini');
+    try {
+        fs.copyFileSync(dll, targetDll);
+        r.applied.push(`Vireio HT proxy → ${targetDll}`);
+        const iniSrc = path.join(projectRoot, 'engine', 'vireio-ht-proxy', 'vireio-ht.ini.sample');
+        if (fs.existsSync(iniSrc) && !fs.existsSync(targetIni)) {
+            fs.copyFileSync(iniSrc, targetIni);
+            r.applied.push(`Vireio HT default ini → ${targetIni}`);
+        }
+    } catch (e) {
+        r.success = false;
+        r.errors.push(`Failed to copy Vireio HT proxy: ${e.message}`);
+    }
+    return r;
+}
+
 // Resolve the path to the bundled Vireio binaries. Walks up from this file's
 // location to project root, then into engine/vireio/Release/...
 function findVireioBinaries() {
@@ -52,6 +93,18 @@ async function applyConfig(ctx) {
     const isHtOnly    = headtracking?.method === 'vireio' && !isStereoFix;
     if (!isStereoFix && !isHtOnly) return result;
 
+    // HT-only path doesn't need the main Vireio engine — it ships as a
+    // standalone d3d9.dll proxy. Handle it first so we don't error on a
+    // missing engine build for users who just want headtracking.
+    if (isHtOnly) {
+        const proxyRes = await installVireioHtProxy(gameContext);
+        result.applied .push(...proxyRes.applied);
+        result.warnings.push(...proxyRes.warnings);
+        result.errors  .push(...proxyRes.errors);
+        if (!proxyRes.success) result.success = false;
+        return result;
+    }
+
     const binaries = findVireioBinaries();
     if (!binaries) {
         result.success = false;
@@ -65,26 +118,12 @@ async function applyConfig(ctx) {
     // Resolve workspace .aqu path. For the stereo-fix path we use the
     // game-specific workspace declared in the fix; for HT-only we use a
     // dedicated headtrack-only workspace shipped with the engine.
-    let workspacePath = null;
-    if (isStereoFix) {
-        workspacePath = fix.vireio_workspace || null;
-    } else if (isHtOnly) {
-        // Engine ships a FreeTrackTracker-only workspace at Profiles/HeadTrackingOnly.aqu.
-        // Engine-side TODO: build/maintain that workspace (currently absent in v4 builds).
-        workspacePath = 'Profiles/HeadTrackingOnly.aqu';
-    }
+    let workspacePath = fix.vireio_workspace || null;
     if (workspacePath && !path.isAbsolute(workspacePath)) {
         workspacePath = path.join(binaries.dir, workspacePath);
     }
     if (workspacePath && !fs.existsSync(workspacePath)) {
-        if (isHtOnly) {
-            result.warnings.push(
-                'Vireio HT-only workspace not yet bundled — Inicio launched interactively. ' +
-                'Pick "FreeTrackTracker → OpenTrack UDP" plugins in the New Project window.'
-            );
-        } else {
-            result.warnings.push(`Vireio workspace not found at ${workspacePath} — falling back to interactive launch.`);
-        }
+        result.warnings.push(`Vireio workspace not found at ${workspacePath} — falling back to interactive launch.`);
         workspacePath = null;
     }
 
@@ -104,11 +143,10 @@ async function applyConfig(ctx) {
             console.error('[vireio adapter] Inicio spawn error:', err);
         });
         child.unref();
-        const modeLabel = isHtOnly ? 'HT-only' : 'stereo';
         result.applied.push(
             workspacePath
-                ? `Inicio.exe autorun (${binaries.build}, ${modeLabel}) — workspace="${path.basename(workspacePath)}", target="${gameContext?.exeName || '?'}"`
-                : `Inicio.exe launched (${binaries.build}, ${modeLabel}) — interactive mode`
+                ? `Inicio.exe autorun (${binaries.build}) — workspace="${path.basename(workspacePath)}", target="${gameContext?.exeName || '?'}"`
+                : `Inicio.exe launched (${binaries.build}) — interactive mode`
         );
     } catch (e) {
         result.success = false;
