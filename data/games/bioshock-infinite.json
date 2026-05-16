@@ -1,0 +1,45 @@
+{
+  "id": "bioshockinfinite",
+  "title": "BioShock Infinite",
+  "developer": "Irrational Games",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\BioShock Infinite\\BioShockInfinite.exe",
+  "exe_name": "BioShockInfinite.exe",
+  "steam_app_id": "8870",
+  "fixes": [
+    {
+      "id": "bioshock_infinite_vireio",
+      "name": "Vireio Perception",
+      "type": "vireio",
+      "cost": "free",
+      "authors": [
+        "Denis Reischl",
+        "Grant Bagwell",
+        "Simon Brown",
+        "Neil Schneider"
+      ],
+      "url": "https://github.com/OpenSourceVR/Vireio-Perception",
+      "license": "LGPL-3.0",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "headtracking_method": "opentrack",
+      "headtracking_port": 4242,
+      "vireio_workspace": "Profiles/BioShockInfinite.aqu",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interleaved",
+        "frame_sequential"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Open-source stereo + 6DOF headtracking driver. Works across many older DX9/DX11 engines without per-game shader fixes.",
+      "cons": "Older driver lineage — modern (DX12) games are out of scope. Some shader effects (specular highlights, bumpmaps) can render at screen depth.",
+      "issues": [],
+      "notes": "UE3 DX11. Tested against the standard Steam release — the Remastered (Complete Edition) build also works."
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "_schema": "Vireio Perception supported-games catalogue. Each entry generates a data/games/<slug>.json with a `type: \"vireio\"` stereo fix entry. The fix carries a `vireio_workspace` filename — at install time, modules/adapters/vireio.js spawns Inicio with `--workspace Profiles/<file>.aqu --target <exe>` so the engine auto-loads. Vireio's head-tracking output is independently available as an HT Fix option for any stereo mod (see renderer.js DETECTED_HARDWARE_TO_DISPLAY + the 'vireio' method in updateHeadtrackingUI).",
+  "_credits": "Vireio v4 community profiles. Original engine: github.com/OpenSourceVR/Vireio-Perception (Denis Reischl, Grant Bagwell, Simon Brown, Neil Schneider). Re-licensed under GPL-3.0 here per LGPL-3.0 -> GPL-3.0 compatibility.",
+  "games": {
+    "half-life-2": {
+      "title":        "Half-Life 2",
+      "developer":    "Valve",
+      "steam_app_id": "220",
+      "exe_name":     "hl2.exe",
+      "graphics_api": "dx9",
+      "vireio_workspace":  "Profiles/HalfLife2.aqu",
+      "rendering_method":  "Dual-View Rendering",
+      "notes":             "Source engine. DX9 path. Run with -dxlevel 90 launch option for stability.",
+      "issues":            ["Some bumpmaps render at screen depth.", "Set 'mat_phong 0' to fix specular ghosting."]
+    },
+    "portal-2": {
+      "title":        "Portal 2",
+      "developer":    "Valve",
+      "steam_app_id": "620",
+      "exe_name":     "portal2.exe",
+      "graphics_api": "dx9",
+      "vireio_workspace":  "Profiles/Portal2.aqu",
+      "rendering_method":  "Dual-View Rendering",
+      "notes":             "Force DX9 mode via -dxlevel 90."
+    },
+    "skyrim-special-edition": {
+      "title":        "The Elder Scrolls V: Skyrim Special Edition",
+      "developer":    "Bethesda Game Studios",
+      "steam_app_id": "489830",
+      "exe_name":     "SkyrimSE.exe",
+      "graphics_api": "dx11",
+      "vireio_workspace":  "Profiles/SkyrimSE.aqu",
+      "rendering_method":  "Dual-View Rendering",
+      "notes":             "Creation Engine DX11 path. Disable Skyrim's own borderless windowed mode."
+    },
+    "mirrors-edge": {
+      "title":        "Mirror's Edge",
+      "developer":    "EA DICE",
+      "steam_app_id": "17410",
+      "exe_name":     "MirrorsEdge.exe",
+      "graphics_api": "dx9",
+      "vireio_workspace":  "Profiles/MirrorsEdge.aqu",
+      "rendering_method":  "Dual-View Rendering",
+      "notes":             "UE3. PhysX cloth/water can break in stereo — disable PhysX advanced effects."
+    },
+    "bioshock-infinite": {
+      "title":        "BioShock Infinite",
+      "developer":    "Irrational Games",
+      "steam_app_id": "8870",
+      "exe_name":     "BioShockInfinite.exe",
+      "graphics_api": "dx11",
+      "vireio_workspace":  "Profiles/BioShockInfinite.aqu",
+      "rendering_method":  "Dual-View Rendering",
+      "notes":             "UE3 DX11. Tested against the standard Steam release — the Remastered (Complete Edition) build also works."
+    },
+    "dishonored": {
+      "title":        "Dishonored",
+      "developer":    "Arkane Studios",
+      "steam_app_id": "205100",
+      "exe_name":     "Dishonored.exe",
+      "graphics_api": "dx9",
+      "vireio_workspace":  "Profiles/Dishonored.aqu",
+      "rendering_method":  "Dual-View Rendering",
+      "notes":             "UE3."
+    },
+    "borderlands-2": {
+      "title":        "Borderlands 2",
+      "developer":    "Gearbox Software",
+      "steam_app_id": "49520",
+      "exe_name":     "Borderlands2.exe",
+      "graphics_api": "dx9",
+      "vireio_workspace":  "Profiles/Borderlands2.aqu",
+      "rendering_method":  "Dual-View Rendering",
+      "notes":             "UE3 cel-shaded. Disable in-game DOF/AO for cleaner depth."
+    },
+    "left-4-dead-2": {
+      "title":        "Left 4 Dead 2",
+      "developer":    "Valve",
+      "steam_app_id": "550",
+      "exe_name":     "left4dead2.exe",
+      "graphics_api": "dx9",
+      "vireio_workspace":  "Profiles/Left4Dead2.aqu",
+      "rendering_method":  "Dual-View Rendering",
+      "notes":             "Source engine. Run with -dxlevel 90."
+    }
+  }
+}
