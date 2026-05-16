@@ -1,0 +1,45 @@
+{
+  "id": "callofdutyblackops",
+  "title": "Call of Duty: Black Ops",
+  "developer": "Unknown",
+  "graphics_api": "dx9",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Call of Duty: Black Ops\\callofdutyblackops.exe",
+  "exe_name": "callofdutyblackops.exe",
+  "fixes": [
+    {
+      "id": "call_of_duty_black_ops_wiz3d",
+      "name": "wiz3D",
+      "type": "wiz3d_wrapper",
+      "cost": "free",
+      "authors": [
+        "effcol",
+        "iZ3D (original)",
+        "bo3b (open-source release)"
+      ],
+      "url": "https://github.com/effcol/wiz3D",
+      "license": "LGPL-2.1",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "pipeline_overrides": {},
+      "wiz3d_status": "working",
+      "wiz3d_section": "Nvidia 3D Vision \"Automatic Mode\" Games",
+      "wiz3d_api_raw": "DX9",
+      "wiz3d_bits": "x86",
+      "wiz3d_iz3d_profile": true,
+      "pros": "Tested working with wiz3D — stereo 3D output confirmed.",
+      "cons": "Some shader effects may still benefit from a per-game shader fix.",
+      "notes": "Might need to implement more 3D Vison features."
+    }
+  ]
+}

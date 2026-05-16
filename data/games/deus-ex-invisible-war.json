@@ -1,0 +1,45 @@
+{
+  "id": "deusexinvisiblewar",
+  "title": "Deus Ex: Invisible War",
+  "developer": "Unknown",
+  "graphics_api": "dx8",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Deus Ex: Invisible War\\deusexinvisiblewar.exe",
+  "exe_name": "deusexinvisiblewar.exe",
+  "fixes": [
+    {
+      "id": "deus_ex_invisible_war_wiz3d",
+      "name": "wiz3D",
+      "type": "wiz3d_wrapper",
+      "cost": "free",
+      "authors": [
+        "effcol",
+        "iZ3D (original)",
+        "bo3b (open-source release)"
+      ],
+      "url": "https://github.com/effcol/wiz3D",
+      "license": "LGPL-2.1",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "pipeline_overrides": {},
+      "wiz3d_status": "partial",
+      "wiz3d_section": "DirectX 7/8 Games",
+      "wiz3d_api_raw": "DX8",
+      "wiz3d_bits": "x86",
+      "wiz3d_iz3d_profile": false,
+      "pros": "Tested with wiz3D — playable but with known caveats.",
+      "cons": "See notes for the specific issues.",
+      "notes": "Startsup, gets into menu on Linux."
+    }
+  ]
+}

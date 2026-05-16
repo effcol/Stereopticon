@@ -1,0 +1,45 @@
+{
+  "id": "deadoralive5lastround",
+  "title": "Dead or Alive 5 Last Round",
+  "developer": "Unknown",
+  "graphics_api": "dx9",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Dead or Alive 5 Last Round\\deadoralive5lastround.exe",
+  "exe_name": "deadoralive5lastround.exe",
+  "fixes": [
+    {
+      "id": "dead_or_alive_5_last_round_wiz3d",
+      "name": "wiz3D",
+      "type": "wiz3d_wrapper",
+      "cost": "free",
+      "authors": [
+        "effcol",
+        "iZ3D (original)",
+        "bo3b (open-source release)"
+      ],
+      "url": "https://github.com/effcol/wiz3D",
+      "license": "LGPL-2.1",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "pipeline_overrides": {},
+      "wiz3d_status": "working",
+      "wiz3d_section": "DirectX 9 32bit Games",
+      "wiz3d_api_raw": "DX9",
+      "wiz3d_bits": "x86",
+      "wiz3d_iz3d_profile": true,
+      "pros": "Tested working with wiz3D — stereo 3D output confirmed.",
+      "cons": "Some shader effects may still benefit from a per-game shader fix.",
+      "notes": ""
+    }
+  ]
+}

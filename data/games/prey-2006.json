@@ -1,0 +1,45 @@
+{
+  "id": "prey2006",
+  "title": "Prey (2006)",
+  "developer": "Unknown",
+  "graphics_api": "opengl",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Prey (2006)\\prey2006.exe",
+  "exe_name": "prey2006.exe",
+  "fixes": [
+    {
+      "id": "prey_2006_wiz3d",
+      "name": "wiz3D",
+      "type": "wiz3d_opengl",
+      "cost": "free",
+      "authors": [
+        "effcol",
+        "iZ3D (original)",
+        "bo3b (open-source release)"
+      ],
+      "url": "https://github.com/effcol/wiz3D",
+      "license": "LGPL-2.1",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "pipeline_overrides": {},
+      "wiz3d_status": "untested",
+      "wiz3d_section": "OpenGL Quad-Buffer Stereo Games (Testing Release)",
+      "wiz3d_api_raw": "OpenGL",
+      "wiz3d_bits": "x86",
+      "wiz3d_iz3d_profile": false,
+      "pros": "In the wiz3D catalogue but not yet tested by the maintainers.",
+      "cons": "Has an iZ3D profile but no maintainer test report yet — your mileage may vary.",
+      "notes": "Check [3D/VR Compatibility Database](https://airtable.com/appByPZJsOQSVGDID/shrAfMuGs1IOIEpRT?uMgeK=rech3exawnWvSNm31) to enable the game's native stereo 3D."
+    }
+  ]
+}

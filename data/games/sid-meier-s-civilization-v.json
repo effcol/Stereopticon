@@ -1,0 +1,45 @@
+{
+  "id": "sidmeierscivilizationv",
+  "title": "Sid Meier's Civilization V",
+  "developer": "Unknown",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Sid Meier's Civilization V\\sidmeierscivilizationv.exe",
+  "exe_name": "sidmeierscivilizationv.exe",
+  "fixes": [
+    {
+      "id": "sid_meier_s_civilization_v_wiz3d",
+      "name": "wiz3D",
+      "type": "wiz3d_wrapper",
+      "cost": "free",
+      "authors": [
+        "effcol",
+        "iZ3D (original)",
+        "bo3b (open-source release)"
+      ],
+      "url": "https://github.com/effcol/wiz3D",
+      "license": "LGPL-2.1",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "pipeline_overrides": {},
+      "wiz3d_status": "untested",
+      "wiz3d_section": "Nvidia 3D Vision \"Automatic Mode\" Games",
+      "wiz3d_api_raw": "DX9/DX11",
+      "wiz3d_bits": "x86",
+      "wiz3d_iz3d_profile": true,
+      "pros": "In the wiz3D catalogue but not yet tested by the maintainers.",
+      "cons": "Has an iZ3D profile but no maintainer test report yet — your mileage may vary.",
+      "notes": ""
+    }
+  ]
+}

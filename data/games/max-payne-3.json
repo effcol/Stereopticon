@@ -1,0 +1,45 @@
+{
+  "id": "maxpayne3",
+  "title": "Max Payne 3",
+  "developer": "Unknown",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Max Payne 3\\maxpayne3.exe",
+  "exe_name": "maxpayne3.exe",
+  "fixes": [
+    {
+      "id": "max_payne_3_wiz3d",
+      "name": "wiz3D",
+      "type": "wiz3d_wrapper",
+      "cost": "free",
+      "authors": [
+        "effcol",
+        "iZ3D (original)",
+        "bo3b (open-source release)"
+      ],
+      "url": "https://github.com/effcol/wiz3D",
+      "license": "LGPL-2.1",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "pipeline_overrides": {},
+      "wiz3d_status": "partial",
+      "wiz3d_section": "Nvidia 3D Vision \"Automatic Mode\" Games",
+      "wiz3d_api_raw": "DX9/DX11",
+      "wiz3d_bits": "x86",
+      "wiz3d_iz3d_profile": false,
+      "pros": "Tested with wiz3D — playable but with known caveats.",
+      "cons": "See notes for the specific issues.",
+      "notes": "Needs 3D Vision shader fixes. `3D Vision` not showing in `Graphics` menu. `-stereo 1` command line argument."
+    }
+  ]
+}

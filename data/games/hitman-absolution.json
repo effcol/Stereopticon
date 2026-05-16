@@ -1,0 +1,45 @@
+{
+  "id": "hitmanabsolution",
+  "title": "Hitman: Absolution",
+  "developer": "Unknown",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Hitman: Absolution\\hitmanabsolution.exe",
+  "exe_name": "hitmanabsolution.exe",
+  "fixes": [
+    {
+      "id": "hitman_absolution_wiz3d",
+      "name": "wiz3D",
+      "type": "wiz3d_3dvision_dm",
+      "cost": "free",
+      "authors": [
+        "effcol",
+        "iZ3D (original)",
+        "bo3b (open-source release)"
+      ],
+      "url": "https://github.com/effcol/wiz3D",
+      "license": "LGPL-2.1",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "pipeline_overrides": {},
+      "wiz3d_status": "working",
+      "wiz3d_section": "Nvidia 3D Vision \"Direct Mode\" Games",
+      "wiz3d_api_raw": "DX11",
+      "wiz3d_bits": "x86",
+      "wiz3d_iz3d_profile": false,
+      "pros": "Tested working with wiz3D — stereo 3D output confirmed.",
+      "cons": "Some shader effects may still benefit from a per-game shader fix.",
+      "notes": "Game supports 3D Vision Direct Mode and HD3D."
+    }
+  ]
+}

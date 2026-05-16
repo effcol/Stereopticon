@@ -1,0 +1,45 @@
+{
+  "id": "sniperelite4",
+  "title": "Sniper Elite 4",
+  "developer": "Unknown",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Sniper Elite 4\\sniperelite4.exe",
+  "exe_name": "sniperelite4.exe",
+  "fixes": [
+    {
+      "id": "sniper_elite_4_wiz3d",
+      "name": "wiz3D",
+      "type": "wiz3d_hd3d",
+      "cost": "free",
+      "authors": [
+        "effcol",
+        "iZ3D (original)",
+        "bo3b (open-source release)"
+      ],
+      "url": "https://github.com/effcol/wiz3D",
+      "license": "LGPL-2.1",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "pipeline_overrides": {},
+      "wiz3d_status": "working",
+      "wiz3d_section": "AMD HD3D Native Games",
+      "wiz3d_api_raw": "DX11/12",
+      "wiz3d_bits": "x64",
+      "wiz3d_iz3d_profile": false,
+      "pros": "Tested working with wiz3D — stereo 3D output confirmed.",
+      "cons": "Some shader effects may still benefit from a per-game shader fix.",
+      "notes": "DX11 only. DX12 doens't seem to trigger HD3D stereo. [Depth Map Reprojection](https://www.pcgamingwiki.com/wiki/Glossary:Native_3D#Depth_Map_Reprojection)."
+    }
+  ]
+}
