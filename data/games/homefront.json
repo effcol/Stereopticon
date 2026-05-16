@@ -1,0 +1,47 @@
+{
+  "id": "homefront",
+  "title": "Homefront",
+  "developer": "Unknown (Vireio v3 catalogue)",
+  "graphics_api": "dx9",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Homefront\\HOMEFRONT.exe",
+  "exe_name": "HOMEFRONT.exe",
+  "fixes": [
+    {
+      "id": "homefront_vireio",
+      "name": "Vireio Perception",
+      "type": "vireio",
+      "cost": "free",
+      "authors": [
+        "Denis Reischl",
+        "Grant Bagwell",
+        "Simon Brown",
+        "Neil Schneider"
+      ],
+      "url": "https://github.com/OpenSourceVR/Vireio-Perception",
+      "license": "LGPL-3.0",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "headtracking_method": "opentrack",
+      "headtracking_port": 4242,
+      "vireio_workspace": "Profiles/Homefront.aqu",
+      "vireio_v3_rules": "HOMEFRONT.xml",
+      "vireio_v3_game_type": "2021220",
+      "cpu_architecture": "32bit",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Open-source stereo + 6DOF headtracking. Per-game shader profile bundled in the Vireio v3 catalogue.",
+      "cons": "Older driver lineage — DX9 / DX11 only. Some shader effects may render at screen depth.",
+      "notes": "Profile maps to Vireio v3 rule file 'HOMEFRONT.xml'. Architecture: 32bit."
+    }
+  ],
+  "steam_app_id": "55100"
+}
