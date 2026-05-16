@@ -1,0 +1,32 @@
+{
+  "id": "the_surge_2",
+  "title": "The Surge 2",
+  "developer": "Deck13 Interactive",
+  "graphics_api": ["dx11", "vulkan"],
+  "default_path": "C:\\Games\\The Surge 2\\TheSurge2.exe",
+  "exe_name": "TheSurge2.exe",
+  "steam_app_id": "644830",
+  "fixes": [
+    {
+      "id": "surge2_vk3dvision",
+      "name": "vk3DVision",
+      "type": "vk3dvision",
+      "cost": "free",
+      "authors": ["DadSchoorse", "MasterOtaku"],
+      "url": "https://3dsurroundgaming.com/Vk3DVisionGames.html",
+      "download_url": "https://3dsurroundgaming.com/Vk3DVision/SFS_Releases/The_Surge_2.7z",
+      "download_note": "",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": ["sbs", "tab", "anaglyph"],
+      "pipeline_overrides": {
+        "sr_weave": ["ShaderGlass", "ReShade", "3DGameBridge"]
+      },
+      "pros": "True Dual-View Rendering via Vulkan interception. No DX11 mode required.",
+      "cons": "Experimental — vk3DVision has limited game support. Linux-first development.",
+      "issues": [],
+      "notes": "Launch the game in Vulkan mode. For SR Weave output: because vk3DVision is Vulkan-based, it cannot host ReShade directly. ShaderGlass creates a DX11 overlay window that ReShade can attach to, then 3DGameBridge routes the SBS output to the SR display."
+    }
+  ]
+}

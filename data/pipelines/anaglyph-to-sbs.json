@@ -1,0 +1,20 @@
+{
+  "id": "anaglyph_to_sbs",
+  "name": "Anaglyph-to-SBS/TAB",
+  "category": "reshade_shader",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/effcol/Anaglyph-to-SBS-or-TAB",
+  "authors": ["effcol"],
+  "requires": ["reshade"],
+  "rendering_method": null,
+  "summary": "ReShade shader that converts a red/cyan anaglyph frame into Side-by-Side or Top-and-Bottom output. Designed for games with native anaglyph output (FEZ, Limbo, etc.) that lack SBS/TAB modes. Game-specific variants handle UI elements rendered outside the anaglyph pass, which generic shaders miss.",
+  "input_format": "Anaglyph (red/cyan)",
+  "compatibility_notes": "Input must be a red/cyan anaglyph frame. Generic variants work for most games. Game-specific variants (FEZ, Limbo) handle edge cases where UI or HUD elements are rendered outside the anaglyph pass and would otherwise appear flat.",
+  "graphics_apis": ["dx9", "dx10", "dx11"],
+  "supported_outputs": {
+    "sbs": [],
+    "tab": []
+  }
+}

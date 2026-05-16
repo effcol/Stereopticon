@@ -1,0 +1,29 @@
+{
+  "id": "geo11",
+  "name": "Geo-11",
+  "description": "3DMigoto-based stereo injector for D3D11/D3D12 games. The primary platform for modern stereo fixes — most active community fixes target Geo-11.",
+  "url": "https://helixmod.blogspot.com",
+  "license": "GPL-3.0",
+  "graphics_api": ["dx11", "dx12"],
+  "versions": {
+    "v0.6.56": {
+      "url": "https://helixmod.blogspot.com",
+      "default": true,
+      "native_outputs": ["sbs", "sbs_half", "tab", "tab_half", "anaglyph", "interlaced", "frame_sequential"],
+      "via_pipeline": {
+        "sr_weave": "3DGameBridge"
+      },
+      "notes": "Standard stable release. Most game fixes target this version."
+    },
+    "v0.6.60.23-beta": {
+      "url": "https://helixmod.blogspot.com",
+      "native_outputs": ["sr_weave", "sbs", "sbs_half", "tab", "tab_half", "anaglyph"],
+      "notes": "Beta with native SR Weave output. No mainline game fixes currently use this version yet."
+    },
+    "v0.6.196": {
+      "url": "https://helixmod.blogspot.com",
+      "native_outputs": ["sbs", "sbs_half", "tab", "tab_half", "anaglyph"],
+      "notes": "Default from the Geo-11 website. Newer than v0.6.56 but fewer tested fixes."
+    }
+  }
+}

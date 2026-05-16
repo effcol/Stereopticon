@@ -1,0 +1,16 @@
+{
+  "id": "dgvoodoo2",
+  "name": "dgVoodoo2",
+  "category": "api_wrapper",
+  "status": "active",
+  "cost": "free",
+  "open_source": false,
+  "url": "http://dege.freeweb.hu/dgVoodoo2/",
+  "authors": ["dege (Dávid Házy)"],
+  "rendering_method": null,
+  "summary": "A DirectX and Glide API wrapper that translates DX1–DX9 and 3dfx Glide calls into DirectX 11 or 12. Used as a prerequisite for Geo-11 fixes on older DX9 games, since Geo-11 requires a DX11 surface to intercept. Drop-in: copy the DLLs into the game folder alongside the Geo-11 fix.",
+  "input_format": "DirectX 1–9, 3dfx Glide",
+  "compatibility_notes": "Not all DX9 games require this — some DX9 games work with Geo-11 directly. Required when Geo-11 cannot hook the game's renderer. May introduce minor visual differences on some titles (texture filtering, resolution handling). Still actively developed.",
+  "graphics_apis": ["dx9", "dx8", "dx7", "glide"],
+  "supported_outputs": {}
+}

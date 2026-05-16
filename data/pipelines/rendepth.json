@@ -1,0 +1,21 @@
+{
+  "id": "rendepth",
+  "name": "Rendepth",
+  "category": "ai_reprojection",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/hamzerhamz/Rendepth",
+  "authors": ["hamzerhamz"],
+  "rendering_method": "AI Reprojection",
+  "summary": "Standalone AI reprojection tool that converts any 2D game or video to stereoscopic output using a machine learning depth estimation model. Hardware-dependent — requires local AI acceleration (Tensor cores, NPU) for real-time play. Can be applied to any game regardless of depth buffer availability, including DX12 and Vulkan games that block ReShade depth access.",
+  "compatibility_notes": "Requires capable GPU (Nvidia RTX recommended for Tensor core acceleration). Depth accuracy varies by scene complexity. Prone to AI hallucinations in complex geometry, shimmering depth, and shallow field of depth. Better suited for cinematic or slower-paced content than fast-action games.",
+  "graphics_apis": ["any"],
+  "supported_outputs": {
+    "sbs": [],
+    "tab": [],
+    "anaglyph": [],
+    "sr_weave": [],
+    "lkg_quilt": []
+  }
+}

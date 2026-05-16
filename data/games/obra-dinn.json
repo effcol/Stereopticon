@@ -1,0 +1,38 @@
+{
+  "id": "obradinn",
+  "title": "Return of the Obra Dinn",
+  "developer": "Lucas Pope / 3909",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Return of the Obra Dinn\\Return of the Obra Dinn.exe",
+  "exe_name": "Return of the Obra Dinn.exe",
+  "steam_app_id": "653530",
+  "fixes": [
+    {
+      "id": "obradinn_loop_headtrack",
+      "name": "Loop Head Tracking",
+      "type": "loop_headtrack",
+      "cost": "free",
+      "authors": [
+        "itsloopyo"
+      ],
+      "url": "https://github.com/itsloopyo/obra-dinn-headtracking",
+      "loop_repo": "itsloopyo/obra-dinn-headtracking",
+      "loader_type": "BepInEx",
+      "license": "MIT",
+      "recommended": true,
+      "rendering_method": "BepInEx 5 x86 + Harmony camera hook",
+      "headtracking": "6dof",
+      "headtracking_method": "freetrack_udp",
+      "headtracking_port": 4242,
+      "native_outputs": [],
+      "addon": true,
+      "addon_note": "Headtracking-only — pair with a stereo fix (Geo-11, wiz3D, Vireio) to get 3D + headtracking together. Mono-only use is not supported in Stereopticon; use Loop's own Lopari launcher for that case.",
+      "pipeline_overrides": {},
+      "pros": "Decoupled look and aim — head tracking moves the camera, mouse still controls aim. Built-in smoothing for network jitter.",
+      "cons": "Headtracking only — does not produce 3D output on its own.",
+      "notes": "Reads OpenTrack-protocol UDP head pose on port 4242. Stereopticon's OpenTrack hub adapter handles emission. Pair with any Stereopticon stereo fix for the 3D side.",
+      "loader_arch": "x86",
+      "loader_notes": "BepInEx 5 x86 — Obra Dinn is a 32-bit Unity 2017 build"
+    }
+  ]
+}

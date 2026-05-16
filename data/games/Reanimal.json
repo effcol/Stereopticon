@@ -1,0 +1,53 @@
+{
+  "id": "reanimal",
+  "title": "Reanimal",
+  "developer": "Inside Systems",
+  "graphics_api": "dx12",
+  "steam_app_id": 2881870,
+  "exe_name": "Reanimal.exe",
+  "default_path": "C:\\Games\\Reanimal\\Reanimal.exe",
+  "fixes": [
+    {
+      "id": "reanimal_geo12_truegame",
+      "name": "Geo-12 (Acer TrueGame — Official)",
+      "type": "geo12",
+      "geo11_variant": "Geo-12",
+      "authors": [
+        "Acer"
+      ],
+      "url": "https://www.acer.com/truegame",
+      "recommended": true,
+      "cost": "free",
+      "platform": {
+        "os": [
+          "windows10",
+          "windows11"
+        ],
+        "gpu": [
+          "nvidia",
+          "amd",
+          "intel"
+        ],
+        "note": "Geo-12 is primarily tested on Nvidia. Acer TrueGame is the official delivery mechanism — not available via NewAxis yet."
+      },
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sr_weave",
+        "sbs",
+        "tab"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Official Acer TrueGame fix. Designed specifically for this game.",
+      "cons": "Only available through Acer TrueGame directly (NewAxis not yet supported for this title).",
+      "issues": [],
+      "notes": "Use the Acer TrueGame application to install this fix. Check the TrueGame game library for the Reanimal profile. DX12 title.",
+      "display_restriction": {
+        "allowed_displays": [
+          "sr_display"
+        ],
+        "note": "Reanimal's Geo-12 fix is delivered via Acer TrueGame directly (not NewAxis). Only works on Acer SpatialLabs displays."
+      }
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": "assetto_corsa",
+  "title": "Assetto Corsa",
+  "developer": "Kunos Simulazioni",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Games\\assettocorsa\\AssettoCorsa.exe",
+  "exe_name": "AssettoCorsa.exe",
+  "steam_app_id": "244210",
+  "fixes": [
+    {
+      "id": "assettocorsa_geo11",
+      "name": "Geo-11",
+      "type": "geo11",
+      "geo11_variant": "Shader Fix",
+      "cost": "free",
+      "ini_file": "d3dxdm.ini",
+      "authors": [
+        "4everAwake",
+        "3DJ"
+      ],
+      "url": "https://airtable.com/appByPZJsOQSVGDID/shrAfMuGs1IOIEpRT?uMgeK=rec307rqYmc8IrLI3",
+      "download_url": "https://github.com/Stereoscopic3D/ShaderFixes/releases/download/AssettoCorsa/AssettoCorsa_2025-12-16_3DJ.zip",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": [
+        "opentrack"
+      ],
+      "native_outputs": [
+        "sbs",
+        "tab",
+        "interleaved",
+        "frame_sequential",
+        "anaglyph"
+      ],
+      "pros": "",
+      "cons": "Issues with car mirrors and heat shimmer effect when stopped.",
+      "issues": [],
+      "notes": "",
+      "geo11_version": "Latest stable"
+    },
+    {
+      "id": "assettocorsa_native_vr",
+      "name": "SteamVR Native",
+      "type": "native",
+      "cost": "free",
+      "authors": [
+        "Kunos Simulazioni"
+      ],
+      "recommended": false,
+      "rendering_method": "Native SteamVR",
+      "headtracking": [
+        "steamvr"
+      ],
+      "native_outputs": [
+        "vr"
+      ],
+      "pros": "Native SteamVR support built into game",
+      "cons": "Not recommended — Geo-11 provides better quality. Use only if experiencing issues with Geo-11.",
+      "issues": [],
+      "notes": "Enables game's built-in SteamVR mode. Requires SteamVR runtime."
+    }
+  ]
+}

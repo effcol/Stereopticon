@@ -1,0 +1,39 @@
+{
+  "id": "dragon_quest_11_re",
+  "title": "Dragon Quest VII Reimagined",
+  "developer": "Square Enix",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Games\\DragonQuestXI\\DQ11.exe",
+  "exe_name": "DQ11S.exe",
+  "steam_app_id": "2499860",
+  "fixes": [
+    {
+      "id": "dq11_masterotaku",
+      "name": "Geo-11",
+      "type": "geo11",
+      "authors": [
+        "MasterOtaku"
+      ],
+      "geo11_variant": "Shader Fix",
+      "ini_file": "d3dxdm.ini",
+      "url": "https://helixmod.blogspot.com/2026/01/dragon-quest-vii-reimagined-dx11.html",
+      "download_url": "https://masterotaku.s3.amazonaws.com/Dragon+Quest+VII/DRAGON_QUEST_VII_Reimagined_geo11_fix.7z",
+      "download_note": "",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "tab",
+        "interleaved",
+        "frame_sequential"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Fixed haloing, fixed water shaders, correct UI depth.",
+      "cons": "",
+      "issues": [],
+      "notes": "This uses a custom version of Geo-11 specific to this game.",
+      "geo11_version": "Latest stable"
+    }
+  ]
+}

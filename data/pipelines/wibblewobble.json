@@ -1,0 +1,18 @@
+{
+  "id": "wibblewobble",
+  "name": "WibbleWobbleVR",
+  "category": "vr_converter",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/simonwibl/WibbleWobbleVR",
+  "authors": ["simonwibl"],
+  "rendering_method": null,
+  "summary": "A SteamVR driver that converts VR game output to frame sequential format, enabling play on OLED displays using 120Hz page-flipped stereo (Sequential-View output). Targeted at high-refresh OLED panels and active-shutter display setups without a physical VR headset.",
+  "input_format": "SteamVR frame pair",
+  "compatibility_notes": "Requires SteamVR and a 120Hz+ display. OLED panels are preferred for their near-zero response time between left/right frames. Introduces crosstalk on slow-response LCD panels.",
+  "graphics_apis": ["dx11", "dx12"],
+  "supported_outputs": {
+    "frame_sequential": []
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "firewatch",
+  "title": "Firewatch",
+  "developer": "Campo Santo",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Firewatch\\Firewatch.exe",
+  "exe_name": "Firewatch.exe",
+  "steam_app_id": "383870",
+  "fixes": [
+    {
+      "id": "firewatch_loop_headtrack",
+      "name": "Loop Head Tracking",
+      "type": "loop_headtrack",
+      "cost": "free",
+      "authors": ["itsloopyo"],
+      "url": "https://github.com/itsloopyo/firewatch-headtracking",
+      "loop_repo": "itsloopyo/firewatch-headtracking",
+      "loader_type": "MelonLoader",
+      "loader_version_pin": "v0.5.7",
+      "loader_pin_reason": "v0.6.x is not compatible with Firewatch's Unity 2017 Mono runtime.",
+      "license": "MIT",
+      "recommended": true,
+      "rendering_method": "Camera View Matrix Injection",
+      "headtracking": "6dof",
+      "headtracking_method": "freetrack_udp",
+      "headtracking_port": 4242,
+      "native_outputs": [],
+      "addon": true,
+      "addon_note": "Headtracking-only — pair with a stereo fix (Geo-11, wiz3D, Vireio) to get 3D + headtracking together. Mono-only use is not supported in Stereopticon; use Loop's own Lopari launcher for that case.",
+      "pipeline_overrides": {},
+      "pros": "Decoupled look and aim — head tracking moves the camera, mouse still controls aim. Built-in smoothing for network jitter from phone trackers.",
+      "cons": "Headtracking only — does not produce 3D output on its own.",
+      "issues": [
+        "Requires MelonLoader 0.5.7 specifically (auto-installed if absent)",
+        "Game must be launched once after loader install to initialize"
+      ],
+      "notes": "Reads OpenTrack-protocol UDP head pose on port 4242. Stereopticon's OpenTrack hub adapter handles emission. For mono-only headtracking, Loop's own Lopari launcher is a cleaner fit."
+    }
+  ]
+}

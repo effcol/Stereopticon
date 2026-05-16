@@ -1,0 +1,25 @@
+{
+  "id": "quilt",
+  "name": "Looking Glass Quilt",
+  "category": "lightfield_format",
+  "status": "active",
+  "summary": "A multi-view image format used by Looking Glass holographic displays. A quilt is a single image containing a grid of views (typically 45 or 48 views for a 5×9 or 4×8 arrangement) captured from slightly different horizontal angles. The Looking Glass display uses a lenticular lens to direct each view to a different angle, creating an autostereoscopic lightfield visible without glasses.",
+  "variants": [
+    {
+      "id": "quilt_standard",
+      "name": "Standard Quilt (5×9, 45 views)",
+      "description": "45-view quilt. Standard for Looking Glass Portrait and 15.6\" displays."
+    },
+    {
+      "id": "quilt_highres",
+      "name": "High-Res Quilt (8×12, 96 views)",
+      "description": "Higher view count for Looking Glass 8K and Pro displays. Smoother parallax, higher GPU cost."
+    }
+  ],
+  "compatible_displays": ["looking_glass_portrait", "looking_glass_16", "looking_glass_pro"],
+  "hardware_requirements": [
+    "Looking Glass display",
+    "Looking Glass Bridge software or HoloPlay SDK"
+  ],
+  "pipeline_notes": "Games output via Geo-11 or UEVR require an intermediate shader (HoloPlay ReShade shader or HoloUEVR plugin) to generate the multi-view quilt from the stereo pair."
+}

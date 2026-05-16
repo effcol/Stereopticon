@@ -1,0 +1,31 @@
+{
+  "id": "anaglyph",
+  "name": "Anaglyph",
+  "category": "image_format",
+  "status": "active",
+  "summary": "Left and right eye views encoded as different colour channels in a single standard frame. Requires coloured glasses to separate the views. Works on any display with no special hardware. Quality varies significantly by variant — red/cyan is most common but amber/blue preserves the most colour.",
+  "variants": [
+    {
+      "id": "anaglyph_red_cyan",
+      "name": "Red / Cyan",
+      "description": "Most widely used anaglyph format. Left eye through red filter, right eye through cyan. Significant colour distortion — reds and cyans are lost."
+    },
+    {
+      "id": "anaglyph_red_blue",
+      "name": "Red / Blue",
+      "description": "Older variant. Lower quality than red/cyan. Rarely used in modern implementations."
+    },
+    {
+      "id": "anaglyph_green_magenta",
+      "name": "Green / Magenta",
+      "description": "Better colour balance than red/cyan in some scenes. Less common."
+    },
+    {
+      "id": "anaglyph_amber_blue",
+      "name": "Amber / Blue (ColorCode 3D)",
+      "description": "Preserves the most colour information of any anaglyph variant. Requires specific amber/blue glasses. Best anaglyph experience when glasses are available."
+    }
+  ],
+  "compatible_displays": ["any"],
+  "hardware_requirements": ["Coloured anaglyph glasses (variant-specific)"]
+}

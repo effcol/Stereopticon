@@ -1,0 +1,25 @@
+{
+  "id": "amd_hd3d",
+  "name": "AMD HD3D",
+  "category": "driver",
+  "status": "deprecated",
+  "deprecated_since": "2016-12",
+  "deprecated_version": "Crimson ReLive 16.12.1",
+  "cost": "free",
+  "open_source": false,
+  "url": "https://www.amd.com/en/technologies/hd3d",
+  "authors": ["AMD"],
+  "summary": "AMD's open-standard 3D platform for Radeon GPUs. Unlike Nvidia 3D Vision, provided an API for native developer implementation rather than a universal wrapper. Required middleware like TriDef or iZ3D for non-native games. Games with native support include Deus Ex: Human Revolution, Dirt 3, and Sleeping Dogs.",
+  "compatibility_notes": "Requires legacy Catalyst 15.7.1 or Crimson 16.2.1 Beta drivers. Compatible AMD hardware: HD 7000, Rx 200, non-Polaris Rx 300 series. Windows 10 2004+ introduced WDDM 2.7 with strict driver signing enforcement, causing legacy Catalyst drivers to BSOD. HD3D code remains in modern Adrenalin drivers but is disabled and cannot initialize on RDNA GPUs.",
+  "hardware_requirements": [
+    "AMD Radeon HD 7000, Rx 200, or non-Polaris Rx 300 series",
+    "Legacy Catalyst 15.7.1 or Crimson 16.2.1 Beta"
+  ],
+  "os_requirements": ["Windows 10 1909 or older"],
+  "graphics_apis": ["dx9", "dx10", "dx11", "opengl"],
+  "supported_outputs": {
+    "frame_sequential": [],
+    "sbs": [],
+    "anaglyph": []
+  }
+}

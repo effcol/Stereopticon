@@ -1,0 +1,21 @@
+{
+  "id": "vorpx",
+  "name": "VorpX",
+  "category": "vr_injector",
+  "status": "active",
+  "cost": "paid",
+  "cost_url": "https://www.vorpx.com",
+  "url": "https://www.vorpx.com",
+  "authors": ["Ralf (VorpX)"],
+  "summary": "Commercial VR injector with curated profiles for hundreds of games. Offers two core rendering modes: Geometry 3D (Dual-View Rendering via driver hooks) and Z-Normal (Single-View Depth Reprojection via depth buffer). Also supports Cinema mode for flat-screen VR. SBS output is available as a side-effect of VR mode.",
+  "rendering_methods": {
+    "geometry_3d": "Dual-View Rendering",
+    "z_normal": "Single-View Depth Reprojection"
+  },
+  "compatibility_notes": "Paid (~€40 one-time). Performance overhead vs native. Next-gen game updates can break profiles. Z-Normal mode has depth artifacts typical of depth reprojection.",
+  "graphics_apis": ["dx9", "dx11", "dx12", "opengl"],
+  "supported_outputs": {
+    "vr_native": [],
+    "sbs": []
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "vk3dvision",
+  "name": "vk3DVision",
+  "category": "vulkan_injector",
+  "status": "abandoned",
+  "cost": "free",
+  "open_source": false,
+  "url": "https://github.com/DadSchoorse/vk3DVision",
+  "authors": ["DadSchoorse"],
+  "rendering_method": "Dual-View Rendering",
+  "summary": "Vulkan layer injecting Dual-View Rendering into Vulkan games. Linux-first, Windows secondary. Development has ended — the author announced they will no longer work on the project and that key internal code cannot be open-sourced due to NDA constraints. The software remains functional for supported games but will receive no further updates or new game support.",
+  "compatibility_notes": "Vulkan only. Windows support is secondary to Linux. Development ended — no new game fixes will be written. Existing fixes continue to work. Cannot host ReShade directly — ShaderGlass required as a DX11 overlay for SR Weave or other ReShade-dependent output conversions. Not to be confused with Helifax's Vk3DVision (a separate project at 3dsurroundgaming.com).",
+  "graphics_apis": ["vulkan"],
+  "supported_outputs": {
+    "sbs": [],
+    "tab": [],
+    "anaglyph": [],
+    "sr_weave": ["ShaderGlass", "ReShade", "3DGameBridge"]
+  }
+}

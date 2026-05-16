@@ -1,0 +1,88 @@
+# ── Node / Electron ──────────────────────────────────────────
+node_modules/
+out/
+dist/
+*.log
+npm-debug.log*
+.npm/
+
+# ── Reference / dev-only material (gitignored per user request) ──
+# lib/ holds upstream mod releases, vendor sources, and reference
+# material that we don't redistribute. Devs can drop copies here for
+# the on-disk fallback path in scripts/download-tools.js — production
+# always downloads at setup.
+lib/
+
+# ── Downloaded third-party tools (fetched by scripts/download-tools.js) ──
+resources/reshade/
+resources/uevr/
+resources/vrto3d/
+resources/xrgamebridge/
+resources/dgvoodoo2/
+resources/wiz3d/
+resources/opentrack/
+resources/loop-mods/
+
+# ── Build outputs / release artefacts ────────────────────────
+build/
+Build/
+Release/
+Debug/
+release/
+*.exe
+*.dll
+*.lib
+*.exp
+*.pdb
+*.ilk
+*.iobj
+*.ipdb
+*.obj
+*.o
+*.a
+*.suo
+*.user
+
+# Engine — keep source, ignore built binaries + intermediate files
+engine/vireio/**/Release/
+engine/vireio/**/Debug/
+engine/vireio/**/x64/
+engine/vireio/**/x86/
+engine/vireio/**/Bin/
+engine/vireio/**/.vs/
+engine/vireio/**/*.tlog
+engine/vireio/**/*.idb
+engine/vireio/**/CMakeFiles/
+engine/vireio/**/CMakeCache.txt
+
+engine/sr-opentrack-bridge/build/
+engine/sr-opentrack-bridge/**/CMakeFiles/
+
+# CMake-generated
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+*.vcxproj.filters.user
+*.vcxproj.user
+
+# vcpkg installed deps
+vcpkg_installed/
+
+# ── Claude Code session-local settings (not personal info, just IDE-ish state) ──
+.claude/
+
+# ── IDE / OS junk ────────────────────────────────────────────
+.vs/
+.vscode/.cache/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Cache / temp ─────────────────────────────────────────────
+.cache/
+*.tmp
+*.bak
+*~

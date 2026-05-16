@@ -1,0 +1,43 @@
+{
+  "id": "mass_effect_le",
+  "title": "Mass Effect Legendary Edition",
+  "developer": "BioWare",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Games\\Mass Effect Legendary Edition\\Game\\Binaries\\Win64\\MassEffect1.exe",
+  "exe_name": "MassEffect1.exe",
+  "steam_app_id": "1328670",
+  "fixes": [
+    {
+      "id": "me_geo11",
+      "name": "Geo-11",
+      "type": "geo11",
+      "authors": [
+        "Bo3b",
+        "DarkStarSword",
+        "Flintlock"
+      ],
+      "geo11_variant": "Shader Fix",
+      "url": "https://helixmod.blogspot.com/2021/06/mass-effect-legendary-edition.html",
+      "download_url": "https://bo3b.s3.us-east-1.amazonaws.com/MassEffectLE_geo-11.7z",
+      "download_note": "",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "tab",
+        "interleaved",
+        "frame_sequential",
+        "anaglyph"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Perfect shadows, native performance.",
+      "cons": "No VR headtracking.",
+      "issues": [
+        "HUD depth locked"
+      ],
+      "notes": "Excellent fix. Press F10 to cycle HUD depth.",
+      "geo11_version": "Latest stable"
+    }
+  ]
+}

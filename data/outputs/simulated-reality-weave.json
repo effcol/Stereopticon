@@ -1,0 +1,25 @@
+{
+  "id": "sr_weave",
+  "name": "Simulated Reality Weave",
+  "category": "lightfield_format",
+  "status": "active",
+  "summary": "The interleaved multi-view format used by Leia Inc. (Lume Pad tablets), Acer SpatialLabs, and SR (Super Retina / Dimenco) auto-stereoscopic displays. A weave interleaves multiple views at the subpixel level for the display's lenticular or barrier layer to separate into per-angle streams.",
+  "variants": [
+    {
+      "id": "leia_weave_standard",
+      "name": "Leia Weave (4-view)",
+      "description": "Standard 4-view weave for Leia Lume Pad and compatible displays."
+    },
+    {
+      "id": "sr_weave",
+      "name": "SR Display Weave",
+      "description": "Variant used by Acer SpatialLabs and Dimenco SR displays. Delivered via DisplayPort 1.4 with 3D Game Bridge routing."
+    }
+  ],
+  "compatible_displays": ["acer_spatiallabs", "samsung_odyssey_3d", "dimenco_sr"],
+  "hardware_requirements": [
+    "Leia, Acer SpatialLabs, or compatible SR display",
+    "3D Game Bridge or LeiaPlayer for routing"
+  ],
+  "pipeline_notes": "Typically requires 3D Game Bridge to convert a standard SBS or stereo output into the display-specific weave format. Direct weave output from Geo-11 is possible on some setups with display SDK integration."
+}

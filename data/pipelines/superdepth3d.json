@@ -1,0 +1,22 @@
+{
+  "id": "superdepth3d",
+  "name": "SuperDepth3D",
+  "category": "reshade_shader",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/BlueSkyDefender/Depth3D",
+  "authors": ["BlueSkyDefender"],
+  "requires": ["reshade"],
+  "rendering_method": "Single-View Depth Reprojection",
+  "summary": "ReShade shader performing Single-View Depth Reprojection. Reads the game's depth buffer (Z-buffer) and warps the 2D frame into a stereo pair. Can be applied to almost any game that exposes a depth buffer and supports ReShade.",
+  "input_format": "2D frame + depth buffer",
+  "compatibility_notes": "Requires a game that exposes a depth buffer to ReShade. Does not work with DX12 or Vulkan in most cases (depth access restricted). Typical artifacts: halo/ghosting around object edges, incorrect depth on UI/HUD elements, stair-stepping on depth gradients.",
+  "graphics_apis": ["dx9", "dx10", "dx11"],
+  "supported_outputs": {
+    "sbs": [],
+    "tab": [],
+    "anaglyph": [],
+    "interleaved": []
+  }
+}

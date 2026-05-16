@@ -1,0 +1,56 @@
+{
+  "id": "split_fiction",
+  "title": "Split Fiction",
+  "developer": "Hazelight Studios",
+  "graphics_api": [
+    "dx11",
+    "dx12"
+  ],
+  "steam_app_id": "2001120",
+  "exe_name": "SplitFiction.exe",
+  "default_path": "C:\\Games\\Split Fiction\\SplitFiction.exe",
+  "fixes": [
+    {
+      "id": "splitfiction_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "authors": [
+        "Praydog"
+      ],
+      "url": "https://github.com/praydog/UEVR",
+      "recommended": true,
+      "cost": "free",
+      "platform": {
+        "os": [
+          "windows10",
+          "windows11"
+        ],
+        "gpu": [
+          "nvidia",
+          "amd"
+        ],
+        "note": "Co-op game \u2014 both players would need VR rigs for full VR. Single-player VR works normally."
+      },
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": ["steamvr"],
+      "native_outputs": [
+        "vr_native"
+      ],
+      "pipeline_overrides": {
+        "sr_weave": [
+          "XRGameBridge"
+        ],
+        "sbs": [
+          "VRto3D"
+        ],
+        "tab": [
+          "VRto3D"
+        ]
+      },
+      "pros": "Full VR immersion. The game's cinematic set-pieces are spectacular in 3D.",
+      "cons": "Co-op VR requires two headsets. High GPU requirement.",
+      "issues": [],
+      "notes": "Frostbite engine (not Unreal). Check UEVR compatibility for Frostbite titles. Community profiles may be available on the UEVR Discord."
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "vr_native",
+  "name": "VR Native",
+  "category": "vr_output",
+  "status": "active",
+  "summary": "Output directly to a VR headset via OpenXR or SteamVR runtime. The headset receives separate left/right eye renders at native headset resolution with full lens distortion correction and timewarp. Highest quality VR output — no intermediate conversion.",
+  "variants": [
+    {
+      "id": "vr_openxr",
+      "name": "OpenXR",
+      "description": "Modern open standard. Supported by all major headsets (Quest, Pico, Index, WMR, Varjo, Pimax). Preferred for new implementations."
+    },
+    {
+      "id": "vr_steamvr",
+      "name": "SteamVR",
+      "description": "Valve's VR runtime. Broadest game compatibility. Acts as an OpenXR runtime on most headsets. Some older games only support SteamVR and not native OpenXR."
+    },
+    {
+      "id": "vr_oculus",
+      "name": "Meta / Oculus SDK",
+      "description": "Meta's proprietary runtime for Quest headsets. Some games target this directly rather than OpenXR. PC Link and Air Link required for PCVR."
+    }
+  ],
+  "compatible_displays": ["any_pcvr_headset"],
+  "hardware_requirements": ["PCVR-capable headset", "VR-ready GPU (RTX 3070 / RX 6700 XT or better recommended)"]
+}

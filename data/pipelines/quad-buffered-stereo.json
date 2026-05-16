@@ -1,0 +1,17 @@
+{
+  "id": "quad_buffer_opengl",
+  "name": "OpenGL Quad-Buffered Stereo",
+  "category": "api",
+  "status": "niche",
+  "cost": "free",
+  "open_source": false,
+  "url": "https://www.khronos.org/opengl/wiki/Stereo_Rendering",
+  "authors": ["Khronos / Nvidia / AMD"],
+  "summary": "Professional-grade stereoscopic rendering method for OpenGL applications. Uses four framebuffers (front-left, front-right, back-left, back-right) for page-flipped stereo output. Historically associated with Nvidia Quadro and AMD FirePro workstation GPUs.",
+  "compatibility_notes": "Consumer GPU support limited to Nvidia RTX 20-series or older using driver 425.31 with 3D Vision. Still functional in GZDoom and some OpenGL source ports. Largely replaced by modern DirectX pipelines in gaming contexts. Professional visualization tools still use it natively.",
+  "graphics_apis": ["opengl"],
+  "supported_outputs": {
+    "frame_sequential": [],
+    "nvidia_3d_vision": []
+  }
+}

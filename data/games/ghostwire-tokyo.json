@@ -1,0 +1,135 @@
+{
+  "id": "ghostwire_tokyo",
+  "title": "Ghostwire: Tokyo",
+  "developer": "Tango Gameworks",
+  "graphics_api": [
+    "dx11",
+    "dx12"
+  ],
+  "steam_app_id": "1475810",
+  "exe_name": "GhostwireTokyo.exe",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\GhostWire Tokyo",
+  "fixes": [
+    {
+      "id": "ghostwire_geo12_newaxis",
+      "name": "Geo-12 (NewAxis — Acer TrueGame)",
+      "type": "geo12",
+      "geo11_variant": "Geo-12",
+      "authors": [
+        "MarcusSacana"
+      ],
+      "url": "https://github.com/marcussacana/NewAxis",
+      "download_url": "https://github.com/marcussacana/NewAxis/releases/download/v12/NewAxis.v12.7z",
+      "recommended": true,
+      "cost": "free",
+      "ini_file": "d3dxdm.ini",
+      "platform": {
+        "os": [
+          "windows10",
+          "windows11"
+        ],
+        "gpu": [
+          "nvidia",
+          "amd",
+          "intel"
+        ],
+        "note": "Geo-12 primarily tested on Nvidia."
+      },
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "tab",
+        "interleaved",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "pros": "Official Acer TrueGame fix via NewAxis. Native SR Weave support for SpatialLabs displays.",
+      "cons": "Best results on Nvidia.",
+      "issues": [],
+      "notes": "Preferred way to play on SpatialLabs and Samsung Odyssey 3D.",
+      "display_restriction": {
+        "allowed_displays": [
+          "sr_display",
+          "leia_tablet"
+        ],
+        "note": "Targets SR displays primarily."
+      }
+    },
+    {
+      "id": "ghostwire_geo11",
+      "name": "Geo-11 (Standard)",
+      "type": "geo11",
+      "geo11_variant": "Shader Fix",
+      "authors": [
+        "community"
+      ],
+      "url": "https://helixmod.blogspot.com",
+      "recommended": false,
+      "cost": "free",
+      "ini_file": "d3dxdm.ini",
+      "platform": {
+        "os": [
+          "windows10",
+          "windows11"
+        ],
+        "gpu": [
+          "nvidia",
+          "amd",
+          "intel"
+        ]
+      },
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "tab",
+        "interleaved",
+        "frame_sequential",
+        "anaglyph"
+      ],
+      "pros": "Broader output format support than Geo-12.",
+      "cons": "Less integrated than NewAxis for SR displays.",
+      "issues": [],
+      "notes": "Use Geo-12 via NewAxis if you have a SpatialLabs display.",
+      "geo11_version": "Latest stable"
+    },
+    {
+      "id": "ghostwire_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "authors": [
+        "Praydog"
+      ],
+      "url": "https://github.com/praydog/UEVR",
+      "recommended": false,
+      "cost": "free",
+      "platform": {
+        "os": [
+          "windows10",
+          "windows11"
+        ],
+        "gpu": [
+          "nvidia",
+          "amd"
+        ]
+      },
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": [
+        "steamvr"
+      ],
+      "native_outputs": [
+        "vr_native"
+      ],
+      "pipeline_overrides": {
+        "sr_weave": [
+          "XRGameBridge"
+        ]
+      },
+      "pros": "Full VR with headtracking.",
+      "cons": "High GPU requirement. Less polished than TrueGame fix for flat displays.",
+      "issues": [],
+      "notes": "For flat 3D displays, Geo-12/NewAxis is the better choice. UEVR shines with VR headsets."
+    }
+  ]
+}

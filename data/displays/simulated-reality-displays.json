@@ -1,0 +1,299 @@
+{
+  "family": "sr_display",
+  "family_name": "Simulated Reality Displays",
+  "family_id": "sr_display",
+  "native_input": "sr_weave",
+  "os": ["windows"],
+
+  "summary": "Auto-stereoscopic displays that use a lenticular lens or barrier layer to separate left/right eye views without glasses. All consume SR Weave format delivered via DisplayPort 1.4. Require display vendor SDK software to activate 3D mode.",
+
+  "vrto3d_output_profiles": {
+    "sr_weave": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1440,
+      "fov": 90.0,
+      "depth": 0.1,
+      "convergence": 1.0,
+      "tab_enable": false,
+      "display_frequency": 120.0,
+      "pitch_enable": true,
+      "yaw_enable": true,
+      "use_open_track": true,
+      "open_track_port": 4242,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "SR Weave native output with 3DGameBridge ReShade addon. Headtracking enabled for Leia Track support."
+    },
+    "sbs": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1440,
+      "fov": 90.0,
+      "depth": 0.1,
+      "convergence": 1.0,
+      "tab_enable": false,
+      "display_frequency": 120.0,
+      "pitch_enable": true,
+      "yaw_enable": true,
+      "use_open_track": true,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "Side-by-side output. 3DGameBridge converts to SR Weave."
+    },
+    "tab": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1440,
+      "fov": 90.0,
+      "depth": 0.1,
+      "convergence": 1.0,
+      "tab_enable": true,
+      "framepack_offset": 0,
+      "display_frequency": 120.0,
+      "pitch_enable": true,
+      "yaw_enable": true,
+      "use_open_track": true,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "Top-and-bottom output converted by 3DGameBridge."
+    },
+    "anaglyph": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1440,
+      "fov": 90.0,
+      "depth": 0.1,
+      "convergence": 1.0,
+      "tab_enable": false,
+      "display_frequency": 120.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "use_open_track": false,
+      "async_enable": false,
+      "auto_focus": false,
+      "notes": "Anaglyph output. Converted via ReShade 3DToElse shader; no head tracking in ColoredGlass mode."
+    }
+  },
+
+  "accepted_fix_outputs": {
+    "sr_weave": {
+      "steps": [],
+      "notes": "Fix outputs SR Weave natively — no conversion needed."
+    },
+    "sbs": {
+      "steps": ["3DGameBridge"],
+      "constraints": {
+        "graphics_api": ["dx9", "dx11", "dx12"],
+        "notes": "3DGameBridge does not support Vulkan. Use sbs_vulkan path instead."
+      }
+    },
+    "sbs_vulkan": {
+      "steps": ["ShaderGlass", "3DGameBridge"],
+      "constraints": {
+        "graphics_api": ["vulkan"],
+        "notes": "ShaderGlass captures Vulkan output and re-presents as DX11 for 3DGameBridge."
+      }
+    },
+    "tab": {
+      "steps": ["3DGameBridge"],
+      "constraints": {
+        "graphics_api": ["dx9", "dx11", "dx12"]
+      }
+    }
+  },
+
+  "vr_drivers": {
+    "vrto3d": {
+      "supported": true,
+      "notes": "VRto3D outputs SBS which 3DGameBridge ReShade addon (running on vrserver.exe) converts to SR Weave.",
+      "install_reshade_on": "SteamVR/bin/win64/vrserver.exe",
+      "config_base": {
+        "tab_enable": false
+      }
+    },
+    "xrgamebridge": {
+      "supported": true,
+      "notes": "Preferred over VRto3D on SR displays — OpenXR native, lower latency. UEVR must be set to OpenXR mode.",
+      "config_base": {}
+    }
+  },
+
+  "headtracking": {
+    "methods": ["leiatrack", "opentrack"],
+    "notes": "Leia Track provides head-position data via OpenTrack UDP. Set OpenTrack output to 'freetrack 2.0 enhanced'."
+  },
+
+  "family_software": [
+    {
+      "id": "3dgamebridge",
+      "name": "3DGameBridge",
+      "type": "reshade_addon",
+      "required": true,
+      "exclusive_to": null,
+      "works_on": "all",
+      "notes": "ReShade addon that routes SBS/TAB output through the Leia SR SDK to produce SR Weave. Works on all SR displays."
+    },
+    {
+      "id": "newaxis",
+      "name": "NewAxis",
+      "type": "launcher",
+      "required": false,
+      "exclusive_to": null,
+      "works_on": "all",
+      "notes": "Cross-SR-display launcher. Runs most TrueGame-compatible content on any SR display, not just Acer. Does not cover TrueGame-exclusive titles. Primary way to play TrueGame content on Samsung Odyssey 3D or Asus Spatial Vision.",
+      "url": "https://www.newaxis.io"
+    },
+    {
+      "id": "leiasr_platform",
+      "name": "LeiaSR Platform",
+      "type": "sdk",
+      "required": true,
+      "exclusive_to": null,
+      "works_on": "all",
+      "notes": "Underlying SDK that 3DGameBridge and XRGameBridge depend on. If 3DGameBridge shows 'Unable to load all SR DLLs', add LeiaSR Platform bin to PATH and reboot."
+    }
+  ],
+
+  "devices": [
+    {
+      "id": "acer_spatiallabs",
+      "name": "Acer SpatialLabs View / SpatialLabs View Pro",
+      "vendor": "Acer",
+      "resolutions": [
+        { "width": 3840, "height": 2160, "model": "SpatialLabs View Pro 27 (4K)" },
+        { "width": 2560, "height": 1440, "model": "SpatialLabs View 15.6 (1440p)" }
+      ],
+      "refresh_hz": [60],
+      "vrto3d_config": {
+        "display_frequency": 60,
+        "render_width": 2560,
+        "render_height": 1440
+      },
+      "device_software": [
+        {
+          "id": "acer_truegame",
+          "name": "Acer TrueGame",
+          "type": "launcher",
+          "required": false,
+          "exclusive_to": "acer_spatiallabs",
+          "cross_device_via": "newaxis",
+          "cross_device_notes": "Most TrueGame content can be played on other SR displays via NewAxis. Some titles are TrueGame-exclusive and cannot currently be played on other hardware.",
+          "url": "https://www.acer.com/truegame"
+        },
+        {
+          "id": "acer_spatiallabs_experience",
+          "name": "SpatialLabs Experience Center",
+          "type": "utility",
+          "required": true,
+          "exclusive_to": "acer_spatiallabs",
+          "cross_device_via": null,
+          "notes": "Acer's display management and activation software. Required to enable 3D mode."
+        }
+      ],
+      "quirks": [],
+      "setup_notes": [
+        "Install SpatialLabs Experience Center from Acer to enable 3D mode.",
+        "Install LeiaSR Platform — required for 3DGameBridge and XRGameBridge.",
+        "If 3DGameBridge shows 'Status: Inactive — Unable to load SR DLLs': run cmd /k setx PATH \"C:\\Program Files\\LeiaSR\\Platform\\bin;%PATH%\" then reboot.",
+        "TrueGame content: use Acer TrueGame directly, or NewAxis for cross-device access."
+      ]
+    },
+
+    {
+      "id": "samsung_odyssey_3d",
+      "name": "Samsung Odyssey 3D",
+      "vendor": "Samsung",
+      "resolutions": [
+        { "width": 2560, "height": 1440, "model": "Odyssey 3D 27 (1440p)" }
+      ],
+      "refresh_hz": [165, 144, 120, 60],
+      "vrto3d_config": {
+        "display_frequency": 165,
+        "render_width": 2560,
+        "render_height": 1440
+      },
+      "device_software": [
+        {
+          "id": "samsung_odyssey_hub",
+          "name": "Samsung Odyssey 3D Hub",
+          "type": "launcher",
+          "required": false,
+          "exclusive_to": "samsung_odyssey_3d",
+          "cross_device_via": null,
+          "notes": "Samsung's own 3D game launcher. Exclusive to Odyssey 3D — its game library cannot be accessed on other SR displays. No cross-device equivalent currently exists for Odyssey Hub exclusive titles.",
+          "url": "https://www.samsung.com/odyssey3d"
+        }
+      ],
+      "quirks": [
+        "High refresh rate (165Hz) — set display_frequency: 165 in VRto3D default_config.json for smoothest output.",
+        "TrueGame content: use NewAxis — Odyssey Hub is exclusive and not a substitute.",
+        "Samsung Gaming Hub is separate from Odyssey 3D Hub — ensure correct software is installed."
+      ],
+      "setup_notes": [
+        "Install LeiaSR Platform for 3DGameBridge / XRGameBridge support.",
+        "Set display_frequency to 165 (or your preferred rate) in VRto3D config.",
+        "To play Acer TrueGame content: install NewAxis — it bridges most TrueGame titles to the Odyssey 3D.",
+        "Samsung Odyssey 3D Hub is for Samsung's own curated 3D titles only."
+      ]
+    },
+
+    {
+      "id": "asus_spatial_vision",
+      "name": "Asus ProArt Spatial Vision / Asus ROG Spatial Vision",
+      "vendor": "Asus",
+      "resolutions": [
+        { "width": 3840, "height": 2160, "model": "ProArt PA32KCX (4K)" },
+        { "width": 2560, "height": 1440, "model": "ROG Swift OLED PG27UCDM (1440p)" }
+      ],
+      "refresh_hz": [60, 120],
+      "vrto3d_config": {
+        "display_frequency": 60,
+        "render_width": 2560,
+        "render_height": 1440
+      },
+      "device_software": [
+        {
+          "id": "asus_spatial_vision_hub",
+          "name": "Asus Spatial Vision Hub",
+          "type": "utility",
+          "required": true,
+          "exclusive_to": "asus_spatial_vision",
+          "cross_device_via": null,
+          "notes": "Required for 3D mode activation on Asus Spatial Vision displays."
+        }
+      ],
+      "quirks": [
+        "No exclusive game launcher — uses NewAxis for TrueGame content and standard 3DGameBridge pipeline otherwise."
+      ],
+      "setup_notes": [
+        "Install Asus Spatial Vision Hub to enable 3D mode.",
+        "Install LeiaSR Platform for 3DGameBridge / XRGameBridge support.",
+        "For TrueGame content: use NewAxis."
+      ]
+    },
+
+    {
+      "id": "dimenco_sr",
+      "name": "Dimenco SR Display",
+      "vendor": "Dimenco",
+      "resolutions": [
+        { "width": 3840, "height": 2160, "model": "Dimenco 32 4K SR" }
+      ],
+      "refresh_hz": [60],
+      "vrto3d_config": {
+        "display_frequency": 60,
+        "render_width": 2560,
+        "render_height": 1440
+      },
+      "device_software": [],
+      "quirks": [
+        "Original Dimenco display — predecessor to SpatialLabs line. Uses same LeiaSR / 3DGameBridge pipeline."
+      ],
+      "setup_notes": [
+        "Install LeiaSR Platform.",
+        "Standard 3DGameBridge pipeline applies."
+      ]
+    }
+  ]
+}

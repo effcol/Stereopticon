@@ -1,0 +1,21 @@
+{
+  "id": "vrto3d",
+  "name": "VRto3D",
+  "category": "vr_converter",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/oneup03/VRto3D",
+  "authors": ["oneup03"],
+  "rendering_method": null,
+  "summary": "A SteamVR driver that intercepts VR output from any game using SteamVR (including UEVR and UUVR injected games) and converts it to flat 3D formats — SBS, TAB, interleaved, or anaglyph. Allows VR-injected games to be displayed on flat 3D displays without a physical VR headset connected.",
+  "input_format": "SteamVR frame pair",
+  "compatibility_notes": "Requires SteamVR. Does not work with native OpenXR games that bypass SteamVR. For games using XRGameBridge as their OpenXR runtime, VRto3D is not in the chain. Headtracking is not available in flat output modes.",
+  "graphics_apis": ["dx11", "dx12"],
+  "supported_outputs": {
+    "sbs": [],
+    "tab": [],
+    "interleaved": [],
+    "anaglyph": []
+  }
+}

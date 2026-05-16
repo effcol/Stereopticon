@@ -1,0 +1,52 @@
+{
+  "id": "dont_stop_girlypop",
+  "title": "Don't Stop, Girlypop!",
+  "developer": "WayForward",
+  "graphics_api": "dx11",
+  "steam_app_id": "2610650",
+  "exe_name": "INCOLATUS.exe",
+  "default_path": "E:\\SteamLibrary\\steamapps\\common\\Incolatus\\INCOLATUS.exe",
+  "fixes": [
+    {
+      "id": "girlypop_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "authors": [
+        "Praydog"
+      ],
+      "url": "https://github.com/praydog/UEVR",
+      "recommended": true,
+      "cost": "free",
+      "platform": {
+        "os": [
+          "windows10",
+          "windows11"
+        ],
+        "gpu": [
+          "nvidia",
+          "amd"
+        ]
+      },
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": ["steamvr"],
+      "native_outputs": [
+        "vr_native"
+      ],
+      "pipeline_overrides": {
+        "sr_weave": [
+          "XRGameBridge"
+        ],
+        "sbs": [
+          "VRto3D"
+        ],
+        "tab": [
+          "VRto3D"
+        ]
+      },
+      "pros": "Full VR headtracking. VRto3D handles SBS/TAB output for flat displays.",
+      "cons": "UE4/5 title — check UEVR compatibility notes.",
+      "issues": [],
+      "notes": "Unreal Engine game. Use UEVR with a community profile. VRto3D provides SBS/TAB output if you don't have a VR headset."
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "id": "wiz3d_wrapper",
+  "name": "wiz3D — DX7/DX8/DX9/DX10/DX11 Wrappers",
+  "description": "Lightweight stereo-3D injection wrappers (effcol). Wraps DirectX 7 / 8 / 9 / 10-11 / 12 and Vulkan to add stereoscopic 3D to games that don't natively render it. Originally targeted iZ3D-supported titles, now works with most games. The DX9-DX11 wrappers also hook into games that shipped with DirectX Automatic Mode support (in-game 3D toggles, separation/convergence sliders), driving those controls from the wrapper. Stereopticon downloads wiz3D from its upstream GitHub release at setup time rather than bundling — wiz3D's LGPL-2.1 isn't directly compatible with GPL-3.0 distribution, and this also keeps users on the latest build. Config via wiz3D_Config.xml dropped next to the game exe.",
+  "url": "https://github.com/effcol/wiz3D",
+  "license": "LGPL-2.1 (not bundled — fetched at setup from upstream releases)",
+  "graphics_api": ["dx7", "dx8", "dx9", "dx10", "dx11", "dx12", "vulkan"],
+  "graphics_api_status": {
+    "working":  ["dx8", "dx9"],
+    "planned":  ["dx7", "dx10", "dx11", "dx12", "vulkan"]
+  },
+  "supports_directx_automatic_mode": true,
+  "config_file": "wiz3D_Config.xml",
+  "bundled": false,
+  "fetch_strategy": "github_release_latest",
+  "versions": {
+    "latest": {
+      "url": "https://github.com/effcol/wiz3D/releases/latest",
+      "default": true,
+      "fetch_strategy": "github_release_latest",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "wiz3d_output_classes": {
+        "sbs":              "SideBySideOutput",
+        "sbs_half":         "SideBySideOutput",
+        "anaglyph":         "AnaglyphOutput",
+        "interlaced":       "InterlacedOutput",
+        "frame_sequential": "ShutterOutput",
+        "sr_weave":         "SimulatedRealityWeaveOutput"
+      },
+      "wiz3d_advanced_outputs": [
+        "S3DOutput",
+        "S3DMarkedOutput",
+        "S3DShutterOutput",
+        "iZShutterOutput",
+        "CMOShutterOutput",
+        "DualProjectionOutput",
+        "DLP3DOutput",
+        "ATIDLP3DOutput",
+        "AMDHD3DOutput",
+        "StereoMirrorOutput",
+        "S3D120HzProjectorsOutput",
+        "VR920Output",
+        "Z800Output",
+        "LenovoOutput",
+        "ZalmanOutput",
+        "TaerimOutput",
+        "AvitridOutput"
+      ],
+      "wiz3d_advanced_outputs_notes": "These map to historical 3D hardware (vintage HMDs like eMagin Z800, Vuzix VR920; passive 3D monitors like Zalman, Taerim, Avitrid; DLP/CRT shutter variants; iZ3D's own dual-projection mode). Fixes targeting this hardware should select the specific class via tool_config rather than the high-level native_outputs field.",
+      "notes": "General-purpose stereo injection. For games rendering 3D themselves (3D Vision Direct Mode, AMD HD3D, OpenGL quad-buffer), use the dedicated wiz3d_* tool variants instead."
+    }
+  }
+}

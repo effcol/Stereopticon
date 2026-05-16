@@ -1,0 +1,19 @@
+{
+  "id": "3dmigoto",
+  "name": "3DMigoto",
+  "category": "dx_injector",
+  "status": "legacy_active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/bo3b/3Dmigoto",
+  "authors": ["Bo3b", "DarkStarSword"],
+  "summary": "The original DX11 hooking framework that Geo-11 is built upon. Hooks into DirectX 11's rendering pipeline to allow shader replacement, constant injection, and stereo rendering. Still used directly for older 3D Vision-era fixes that have not been ported to Geo-11.",
+  "compatibility_notes": "Requires DirectX 11. Primarily used with Nvidia 3D Vision driver pipeline for legacy fixes. Geo-11 is the modern replacement for new fix development.",
+  "graphics_apis": ["dx11"],
+  "supported_outputs": {
+    "nvidia_3d_vision": [],
+    "sbs": [],
+    "tab": [],
+    "anaglyph": []
+  }
+}

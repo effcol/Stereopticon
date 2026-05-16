@@ -1,0 +1,19 @@
+{
+  "id": "geo3d",
+  "name": "Geo3D",
+  "category": "dx_injector",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/Flugan/Geo3D",
+  "authors": ["Flugan"],
+  "rendering_method": "Dual-View Rendering",
+  "summary": "Flugan's standalone Dual-View Rendering injector for DX11. Simpler fix authoring workflow than 3DMigoto/Geo-11. Used for titles where the Geo-11 pipeline is overkill or incompatible.",
+  "compatibility_notes": "DirectX 11 focused. Fewer games supported than Geo-11 but simpler to write fixes for.",
+  "graphics_apis": ["dx11", "dx12"],
+  "supported_outputs": {
+    "sbs": [],
+    "tab": [],
+    "anaglyph": []
+  }
+}

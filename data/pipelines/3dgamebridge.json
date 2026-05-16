@@ -1,0 +1,19 @@
+{
+  "id": "3dgamebridge",
+  "name": "3D Game Bridge",
+  "category": "reshade_shader",
+  "status": "active",
+  "cost": "free",
+  "open_source": false,
+  "url": "https://www.steamgriddb.com",
+  "authors": ["Dimenco / Looking Glass"],
+  "requires": ["reshade"],
+  "rendering_method": null,
+  "summary": "ReShade shader that routes a stereo pair (SBS or TAB input) to Simulated Reality and lightfield displays. Acts as a bridge between standard stereo game output and SR/Leia/Looking Glass display SDKs. Not a rendering method itself — converts and routes an existing stereo pair.",
+  "input_format": "SBS or TAB stereo pair",
+  "compatibility_notes": "Requires an SR-compatible display (Acer SpatialLabs, Dimenco, Leia). Works downstream of any pipeline that produces SBS/TAB output — Geo-11, UEVR, native, or even SuperDepth3D.",
+  "graphics_apis": ["dx9", "dx10", "dx11"],
+  "supported_outputs": {
+    "sr_weave": []
+  }
+}

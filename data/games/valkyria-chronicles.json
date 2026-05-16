@@ -1,0 +1,74 @@
+{
+  "id": "valkyria",
+  "title": "Valkyria Chronicles",
+  "developer": "SEGA",
+  "graphics_api": "dx9",
+  "default_path": "C:\\Games\\Valkyria Chronicles\\Valkyria.exe",
+  "exe_name": "Valkyria.exe",
+  "steam_app_id": "294860",
+  "fixes": [
+    {
+      "id": "valk_geo11",
+      "name": "Geo-11",
+      "type": "geo11",
+      "authors": [
+        "Bo3b",
+        "Eqzitara",
+        "DarkStarSword"
+      ],
+      "geo11_variant": "",
+      "ini_file": "d3dxdm.ini",
+      "url": "https://helixmod.blogspot.com/2014/11/valkyria-chronicles-3d-vision-fix.html",
+      "download_url": "https://masterotaku.s3.amazonaws.com/The+Witcher+3/The_Witcher_3_geo11_fix.7z",
+      "download_note": "",
+      "prerequisites": [
+        "dgVoodoo2"
+      ],
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "tab",
+        "interleaved",
+        "anaglyph"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Perfect cel-shaded 3D depth, works on modern hardware.",
+      "cons": "Cutscenes remain 2D.",
+      "issues": [
+        "Set 'letterbox=0' in config for full screen"
+      ],
+      "notes": "Requires dgVoodoo2 to convert DX9->DX11 for Geo-11 to work.",
+      "geo11_version": "Latest stable"
+    },
+    {
+      "id": "valk_3dvision",
+      "name": "Legacy 3D Vision (Driver)",
+      "type": "native_legacy",
+      "ini_file": "d3dx.ini",
+      "authors": [
+        "Bo3b",
+        "Eqzitara"
+      ],
+      "url": "https://helixmod.blogspot.com/2016/03/valkyria-chronicles.html",
+      "prerequisites": [
+        "Nvidia 3D Vision Driver",
+        "AION Profile"
+      ],
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "nvidia_3d_vision"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Original intended experience.",
+      "cons": "Requires old Windows (10 v1909) and old Drivers.",
+      "issues": [
+        "Must deactivate 3D then Alt+Enter to activate"
+      ],
+      "notes": "Make config file read-only after setting options."
+    }
+  ]
+}

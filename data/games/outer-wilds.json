@@ -1,0 +1,38 @@
+{
+  "id": "outerwilds",
+  "title": "Outer Wilds",
+  "developer": "Mobius Digital",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Outer Wilds\\OuterWilds.exe",
+  "exe_name": "OuterWilds.exe",
+  "steam_app_id": "753640",
+  "fixes": [
+    {
+      "id": "outerwilds_loop_headtrack",
+      "name": "Loop Head Tracking",
+      "type": "loop_headtrack",
+      "cost": "free",
+      "authors": [
+        "itsloopyo"
+      ],
+      "url": "https://github.com/itsloopyo/outer-wilds-headtracking",
+      "loop_repo": "itsloopyo/outer-wilds-headtracking",
+      "loader_type": "OWML",
+      "license": "MIT",
+      "recommended": true,
+      "rendering_method": "OWML mod + transform save/restore on camera",
+      "headtracking": "6dof",
+      "headtracking_method": "freetrack_udp",
+      "headtracking_port": 4242,
+      "native_outputs": [],
+      "addon": true,
+      "addon_note": "Headtracking-only — pair with a stereo fix (Geo-11, wiz3D, Vireio) to get 3D + headtracking together. Mono-only use is not supported in Stereopticon; use Loop's own Lopari launcher for that case.",
+      "pipeline_overrides": {},
+      "pros": "Decoupled look and aim — head tracking moves the camera, mouse still controls aim. Built-in smoothing for network jitter.",
+      "cons": "Headtracking only — does not produce 3D output on its own.",
+      "notes": "Reads OpenTrack-protocol UDP head pose on port 4242. Stereopticon's OpenTrack hub adapter handles emission. Pair with any Stereopticon stereo fix for the 3D side.",
+      "loader_notes": "Ships through OWML's mod manager — does not participate in install.cmd contract",
+      "owml_unique_name": "itsloopyo.OuterWildsHeadtracking"
+    }
+  ]
+}

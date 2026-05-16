@@ -1,0 +1,113 @@
+{
+  "id": "witcher3",
+  "title": "The Witcher 3: Wild Hunt",
+  "developer": "CD Projekt RED",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Games\\The Witcher 3\\bin\\x64\\witcher3.exe",
+  "exe_name": "witcher3.exe",
+  "steam_app_id": "292030",
+  "fixes": [
+    {
+      "id": "witcher3_geo11",
+      "name": "Geo-11",
+      "type": "geo11",
+      "geo11_variant": "Shader Fix",
+      "cost": "free",
+      "ini_file": "d3dxdm.ini",
+      "authors": [
+        "mike_ar69",
+        "DarkStarSword",
+        "Helifax",
+        "MasterOtaku",
+        "Bo3b",
+        "Flugan"
+      ],
+      "url": "https://helixmod.blogspot.com/2016/06/the-witcher-3-wild-hunt.html",
+      "download_url": "https://masterotaku.s3.amazonaws.com/The+Witcher+3/The_Witcher_3_geo11_fix.7z",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "tab",
+        "interleaved",
+        "frame_sequential",
+        "anaglyph"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Excellent depth, works on modern hardware. Actively maintained.",
+      "cons": "Cutscenes may render incorrectly. HairWorks can have depth issues.",
+      "issues": [
+        "Disable HairWorks or set to Geralt-only for best results",
+        "Some particle effects may clip at high separation values"
+      ],
+      "notes": "One of the best Geo-11 fixes available. The Next Gen update (4.0+) is supported. Switch to DX11 in the launcher — Geo-11 does not support DX12.",
+      "geo11_version": "Latest stable"
+    },
+    {
+      "id": "witcher3_tridef",
+      "name": "TriDef 3D",
+      "type": "tridef",
+      "cost": "paid",
+      "cost_url": "https://tridef.com",
+      "deprecated": true,
+      "authors": [
+        "TriDef"
+      ],
+      "url": "https://helixmod.blogspot.com/2016/06/the-witcher-3-wild-hunt.html",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "frame_sequential",
+        "sbs",
+        "anaglyph"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Worked well at release with minimal setup.",
+      "cons": "TriDef is discontinued. License servers offline. No modern OS support.",
+      "issues": [
+        "TriDef software is no longer available or activatable",
+        "Incompatible with Windows 11",
+        "Does not support the Next Gen (4.0) update"
+      ],
+      "notes": "Documented for historical reference only. Use the Geo-11 fix instead."
+    },
+    {
+      "id": "witcher3_vorpx",
+      "name": "VorpX (VR)",
+      "type": "vorpx",
+      "cost": "paid",
+      "cost_url": "https://www.vorpx.com",
+      "authors": [
+        "Ralf"
+      ],
+      "url": "https://www.vorpx.com",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "rendering_method_note": "Geometry 3D mode. VorpX's Z-Normal mode uses Single-View Depth Reprojection.",
+      "headtracking": "6dof",
+      "pipeline_overrides": {
+        "sbs": [],
+        "tab": [],
+        "vr_native": [],
+        "sr_weave": null,
+        "frame_sequential": null,
+        "anaglyph": null,
+        "interleaved": null
+      },
+      "native_outputs": [
+        "vr_native",
+        "sbs"
+      ],
+      "pros": "Full VR headset support with headtracking. SBS output available for flat 3D displays.",
+      "cons": "Paid software. Not true VR rendering — geometry injection has limits. Motion sickness possible.",
+      "issues": [
+        "Performance overhead vs native play",
+        "FOV and scale require manual tuning per headset",
+        "Next Gen update (4.0) compatibility varies — check VorpX profile list"
+      ],
+      "notes": "VorpX is a commercial VR injector. The Witcher 3 has a curated Geometry 3D profile. For flat 3D displays, Geo-11 is the superior choice — VorpX's SBS output is mainly useful as a side-effect of its VR mode."
+    }
+  ]
+}

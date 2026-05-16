@@ -1,0 +1,40 @@
+{
+  "id": "fallout_shelter",
+  "title": "Fallout Shelter",
+  "developer": "Bethesda Game Studios",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Games\\Fallout Shelter\\FalloutShelter.exe",
+  "exe_name": "FalloutShelter.exe",
+  "steam_app_id": "588430",
+  "fixes": [
+    {
+      "id": "falloutshelter_geo11",
+      "name": "Geo-11",
+      "type": "geo11",
+      "geo11_variant": "Shader Fix",
+      "cost": "free",
+      "ini_file": "d3dxdm.ini",
+      "authors": [
+        "Bo3b"
+      ],
+      "url": "https://helixmod.blogspot.com/2025/12/fallout-shelter-dx11.html",
+      "download_url": "https://bo3b.s3.us-east-1.amazonaws.com/FalloutShelter_geo-11.7z",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "tab",
+        "interleaved",
+        "frame_sequential",
+        "anaglyph"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Clean depth on this simple 2.5D title. Minimal shader complexity means few edge-case issues.",
+      "cons": "2.5D game — depth effect is subtle by nature.",
+      "issues": [],
+      "notes": "",
+      "geo11_version": "Latest stable"
+    }
+  ]
+}

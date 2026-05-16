@@ -1,0 +1,53 @@
+{
+  "id": "fez",
+  "title": "FEZ",
+  "developer": "Polytron",
+  "graphics_api": ["opengl"],
+  "steam_app_id": "224760",
+  "exe_name": "FEZ.exe",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\FEZ",
+  "fixes": [
+    {
+      "id": "fez_native",
+      "name": "Native Anaglyph 3D",
+      "type": "native",
+      "recommended": true,
+      "authors": ["Polytron", "Effcol"],
+      "url": "https://gamebanana.com/mods/649256",
+      "download_url": "https://raw.githubusercontent.com/effcol/Anaglyph-to-SBS-or-TAB/main/FEZ/FEZ_Anaglyph_to_SBS_TAB.fx",
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "cost": "free",
+      "pros": "Built-in Dual-View Rendering — not a depth fake. FEZ-specific shader preserves non-anaglyph UI colour during SBS/TAB conversion.",
+      "cons": "Requires New Game+ or save file workaround to unlock. Must re-enable 3D each launch.",
+      "notes": "FEZ uses Dual-View Rendering internally and outputs red/cyan anaglyph. Other anaglyph variants (green/magenta, amber/blue) are produced by first converting to SBS via the FEZ shader, then repacking with 3DtoElse.",
+      "activation": "Requires New Game+ to unlock the 3D Glasses item. Shortcut: rename a 209.4% save file to SaveSlot2 in %APPDATA%\\FEZ\\. Close Steam before launching FEZ.exe. Collect the 3D Glasses outside the starting room. Each launch: Game Settings → Stereoscopy → Anaglyph Cyan/Red.",
+      "issues": [
+        "Must re-enable stereoscopy in Game Settings every launch",
+        "Some UI elements are outside the anaglyph pass — use the FEZ-specific shader, not the generic one",
+        "Close Steam before launching or the game may not load correctly"
+      ],
+      "reshade_shaders": ["FEZ_Anaglyph_to_SBS_TAB"],
+      "native_outputs": ["anaglyph"],
+      "anaglyph_variant": "red_cyan",
+
+      "pipeline_overrides": {
+        "anaglyph":                        [],
+        "anaglyph_red_cyan":               [],
+        "anaglyph_green_magenta":          ["Anaglyph-to-SBS/TAB (FEZ variant)", "3DtoElse (Anaglyph GM)"],
+        "anaglyph_amber_blue":             ["Anaglyph-to-SBS/TAB (FEZ variant)", "3DtoElse (Anaglyph AB)"],
+        "sbs":                             ["Anaglyph-to-SBS/TAB (FEZ variant)"],
+        "tab":                             ["Anaglyph-to-SBS/TAB (FEZ variant)"],
+        "interleaved":                     ["Anaglyph-to-SBS/TAB (FEZ variant)", "3DtoElse (Interleaved Row)"],
+        "interleaved_row":                 ["Anaglyph-to-SBS/TAB (FEZ variant)", "3DtoElse (Interleaved Row)"],
+        "interleaved_col":                 ["Anaglyph-to-SBS/TAB (FEZ variant)", "3DtoElse (Interleaved Col)"],
+        "interleaved_checkerboard":        ["Anaglyph-to-SBS/TAB (FEZ variant)", "3DtoElse (Interleaved Checkerboard)"],
+        "frame_sequential":                ["Anaglyph-to-SBS/TAB (FEZ variant)"],
+        "frame_packing":                   ["Anaglyph-to-SBS/TAB (FEZ variant)", "3DtoElse (Frame Packing)"],
+        "sr_weave":                        ["Anaglyph-to-SBS/TAB (FEZ variant)", "3DGameBridge"],
+        "lkg_quilt":                       null,
+        "vr_native":                       null
+      }
+    }
+  ]
+}

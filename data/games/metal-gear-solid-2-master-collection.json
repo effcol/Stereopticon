@@ -1,0 +1,52 @@
+{
+  "id": "mgs2_mc",
+  "title": "Metal Gear Solid 2: Sons of Liberty",
+  "developer": "Konami",
+  "graphics_api": "dx11",
+  "steam_app_id": "2131640",
+  "exe_name": "MGS2.exe",
+  "default_path": "C:\\Games\\MGS2\\METAL GEAR SOLID2.exe",
+  "fixes": [
+    {
+      "id": "mgs2_geo11",
+      "name": "Geo-11",
+      "type": "geo11",
+      "geo11_variant": "Shader Fix",
+      "authors": [
+        "MasterOtaku"
+      ],
+      "url": "https://helixmod.blogspot.com/2023/11/metal-gear-solid-2-sons-of-liberty.html",
+      "download_url": "https://masterotaku.s3.amazonaws.com/Metal+Gear+Solid+2/MGS2_geo11_fix.7z",
+      "recommended": true,
+      "cost": "free",
+      "ini_file": "d3dxdm.ini",
+      "platform": {
+        "os": [
+          "windows10",
+          "windows11"
+        ],
+        "gpu": [
+          "nvidia",
+          "amd",
+          "intel"
+        ],
+        "note": "Primarily developed for Nvidia. Should work on AMD. Intel untested."
+      },
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "tab",
+        "interleaved",
+        "frame_sequential",
+        "anaglyph"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Brings stereoscopic 3D to the classic MGS2 remaster.",
+      "cons": "Master Collection version only — not the original HD Collection release.",
+      "issues": [],
+      "notes": "See the Helix blog post for download link and installation instructions. Master Collection version has different shaders than the older HD Collection.",
+      "geo11_version": "Latest stable"
+    }
+  ]
+}

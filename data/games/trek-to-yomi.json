@@ -1,0 +1,99 @@
+{
+  "id": "trek_to_yomi",
+  "title": "Trek to Yomi",
+  "developer": "Leonard Menchiari / Flying Wild Hog",
+  "graphics_api": "dx11",
+  "steam_app_id": "1370050",
+  "exe_name": "TrekToYomi.exe",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Trek to Yomi",
+  "fixes": [
+    {
+      "id": "trekyomi_geo11_newaxis",
+      "name": "Geo-11 (NewAxis — Acer Official)",
+      "type": "geo11",
+      "geo11_variant": "Acer Official Fix",
+      "authors": [
+        "Acer",
+        "MarcusSacana"
+      ],
+      "url": "https://github.com/marcussacana/NewAxis",
+      "download_url": "https://github.com/marcussacana/NewAxis/releases/download/v12/NewAxis.v12.7z",
+      "recommended": true,
+      "cost": "free",
+      "ini_file": "d3dxdm.ini",
+      "platform": {
+        "os": [
+          "windows10",
+          "windows11"
+        ],
+        "gpu": [
+          "nvidia",
+          "amd",
+          "intel"
+        ],
+        "note": "Made by Acer, optimised for SpatialLabs and Samsung Odyssey 3D SR displays."
+      },
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [
+        "sr_weave"
+      ],
+      "pros": "Official Acer fix. Best quality on SpatialLabs and Samsung Odyssey 3D.",
+      "cons": "Primarily targets SR displays — SR is the intended output.",
+      "issues": [
+        "Fix was designed specifically for SR displays — quality on other output types not guaranteed."
+      ],
+      "notes": "Available via NewAxis. Acer-made fix, primarily for Simulated Reality displays.",
+      "display_restriction": {
+        "allowed_displays": [
+          "sr_display"
+        ],
+        "note": "Acer-made fix designed for SpatialLabs and Samsung Odyssey 3D. Other display types not officially supported."
+      },
+      "geo11_version": "Latest stable"
+    },
+    {
+      "id": "trekyomi_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "authors": [
+        "Praydog"
+      ],
+      "url": "https://github.com/praydog/UEVR",
+      "recommended": false,
+      "cost": "free",
+      "platform": {
+        "os": [
+          "windows10",
+          "windows11"
+        ],
+        "gpu": [
+          "nvidia",
+          "amd"
+        ]
+      },
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": [
+        "steamvr"
+      ],
+      "native_outputs": [
+        "vr_native"
+      ],
+      "pipeline_overrides": {
+        "sr_weave": [
+          "XRGameBridge"
+        ],
+        "sbs": [
+          "VRto3D"
+        ],
+        "tab": [
+          "VRto3D"
+        ]
+      },
+      "pros": "Full VR with headtracking.",
+      "cons": "For SR displays without VR, the Geo-11/NewAxis fix is preferred.",
+      "issues": [],
+      "notes": ""
+    }
+  ]
+}

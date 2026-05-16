@@ -1,0 +1,20 @@
+{
+  "id": "noflat",
+  "name": "NoMoreFlat",
+  "category": "game_mod",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/mutar/NoMoreFlat",
+  "authors": ["mutar"],
+  "rendering_method": "Sequential-View Rendering",
+  "summary": "A game-specific mod that adds Sequential-View Rendering (Alternate Eye Rendering) to games that don't support stereo natively. Rather than rendering two full views simultaneously (Dual-View), it alternates rendering the left and right eye on successive frames. Works on games with accessible rendering pipelines. Primary use case has been Assassin's Creed Odyssey and similar Anvil Engine titles.",
+  "compatibility_notes": "Sequential-View Rendering means each eye only receives half the total frames — visual stability requires a consistent, high framerate to avoid eye-flips. Game-specific. Requires consistent framerate to avoid per-eye stutter. Not a general-purpose injector.",
+  "graphics_apis": ["dx11", "dx12"],
+  "supported_outputs": {
+    "sbs": [],
+    "tab": [],
+    "frame_sequential": [],
+    "anaglyph": []
+  }
+}

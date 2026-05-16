@@ -1,0 +1,14 @@
+{
+    "id": "opentrack",
+    "name": "OpenTrack",
+    "url": "https://github.com/opentrack/opentrack",
+    "summary": "Open-source head tracking software. Routes tracking data from any tracker (webcam, IR, Wiimote, joystick, etc.) to games via various output protocols.",
+    "status": "active",
+    "category": "headtracking",
+    "role": "headtracking_middleware",
+    "notes": "OpenTrack itself does not produce 3D output — it provides head tracking data to games or to other tools like VRto3D. Required as a prerequisite for Leia Track App on SR displays.",
+    "supported_outputs": {},
+    "install_notes": "No automated install. Download from GitHub releases and run the installer. No game folder integration needed.",
+    "protocols": ["freetrack2", "trackir", "udp", "joystick", "wine"],
+    "compatible_with": ["leiatrack", "vrto3d"]
+}

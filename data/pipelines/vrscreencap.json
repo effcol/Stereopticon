@@ -1,0 +1,18 @@
+{
+  "id": "vrscreencap",
+  "name": "VRScreenCap",
+  "category": "vr_bridge",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/artumino/VRScreenCap",
+  "authors": ["artumino"],
+  "rendering_method": null,
+  "summary": "OpenXR-based VR bridge bundled with Geo-11. Creates a virtual 3D cinema screen inside a VR headset and displays Geo-11's stereo output on it. Launched via VRScreenCap.cmd included with Geo-11. Uses minimalistic rendering for potentially better performance than Katanga, but without motion controller support. The OpenXR counterpart to Katanga's SteamVR approach.",
+  "input_format": "Geo-11 stereo frame pair",
+  "compatibility_notes": "Bundled with Geo-11 — no separate install required. Requires an OpenXR runtime (SteamVR, Oculus, or native headset OpenXR). Motion controller support not available — use Katanga if you need controllers. Works with any OpenXR-compatible PCVR headset.",
+  "graphics_apis": ["dx11"],
+  "supported_outputs": {
+    "vr_native": []
+  }
+}

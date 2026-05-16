@@ -1,0 +1,21 @@
+{
+  "id": "tab",
+  "name": "Top-and-Bottom (TAB)",
+  "category": "image_format",
+  "status": "active",
+  "summary": "Left and right eye views stacked vertically in a single frame. Less common than SBS but supported by many of the same displays. Preserves horizontal resolution at the cost of vertical.",
+  "variants": [
+    {
+      "id": "tab_full",
+      "name": "Full TAB",
+      "description": "Each eye gets the full vertical resolution. Frame is twice the normal height."
+    },
+    {
+      "id": "tab_half",
+      "name": "Half TAB",
+      "description": "Each eye view is vertically compressed to half height, fitting both into a standard frame. Most common for broadcast and display compatibility."
+    }
+  ],
+  "compatible_displays": ["passive_3dtv", "ar_glasses", "vr_headset"],
+  "hardware_requirements": []
+}

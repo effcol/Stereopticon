@@ -1,0 +1,26 @@
+{
+  "id": "interleaved",
+  "name": "Interleaved",
+  "category": "image_format",
+  "status": "active",
+  "summary": "Left and right eye views interleaved at the pixel or row level within a single frame. The display's polarisation filter physically separates the views to each eye. Used by passive 3D monitors (row interleaved) and some checkerboard displays.",
+  "variants": [
+    {
+      "id": "interleaved_row",
+      "name": "Row Interleaved",
+      "description": "Odd rows contain the left eye view, even rows the right (or vice versa). Standard format for passive 3D monitors. Half vertical resolution per eye."
+    },
+    {
+      "id": "interleaved_column",
+      "name": "Column Interleaved",
+      "description": "Alternating columns for each eye. Less common than row. Used by some auto-stereoscopic displays."
+    },
+    {
+      "id": "interleaved_checkerboard",
+      "name": "Checkerboard",
+      "description": "Pixels alternate in a checkerboard pattern between eyes. Used by some DLP projectors and displays. Half resolution per eye in both axes."
+    }
+  ],
+  "compatible_displays": ["passive_3d_monitor", "passive_3dtv", "dlp_3d_projector"],
+  "hardware_requirements": ["Passive 3D display", "Passive polarised glasses"]
+}

@@ -1,0 +1,139 @@
+{
+  "id": "passive_3dtv",
+  "name": "Passive 3D TV / Projector",
+  "vendor": "various",
+  "type": "passive_3d",
+  "os": ["windows"],
+  "native_input": "sbs",
+
+  "notes": "Passive 3DTVs and projectors use polarised glasses and accept Side-by-Side or Top-and-Bottom at half resolution per eye. Some support frame-packed HDMI 3D for full resolution.",
+
+  "vrto3d_output_profiles": {
+    "sbs": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.1,
+      "convergence": 1.0,
+      "tab_enable": false,
+      "display_frequency": 60.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "async_enable": false,
+      "auto_focus": false,
+      "notes": "Native side-by-side output for passive 3D TV."
+    },
+    "tab": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.1,
+      "convergence": 1.0,
+      "tab_enable": true,
+      "framepack_offset": 0,
+      "display_frequency": 60.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "async_enable": false,
+      "auto_focus": false,
+      "notes": "Top-and-bottom output for passive TVs that support it."
+    },
+    "frame_packing": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 2205,
+      "fov": 90.0,
+      "depth": 0.1,
+      "convergence": 1.0,
+      "tab_enable": true,
+      "framepack_offset": 45,
+      "display_frequency": 60.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "async_enable": false,
+      "auto_focus": false,
+      "notes": "HDMI 3D frame-packed full resolution. Requires custom display resolution in Nvidia Control Panel."
+    },
+    "interlaced_row": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.1,
+      "convergence": 1.0,
+      "tab_enable": true,
+      "display_frequency": 60.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "async_enable": false,
+      "auto_focus": false,
+      "notes": "Row-interlaced output converted via ReShade 3DToElse."
+    },
+    "anaglyph": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.1,
+      "convergence": 1.0,
+      "tab_enable": false,
+      "display_frequency": 60.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "async_enable": false,
+      "auto_focus": false,
+      "notes": "Anaglyph output for red/cyan glasses (or other color pairs via 3DToElse)."
+    }
+  },
+
+  "accepted_fix_outputs": {
+    "sbs": {
+      "steps": [],
+      "notes": "Passive 3DTVs natively accept SBS."
+    },
+    "tab": {
+      "steps": [],
+      "notes": "Enable tab_enable in VRto3D config, or use TaB output from fix directly."
+    },
+    "interleaved": {
+      "steps": ["3DToElse"],
+      "notes": "3DToElse ReShade shader converts SBS/TaB to row or column interlaced for interlaced passive displays."
+    },
+    "anaglyph": {
+      "steps": ["3DToElse"]
+    }
+  },
+
+  "vr_drivers": {
+    "vrto3d": {
+      "supported": true,
+      "notes": "Standard SBS or TaB output. Set display_index to the 3DTV display number.",
+      "config": {
+        "display_frequency": 60,
+        "render_width": 1920,
+        "render_height": 1080,
+        "tab_enable": false
+      }
+    },
+    "xrgamebridge": {
+      "supported": false,
+      "notes": "XRGameBridge is SR display only."
+    }
+  },
+
+  "headtracking": {
+    "methods": ["opentrack"],
+    "notes": "OpenTrack with any supported tracker (FaceTrackNoIR, ArUco, Wiimote, etc). Point output at game's supported input protocol."
+  },
+
+  "required_software": [],
+  "optional_software": ["3DToElse"],
+
+  "setup_notes": [
+    "Connect TV via HDMI. Set display_index in VRto3D default_config.json.",
+    "For interlaced output: install ReShade on vrserver.exe and enable 3DToElse shader. Set to Column Interlaced (SBS source) or Row Interlaced (TaB source).",
+    "For frame-packed HDMI 3D (full res): set tab_enable: true and framepack_offset in VRto3D config. Requires a custom resolution in Nvidia Control Panel."
+  ]
+}

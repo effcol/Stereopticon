@@ -1,0 +1,24 @@
+{
+  "id": "uevr",
+  "name": "UEVR",
+  "description": "praydog's universal Unreal Engine VR injector. Brings 6-DOF VR support to most UE4 / UE5 games via OpenXR or OpenVR.",
+  "url": "https://github.com/praydog/UEVR",
+  "license": "Pending (API headers MIT; binary release license unconfirmed — fetched from official releases, not redistributed in source form)",
+  "graphics_api": ["dx11", "dx12"],
+  "auto_detect": "unreal_engine",
+  "versions": {
+    "latest": {
+      "url": "https://github.com/praydog/UEVR/releases/latest",
+      "default": true,
+      "fetch_strategy": "github_release_latest",
+      "native_outputs": ["vr_native"],
+      "via_pipeline": {
+        "sbs": "vrto3d",
+        "sbs_half": "vrto3d",
+        "tab": "vrto3d",
+        "sr_weave": "xrgamebridge"
+      },
+      "notes": "OpenXR mode preferred for SR-display chains (XRGameBridge route). OpenVR mode falls back to VRto3D for flat 3D output."
+    }
+  }
+}

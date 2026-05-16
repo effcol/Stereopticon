@@ -1,0 +1,20 @@
+{
+  "id": "native",
+  "name": "Native Stereoscopic",
+  "category": "native",
+  "status": "active",
+  "cost": "free",
+  "open_source": false,
+  "url": "https://www.pcgamingwiki.com/wiki/Stereoscopic_3D",
+  "authors": ["Various (first-party)"],
+  "summary": "First-party stereo support built into the game by the developer. No mods or injectors required. Typically outputs Side-by-Side or Top-and-Bottom. Examples include Shadow of the Tomb Raider, FEZ (anaglyph), and Limbo (anaglyph).",
+  "compatibility_notes": "Output options are fixed by the developer — usually limited to SBS, TAB, or anaglyph. Cannot be extended without additional tools. Most reliable option when available.",
+  "graphics_apis": ["dx9", "dx10", "dx11", "dx12", "vulkan", "opengl"],
+  "supported_outputs": {
+    "sbs": [],
+    "tab": [],
+    "anaglyph": [],
+    "nvidia_3d_vision": [],
+    "frame_sequential": []
+  }
+}

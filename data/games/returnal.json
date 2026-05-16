@@ -1,0 +1,32 @@
+{
+  "id": "returnal",
+  "title": "Returnal",
+  "developer": "Housemarque",
+  "graphics_api": "dx12",
+  "default_path": "C:\\Games\\Returnal\\Returnal.exe",
+  "exe_name": "Returnal-Win64-Shipping.exe",
+  "steam_app_id": "1649240",
+  "fixes": [
+    {
+      "id": "returnal_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "cost": "free",
+      "authors": ["Praydog"],
+      "url": "https://helixmod.blogspot.com/2025/04/returnal-uevr-vrto3d.html",
+      "download_url": "https://github.com/oneup03/VRto3D/raw/refs/heads/main/game_configs/uevr/Returnal-Win64-Shipping.zip",
+      "download_note": "",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": ["steamvr", "openxr"],
+      "native_outputs": ["vr_native"],
+      "pipeline_overrides": {
+        "sr_weave": ["XRGameBridge"]
+      },
+      "pros": "Full VR immersion with 6DOF headtracking. On SR displays, XRGameBridge provides native SR Weave output with LeiaID camera headtracking.",
+      "cons": "DX12 — some UEVR features limited vs DX11 titles. High GPU requirement.",
+      "issues": [],
+      "notes": "Unreal Engine 5 — use latest UEVR build. Community profile recommended from UEVR Discord. For VR headsets: UEVR outputs natively. For SBS/TAB/frame sequential: VRto3D or WibbleWobbleVR handle conversion automatically. For SR displays (SpatialLabs, Dimenco): set XRGameBridge as your active OpenXR runtime before launching — this gives native SR Weave output with LeiaID headtracking, which is better than the VRto3D+3DGameBridge path."
+    }
+  ]
+}

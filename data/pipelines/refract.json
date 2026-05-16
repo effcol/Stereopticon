@@ -1,0 +1,20 @@
+{
+  "id": "refract",
+  "name": "Refract",
+  "category": "reshade_shader",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/SolerSoft/Refract",
+  "docs_url": "https://docs.lookingglassfactory.com/community/refract",
+  "authors": ["SolerSoft"],
+  "requires": ["reshade"],
+  "rendering_method": "Single-View Depth Reprojection",
+  "summary": "ReShade shader that generates a Looking Glass quilt from a game's depth buffer. Uses Single-View Depth Reprojection to synthesize the multiple camera angles required for a lightfield quilt. Works downstream of any game that exposes a depth buffer to ReShade — no dedicated stereo pipeline required.",
+  "input_format": "2D frame + depth buffer",
+  "compatibility_notes": "Requires depth buffer access via ReShade — does not work with DX12 or Vulkan in most configurations. Quilt quality depends on depth buffer accuracy. Does not produce true Multi-View Rendering — synthesised views have the same artifacts as depth reprojection (haloing, stair-stepping, incorrect UI depth). For best quilt results, use a native stereo pipeline (Geo-11, UEVR) as input if available.",
+  "graphics_apis": ["dx9", "dx10", "dx11"],
+  "supported_outputs": {
+    "lkg_quilt": []
+  }
+}

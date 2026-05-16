@@ -1,0 +1,24 @@
+{
+  "id": "shaderglass",
+  "name": "ShaderGlass",
+  "status": "active",
+  "summary": "Applies ReShade shaders to any window via desktop-level capture. Bypasses the need to inject into the game process — works with Vulkan games, UWP apps, and any game that refuses normal ReShade injection.",
+  "url": "https://github.com/simonfs/ShaderGlass",
+  "license": "GPL-3.0",
+  "cost": "free",
+  "notes": "ShaderGlass captures the game window using the Windows Desktop Duplication API and passes each frame through ReShade shaders as a post-process. Because it operates on the desktop compositor rather than inside the game, it works universally — including Vulkan, DX12, UWP, and anti-cheat-protected titles where in-process injection is blocked. The trade-off is a small amount of latency (one frame of capture overhead) and slightly reduced shader compatibility.",
+  "use_cases": [
+    "Vulkan games (Cyberpunk 2077, Death Stranding, etc.)",
+    "Games where 3DGameBridge ReShade injection fails",
+    "UWP / Microsoft Store titles",
+    "Anti-cheat-protected games (EAC, BE) where in-process injection is blocked"
+  ],
+  "shaderglass_notes": "ShaderGlass must be running before the game is launched. Stereopticon will launch ShaderGlass first with the correct shader preset, then launch the game. The preset is the same Stereopticon.ini used by in-process ReShade.",
+  "supported_outputs": {
+    "sr_weave":  ["ShaderGlass", "3DGameBridge", "Weave"],
+    "lkg_quilt": ["ShaderGlass", "Refract"],
+    "anaglyph":  ["ShaderGlass", "SuperDepth3D"],
+    "sbs":       ["ShaderGlass", "SuperDepth3D"],
+    "frame_sequential": ["ShaderGlass", "SuperDepth3D"]
+  }
+}

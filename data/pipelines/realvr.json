@@ -1,0 +1,23 @@
+{
+  "id": "realvr",
+  "name": "R.E.A.L. VR (Luke Ross)",
+  "category": "vr_injector",
+  "status": "active",
+  "cost": "paid",
+  "cost_url": "https://www.patreon.com/realvr",
+  "open_source": false,
+  "url": "https://www.patreon.com/realvr",
+  "authors": ["Luke Ross"],
+  "rendering_method": "Dual-View Rendering",
+  "summary": "Patreon-funded proprietary VR injector with broad game support. Covers titles not supported by UEVR or REFramework, including GTA V, Red Dead Redemption 2, Cyberpunk 2077 (removed via DMCA), Hogwarts Legacy, Baldur's Gate 3, Indiana Jones, and Kingdom Come: Deliverance 2. Compatible with VRto3D for flat 3D output.",
+  "compatibility_notes": "Paid Patreon subscription. Closed source. Some game mods have been DMCA'd by publishers (Cyberpunk 2077 by CD Projekt Red, RDR2 by Take-Two). Works with SteamVR. Actively maintained with frequent updates.",
+  "graphics_apis": ["dx11", "dx12"],
+  "supported_outputs": {
+    "vr_native": [],
+    "sbs": ["VRto3D"],
+    "tab": ["VRto3D"],
+    "frame_sequential": ["WibbleWobbleVR"],
+    "anaglyph": ["VRto3D"],
+    "sr_weave": ["XRGameBridge"]
+  }
+}

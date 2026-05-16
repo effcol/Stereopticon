@@ -1,0 +1,24 @@
+{
+  "id": "geo11",
+  "name": "Geo-11",
+  "category": "dx_injector",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "version_info": "Latest stable (0.6.60.22 and earlier). SR Weave support requires v0.6.60.23.",
+  "url": "https://github.com/bo3b/3Dmigoto",
+  "authors": ["Bo3b", "DarkStarSword", "Flugan", "Helifax", "MasterOtaku"],
+  "rendering_method": "Dual-View Rendering",
+  "summary": "The community successor to Nvidia 3D Vision. A fork of 3DMigoto that injects Dual-View Rendering into DirectX 11 games without requiring Nvidia's deprecated stereo driver. Game-specific fix files correct geometry and depth per title. VR output supported via Katanga (SteamVR) or VRScreenCap (OpenXR). SR Weave (simulated_reality) requires Geo-11 v0.6.60.23.",
+  "compatibility_notes": "DirectX 11 only. DX9 games require dgVoodoo2 wrapper first. Works on any modern GPU. VR: run via Katanga.cmd for SteamVR with motion controls, or VRScreenCap.cmd for OpenXR with better performance.",
+  "graphics_apis": ["dx11"],
+  "supported_outputs": {
+    "sbs": [],
+    "tab": [],
+    "interleaved": [],
+    "frame_sequential": [],
+    "anaglyph": [],
+    "sr_weave": ["3DGameBridge"],
+    "vr_native": ["VRScreenCap", "Katanga"]
+  }
+}

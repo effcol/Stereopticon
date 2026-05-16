@@ -1,0 +1,152 @@
+{
+  "family": "ar_glasses",
+  "family_name": "AR Glasses",
+  "family_id": "ar_glasses",
+  "native_input": "sbs",
+  "os": ["windows"],
+
+  "summary": "USB-C DisplayPort glasses that present as a standard flat SBS display. Require a USB-C port with DP Alt Mode, or a compatible adapter with SBS and audio support.",
+
+  "vrto3d_output_profiles": {
+    "sbs": {
+      "display_index": 1,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.065,
+      "convergence": 1.0,
+      "tab_enable": false,
+      "display_frequency": 90.0,
+      "pitch_enable": true,
+      "yaw_enable": true,
+      "use_open_track": true,
+      "open_track_port": 4242,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "Native side-by-side for AR glasses with VertoXR head tracking."
+    },
+    "tab": {
+      "display_index": 1,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.065,
+      "convergence": 1.0,
+      "tab_enable": true,
+      "display_frequency": 90.0,
+      "pitch_enable": true,
+      "yaw_enable": true,
+      "use_open_track": true,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "Top-and-bottom output converted to SBS on glasses."
+    },
+    "anaglyph": {
+      "display_index": 1,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.065,
+      "convergence": 1.0,
+      "tab_enable": false,
+      "display_frequency": 90.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "use_open_track": false,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "Anaglyph output converted via ReShade 3DToElse."
+    }
+  },
+
+  "accepted_fix_outputs": {
+    "sbs": { "steps": [], "notes": "AR glasses natively accept full SBS." },
+    "tab": { "steps": ["3DToElse"], "notes": "3DToElse converts TaB to SBS." },
+    "anaglyph": { "steps": ["3DToElse"] }
+  },
+
+  "vr_drivers": {
+    "vrto3d": {
+      "supported": true,
+      "notes": "Set display_index to the glasses' Windows display number. Ctrl+F8 or auto_focus handles window management.",
+      "config_base": { "tab_enable": false, "vd_fsbs_hack": false, "auto_focus": true }
+    },
+    "xrgamebridge": { "supported": false, "notes": "XRGameBridge requires Leia SR SDK — not compatible with AR glasses." }
+  },
+
+  "headtracking": {
+    "methods": ["vertoxr", "opentrack"],
+    "default_method": "vertoxr",
+    "notes": "VertoXR reads the glasses IMU and feeds 3DoF tracking to VRto3D via OpenTrack UDP. Set use_open_track: true and launch_script: 'start vertoxr://steamvr' in VRto3D default_config.json.",
+    "open_track_port": 4242
+  },
+
+  "family_software": [
+    {
+      "id": "vertoxr", "name": "VertoXR", "type": "headtracking", "required": false,
+      "exclusive_to": null, "works_on": "all",
+      "notes": "Reads IMU from AR glasses, outputs 3DoF head tracking to VRto3D via OpenTrack UDP. Most reliable with Xreal.",
+      "url": "https://www.vertoxr.com"
+    },
+    {
+      "id": "autocursorlock", "name": "AutoCursorLock", "type": "utility", "required": false,
+      "exclusive_to": null, "works_on": "all",
+      "notes": "Prevents mouse cursor escaping game window in single-display mode."
+    }
+  ],
+
+  "devices": [
+    {
+      "id": "xreal_air2_pro", "name": "Xreal Air 2 Pro", "vendor": "Xreal",
+      "resolutions": [{ "width": 1920, "height": 1080 }], "refresh_hz": [72],
+      "vrto3d_config": { "display_frequency": 72, "render_width": 1920, "render_height": 1080 },
+      "device_software": [
+        {
+          "id": "xreal_nebula", "name": "Nebula", "type": "utility", "required": false,
+          "exclusive_to": "xreal_air2_pro", "cross_device_via": null,
+          "notes": "Xreal virtual display manager. Not required for SBS 3D use with VRto3D."
+        }
+      ],
+      "headtracking_support": { "vertoxr": true, "notes": "Best VertoXR support of any AR glasses currently." },
+      "quirks": []
+    },
+    {
+      "id": "xreal_air2", "name": "Xreal Air 2", "vendor": "Xreal",
+      "resolutions": [{ "width": 1920, "height": 1080 }], "refresh_hz": [72],
+      "vrto3d_config": { "display_frequency": 72, "render_width": 1920, "render_height": 1080 },
+      "device_software": [],
+      "headtracking_support": { "vertoxr": true, "notes": "Good VertoXR support." },
+      "quirks": []
+    },
+    {
+      "id": "rokid_max2", "name": "Rokid Max 2", "vendor": "Rokid",
+      "resolutions": [{ "width": 1920, "height": 1080 }], "refresh_hz": [60],
+      "vrto3d_config": { "display_frequency": 60, "render_width": 1920, "render_height": 1080 },
+      "device_software": [],
+      "headtracking_support": { "vertoxr": "partial", "notes": "VertoXR support varies by firmware. Check VertoXR compatibility list." },
+      "quirks": ["USB-C adapter must explicitly support SBS — generic adapters may not output correct signal."]
+    },
+    {
+      "id": "viture_one", "name": "Viture One / Viture Pro", "vendor": "Viture",
+      "resolutions": [{ "width": 1920, "height": 1080 }], "refresh_hz": [60],
+      "vrto3d_config": { "display_frequency": 60, "render_width": 1920, "render_height": 1080 },
+      "device_software": [
+        {
+          "id": "viture_spacewalk", "name": "SpaceWalker", "type": "utility", "required": false,
+          "exclusive_to": "viture_one", "cross_device_via": null,
+          "notes": "Viture virtual display app. Not required for SBS use with VRto3D."
+        }
+      ],
+      "headtracking_support": { "vertoxr": "partial", "notes": "Limited VertoXR support — IMU access not guaranteed on all firmware versions." },
+      "quirks": []
+    },
+    {
+      "id": "rayneo_x2", "name": "RayNeo X2", "vendor": "RayNeo",
+      "resolutions": [{ "width": 1920, "height": 1080 }], "refresh_hz": [60],
+      "vrto3d_config": { "display_frequency": 60, "render_width": 1920, "render_height": 1080 },
+      "device_software": [],
+      "headtracking_support": { "vertoxr": "unknown", "notes": "VertoXR compatibility unconfirmed." },
+      "quirks": []
+    }
+  ]
+}

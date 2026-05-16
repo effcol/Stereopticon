@@ -1,0 +1,47 @@
+{
+  "id": "wiz3d_3dvision_dm",
+  "name": "wiz3D — 3D Vision Direct Mode",
+  "description": "wiz3D component (effcol) for games that originally rendered stereoscopic 3D themselves and submitted to NVIDIA 3D Vision via Direct Mode. wiz3D tricks the game into believing 3D Vision is present, supplies a render surface, then re-routes the resulting stereo output to any modern display format. Fundamentally different from the wrapper variant — the game does the 3D rendering, wiz3D only handles capture and output routing.",
+  "url": "https://github.com/effcol/wiz3D",
+  "license": "LGPL-2.1 (not bundled — fetched at setup from upstream releases)",
+  "graphics_api": ["dx9", "dx10", "dx11"],
+  "graphics_api_status": {
+    "working":  ["dx9"],
+    "planned":  ["dx10", "dx11"]
+  },
+  "config_file": "3DVision_Config.xml",
+  "bundled": false,
+  "fetch_strategy": "github_release_latest",
+  "versions": {
+    "latest": {
+      "url": "https://github.com/effcol/wiz3D/releases/latest",
+      "default": true,
+      "fetch_strategy": "github_release_latest",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "interlaced",
+        "anaglyph",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "wiz3d_output_classes": {
+        "sbs":              "FullSideBySide",
+        "sbs_half":         "HalfSideBySide",
+        "tab":              "FullTopAndBottom",
+        "tab_half":         "HalfTopAndBottom",
+        "interlaced_row":   "RowInterleaved",
+        "interlaced_col":   "ColumnInterleaved",
+        "checkerboard":     "Checkerboard",
+        "anaglyph_rc":      "AnaglyphRedCyan",
+        "anaglyph_gm":      "AnaglyphGreenMagenta",
+        "anaglyph_ab":      "AnaglyphAmberBlue",
+        "sr_weave":         "SimulatedRealityWeave"
+      },
+      "anaglyph_variants_supported": ["red_cyan", "green_magenta", "amber_blue"],
+      "notes": "Targets the (mostly legacy) catalogue of D3D9/10/11 games that shipped with native 3D Vision Direct Mode support. The game renders its own stereo; wiz3D's job is purely output translation."
+    }
+  }
+}

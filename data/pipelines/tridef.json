@@ -1,0 +1,21 @@
+{
+  "id": "tridef",
+  "name": "TriDef 3D",
+  "category": "middleware",
+  "status": "defunct",
+  "deprecated_since": "2017",
+  "cost": "paid",
+  "open_source": false,
+  "url": "https://tridef.com",
+  "authors": ["Dynamic Digital Depth (DDD)"],
+  "summary": "Third-party middleware intercepting DirectX render calls to force a second camera view. Widely bundled with 3D monitors from LG and Samsung. Supported DX9, DX10, and DX11 games. The most commercially successful stereoscopic middleware of the 3DTV era.",
+  "compatibility_notes": "Defunct — Dynamic Digital Depth ceased operations in 2017. License activation servers are offline, making the software impossible to activate on a new install. Incompatible with DX12, Vulkan, and Windows 11. Of historical and collector interest only. Community successor is Geo-11.",
+  "graphics_apis": ["dx9", "dx10", "dx11"],
+  "community_successor": "geo11",
+  "supported_outputs": {
+    "frame_sequential": [],
+    "sbs": [],
+    "anaglyph": [],
+    "nvidia_3d_vision": []
+  }
+}

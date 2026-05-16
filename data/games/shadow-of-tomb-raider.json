@@ -1,0 +1,28 @@
+{
+  "id": "sotr",
+  "title": "Shadow of the Tomb Raider",
+  "developer": "Eidos Montréal",
+  "graphics_api": ["dx11", "dx12"],
+  "default_path": "C:\\Games\\Shadow of the Tomb Raider\\SOTR.exe",
+  "exe_name": "SOTTR.exe",
+  "steam_app_id": "750920",
+  "fixes": [
+    {
+      "id": "sotr_native",
+      "name": "Native Stereoscopic 3D",
+      "type": "native",
+      "authors": ["Eidos Montréal"],
+      "url": "https://www.pcgamingwiki.com/wiki/Shadow_of_the_Tomb_Raider",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": ["sbs", "tab"],
+      "pipeline_overrides": {},
+      "activation": "Enable in launcher settings before starting the game",
+      "pros": "Zero performance loss, native UI depth, no mods required.",
+      "cons": "Limited output options — SBS and TAB only.",
+      "issues": ["RTX shadows render incorrectly in 3D mode"],
+      "notes": "One of the rare games with first-party stereoscopic support. Enable before launching — cannot be toggled in-game."
+    }
+  ]
+}

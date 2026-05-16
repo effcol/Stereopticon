@@ -1,0 +1,25 @@
+{
+  "id": "vireio",
+  "name": "Vireio Perception",
+  "description": "D3D9 / D3D11 stereo + headtracking engine, bundled with Stereopticon. Node-graph plugin architecture; injects via Aquilinus.dll. Long-running fix platform (2012–present); v4.1 modernization (2026) retargets to VS 2026, removes legacy DirectX SDK, adds FreeTrack and OpenXR plugins.",
+  "url": "https://github.com/cybereality/Perception",
+  "license": "LGPL-3.0 (redistributed under GPL-3.0 as part of Stereopticon)",
+  "graphics_api": ["dx9", "dx11"],
+  "bundled": true,
+  "bundle_path": "engine/vireio/Release/Perception/bin/x64/",
+  "injector": "Inicio.exe",
+  "versions": {
+    "v4.1.0": {
+      "default": true,
+      "native_outputs": ["sbs", "sbs_half", "mono"],
+      "via_pipeline": {
+        "anaglyph": "stereopresenter_anaglyph",
+        "sr_weave": "3DGameBridge"
+      },
+      "supports_headtracking": true,
+      "tracker_plugins": ["FreeTrackTracker", "OpenXR-DirectMode"],
+      "renderer_plugins": ["OpenXR-DirectMode"],
+      "notes": "v4.1 modernization bundled with Stereopticon. Plugin DLLs live in engine/vireio/Release/Perception/bin/x64/plugin/. Per-game profile JSONs select which plugins are wired into the runtime node graph."
+    }
+  }
+}

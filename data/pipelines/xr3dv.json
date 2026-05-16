@@ -1,0 +1,21 @@
+{
+  "id": "xr3dv",
+  "name": "XR3DV",
+  "status": "experimental",
+  "summary": "OpenXR runtime that bridges OpenXR applications directly to NVIDIA 3D Vision hardware via NVAPI and D3D9 stereo. No head-tracking — pure stereoscopic rendering only.",
+  "url": "https://github.com/ThreeDeeJay/XR3DV",
+  "license": "GPL-3.0",
+  "cost": "free",
+  "requirements": [
+    "NVIDIA GPU with 3D Vision support (GTX 400 or newer)",
+    "NVIDIA driver ≤ 425.31 (3D Vision enabled)",
+    "Windows 10/11 64-bit"
+  ],
+  "notes": "An AI proof-of-concept — functional but under active development. Registers as the system OpenXR runtime, so it intercepts any OpenXR application and routes stereo output to 3D Vision glasses. No motion controllers, no head tracking: identity pose only. Separation and convergence are configurable in xr3dv.ini and hot-reload at runtime.",
+  "install_notes": "Run install.ps1 as Administrator to register the runtime, or manually set HKLM\\SOFTWARE\\Khronos\\OpenXR\\1\\ActiveRuntime to the path of xr3dv.json. Only one OpenXR runtime can be active at a time — this will replace any existing OpenXR runtime (SteamVR, Oculus, etc.).",
+  "supported_outputs": {
+    "frame_sequential": [],
+    "sbs": ["XR3DV → 3D Vision"],
+    "tab": ["XR3DV → 3D Vision"]
+  }
+}

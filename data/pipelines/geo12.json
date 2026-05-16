@@ -1,0 +1,16 @@
+{
+  "id": "geo12",
+  "name": "Geo-12",
+  "category": "dx_injector",
+  "status": "experimental",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/bo3b/3Dmigoto",
+  "authors": ["Bo3b", "DarkStarSword", "Flugan"],
+  "summary": "An experimental extension of the Geo-11 approach targeting DirectX 12 games. Still in early development — fix coverage is sparse compared to Geo-11. Uses a DX12 interception layer to inject stereo rendering.",
+  "compatibility_notes": "DirectX 12 only. Unstable on some titles. Significantly fewer game fixes available than Geo-11. Not recommended for general use yet.",
+  "graphics_apis": ["dx12"],
+  "supported_outputs": {
+    "sr_weave": []
+  }
+}

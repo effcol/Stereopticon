@@ -1,0 +1,177 @@
+{
+  "id": "interlaced_display",
+  "name": "Interlaced / Line-by-Line 3D Display",
+  "vendor": "various",
+  "type": "interlaced_3d",
+  "os": ["windows"],
+  "description": "Displays that interleave left and right eye data row-by-row or column-by-column (e.g., Sharp Aquos, some polarized passive displays with interlaced encoding).",
+  "native_input": "interlaced_row",
+
+  "notes": "Interlaced displays present a single 2D output where alternating rows or columns contain left/right eye data. The display hardware or glasses handle separation. Compatible with passive or active glasses depending on display type.",
+
+  "vrto3d_output_profiles": {
+    "sbs": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.065,
+      "convergence": 1.0,
+      "tab_enable": false,
+      "display_frequency": 60.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "use_open_track": false,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "VRto3D renders SBS; ReShade 3DToElse shader converts to row-interlaced."
+    },
+    "tab": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.065,
+      "convergence": 1.0,
+      "tab_enable": true,
+      "display_frequency": 60.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "use_open_track": false,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "VRto3D renders TaB; ReShade 3DToElse shader converts to row-interlaced."
+    },
+    "interlaced_row": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.065,
+      "convergence": 1.0,
+      "tab_enable": false,
+      "display_frequency": 60.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "use_open_track": false,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "Native row-interlaced output. Requires game or ReShade to render row-interlaced."
+    },
+    "interlaced_col": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.065,
+      "convergence": 1.0,
+      "tab_enable": false,
+      "display_frequency": 60.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "use_open_track": false,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "Native column-interlaced output. Requires game or ReShade to render column-interlaced."
+    }
+  },
+
+  "accepted_fix_outputs": {
+    "sbs": {
+      "steps": ["3DToElse"],
+      "notes": "3DToElse converts SBS to row or column interlaced. User selects format in ReShade."
+    },
+    "tab": {
+      "steps": ["3DToElse"],
+      "notes": "3DToElse converts TaB to interlaced."
+    },
+    "interlaced_row": {
+      "steps": [],
+      "notes": "Native row-interlaced output."
+    },
+    "interlaced_col": {
+      "steps": [],
+      "notes": "Native column-interlaced output."
+    },
+    "interlaced_checkerboard": {
+      "steps": [],
+      "notes": "Checkerboard interlacing for compatibility with certain 3D display types."
+    }
+  },
+
+  "vr_drivers": {
+    "vrto3d": {
+      "supported": true,
+      "notes": "VRto3D renders SBS or TaB, then ReShade 3DToElse shader converts to interlaced.",
+      "config_base": {
+        "display_index": 0,
+        "render_width": 1920,
+        "render_height": 1080,
+        "display_frequency": 60,
+        "tab_enable": false,
+        "auto_focus": false
+      }
+    },
+    "xrgamebridge": {
+      "supported": false
+    }
+  },
+
+  "headtracking": {
+    "methods": ["none"],
+    "notes": "Most interlaced displays do not support head tracking."
+  },
+
+  "required_software": [
+    {
+      "id": "reshade",
+      "name": "ReShade",
+      "url": "https://reshade.me"
+    },
+    {
+      "id": "3dtoelse_shader",
+      "name": "3DToElse Shader",
+      "url": "https://github.com/BlueSkyDefender/Depth3D"
+    }
+  ],
+
+  "setup_notes": [
+    "Install ReShade on vrserver.exe (for VRto3D) or game executable.",
+    "Download 3DToElse.fx shader and place in reshade-shaders/Shaders folder.",
+    "Open ReShade (Press Home), enable 3DToElse.",
+    "Set 'Stereoscopic Mode Input' to 'Side by Side' or 'Top and Bottom' based on VRto3D output.",
+    "Set '3D Display Mode' to 'Row/Line Interlaced' or 'Column/Checkerboard Interlaced' based on your display.",
+    "Set display_index to target the interlaced display.",
+    "Adjust depth/convergence via VRto3D hotkeys (Ctrl+F3/F4/F5/F6)."
+  ],
+
+  "devices": [
+    {
+      "id": "sharp_aquos_3d",
+      "name": "Sharp Aquos XX (3DTVs)",
+      "vendor": "Sharp",
+      "interlacing_type": "row",
+      "resolutions": [{ "width": 1920, "height": 1080 }],
+      "refresh_hz": [60],
+      "notes": "Row-interlaced with passive polarized glasses."
+    },
+    {
+      "id": "eMagin_z800",
+      "name": "eMagin Z800 (HD3000)",
+      "vendor": "eMagin",
+      "interlacing_type": "column",
+      "resolutions": [{ "width": 1280, "height": 720 }],
+      "refresh_hz": [60],
+      "notes": "LED display with column interlacing and passive glasses."
+    },
+    {
+      "id": "mitsubishi_3d",
+      "name": "Mitsubishi Diamondcrysta 3D",
+      "vendor": "Mitsubishi",
+      "interlacing_type": "row",
+      "resolutions": [{ "width": 1920, "height": 1200 }],
+      "refresh_hz": [60],
+      "notes": "High-end interlaced display with active or passive glasses support."
+    }
+  ]
+}

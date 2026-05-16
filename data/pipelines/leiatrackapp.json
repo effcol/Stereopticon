@@ -1,0 +1,17 @@
+{
+    "id": "leiatrackapp",
+    "name": "Leia Track App",
+    "url": "https://github.com/evilkermitreturns/leia-track-app",
+    "summary": "Head tracking bridge for Simulated Reality (glasses-free 3D) displays. Feeds tracking data from OpenTrack or VRto3D to enable head-coupled parallax on SR monitors like Acer SpatialLabs.",
+    "status": "active",
+    "category": "headtracking",
+    "role": "sr_headtracking_bridge",
+    "notes": "Leia Track App sits between a head tracker (OpenTrack, webcam, etc.) and the SR display system. It enables the display to shift the rendered views based on head position, significantly improving the glasses-free 3D effect — especially for single viewers.",
+    "supported_outputs": {
+        "sr_weave": ["Leia Track App", "3DGameBridge"]
+    },
+    "install_notes": "No automated install. Requires OpenTrack or compatible tracker as prerequisite. See GitHub for setup instructions.",
+    "prerequisites": ["OpenTrack"],
+    "compatible_displays": ["acer_spatiallabs", "samsung_odyssey3d", "dimenco_sr"],
+    "compatible_with": ["opentrack", "vrto3d"]
+}

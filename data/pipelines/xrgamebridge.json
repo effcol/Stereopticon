@@ -1,0 +1,18 @@
+{
+  "id": "xrgamebridge",
+  "name": "XRGameBridge",
+  "category": "openxr_runtime",
+  "status": "active",
+  "cost": "free",
+  "open_source": false,
+  "url": "https://github.com/JoeyAnthony/XRGameBridge",
+  "authors": ["JoeyAnthony"],
+  "rendering_method": null,
+  "summary": "An OpenXR runtime layer specifically for Simulated Reality displays (Acer SpatialLabs, Dimenco SR). Acts as an alternative to SteamVR or native OpenXR runtimes for games using UEVR or native VR — routing the VR output directly to an SR display in SR Weave format. Unlike VRto3D, XRGameBridge preserves LeiaID camera-based headtracking support on compatible SR displays, allowing the displayed view to shift as the user moves their head.",
+  "input_format": "OpenXR VR frame pair",
+  "compatibility_notes": "SR display required (Acer SpatialLabs, Dimenco). LeiaID headtracking camera required for headtracking features. For non-SR output (SBS, frame sequential), VRto3D remains the correct choice. UEVR must be configured to target XRGameBridge as its OpenXR runtime rather than SteamVR.",
+  "graphics_apis": ["dx11", "dx12"],
+  "supported_outputs": {
+    "sr_weave": []
+  }
+}

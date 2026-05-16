@@ -1,0 +1,21 @@
+{
+  "id": "sbs",
+  "name": "Side-by-Side (SBS)",
+  "category": "image_format",
+  "status": "active",
+  "summary": "Left and right eye views placed horizontally side-by-side in a single frame. The most widely supported 3D format — accepted by passive 3D TVs, most AR glasses, and the majority of VR headsets when not using native VR mode.",
+  "variants": [
+    {
+      "id": "sbs_full",
+      "name": "Full SBS",
+      "description": "Each eye gets the full horizontal resolution. Frame is twice the normal width (e.g. 3840×1080 for a 1080p source). Requires a display or app that accepts full SBS."
+    },
+    {
+      "id": "sbs_half",
+      "name": "Half SBS",
+      "description": "Each eye view is horizontally squeezed to half width, fitting both into a standard frame (e.g. 1920×1080). Most common format for 3DTVs and passive glasses. Some horizontal resolution loss."
+    }
+  ],
+  "compatible_displays": ["passive_3dtv", "ar_glasses", "vr_headset", "sbs_monitor"],
+  "hardware_requirements": []
+}

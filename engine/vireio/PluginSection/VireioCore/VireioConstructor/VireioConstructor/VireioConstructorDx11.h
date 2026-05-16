@@ -1,0 +1,175 @@
+﻿/********************************************************************
+Vireio Perception: Open-Source Stereoscopic 3D Driver
+Copyright (C) 2012 Andres Hernandez
+
+Vireio Constructor - Vireio Perception Direct 3D Device Handler (DX11)
+Copyright (C) 2015 Denis Reischl
+
+File <VireioConstructorDx11.h> and
+Class <VireioConstructorDx11> :
+Copyright (C) 2015 Denis Reischl
+
+
+
+Vireio Perception Version History:
+v1.0.0 2012 by Andres Hernandez
+v1.0.X 2013 by John Hicks, Neil Schneider
+v1.1.x 2013 by Primary Coding Author: Chris Drain
+Team Support: John Hicks, Phil Larkson, Neil Schneider
+v2.0.x 2013 by Denis Reischl, Neil Schneider, Joshua Brown
+v2.0.4 onwards 2014 by Grant Bagwell, Simon Brown and Neil Schneider
+v4.0.x 2015 by Denis Reischl, Grant Bagwell, Simon Brown and Neil Schneider
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+********************************************************************/
+
+#define DEBUG_UINT(a) { wchar_t buf[128]; wsprintf(buf, L"%u", a); OutputDebugString(buf); }
+#define DEBUG_HEX(a) { wchar_t buf[128]; wsprintf(buf, L"%x", a); OutputDebugString(buf); }
+
+#include"AQU_Nodus.h"
+#include"Resources.h"
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include"..\..\VireioMatrixModifier\VireioMatrixModifier\VireioMatrixModifierDataStructures.h"
+
+#include <d3d11_1.h>
+#pragma comment(lib, "d3d11.lib")
+
+#include <d3d11.h>
+#pragma comment(lib, "d3d11.lib")
+
+#include"..\..\..\Include\Vireio_Node_Plugtypes.h"
+#include"..\..\..\Include\VireioMenu.h"
+
+#define	PROVOKING_TYPE                                 2                     /**< Provoking type is 2 - just invoker, no provoker **/
+#define METHOD_REPLACEMENT                         false                     /**< This node does NOT replace the D3D call (default) **/
+
+#define NUMBER_OF_COMMANDERS                           1
+#define NUMBER_OF_DECOMMANDERS                         13
+
+/**
+* Node Commander enumeration
+***/
+enum ODM_Commanders
+{
+	VireioMenu,                  /**<  The Vireio Menu node connector. ***/
+};
+
+/**
+* Node Commander Enumeration.
+***/
+enum STS_Decommanders
+{
+	pShaderBytecode_VertexShader,            /**< ID3D11Device::CreateVertexShader ***/
+	BytecodeLength_VertexShader,             /**< ID3D11Device::CreateVertexShader ***/
+	pClassLinkage_VertexShader,              /**< ID3D11Device::CreateVertexShader ***/
+	ppVertexShader_DX11,                     /**< ID3D11Device::CreateVertexShader ***/
+	pShaderBytecode_PixelShader,             /**< ID3D11Device::CreatePixelShader ***/
+	BytecodeLength_PixelShader,              /**< ID3D11Device::CreatePixelShader ***/
+	pClassLinkage_PixelShader,               /**< ID3D11Device::CreatePixelShader **/
+	ppPixelShader_DX11,                      /**< ID3D11Device::CreatePixelShader ***/
+	pDesc_DX11,                              /**< ID3D11Device::CreateBuffer ***/
+	pInitialData_DX11,                       /**< ID3D11Device::CreateBuffer ***/
+	ppBuffer_DX11,                           /**< ID3D11Device::CreateBuffer ***/
+	asVShaderData,                           /**< The vertex shader data vector initialized in the matrix modifier ***/
+	asPShaderData,                           /**< The pixel shader data vector initialized in the matrix modifier ***/
+};
+
+/**
+* Vireio Perception Direct 3D Device Handler (DX11).
+* Vireio Perception Constructor handling all D3D Device methods.
+***/
+class VireioConstructorDx11 : public AQU_Nodus
+{
+public:
+	VireioConstructorDx11();
+	virtual ~VireioConstructorDx11();
+
+	/*** AQU_Nodus public methods ***/
+	virtual const char*     GetNodeType();
+	virtual UINT            GetNodeTypeId();
+	virtual LPWSTR          GetCategory();
+	virtual HBITMAP         GetLogo();
+	virtual HBITMAP         GetControl();
+	virtual ImVec2          GetNodeSize() { return ImVec2((float)g_uGlobalNodeWidth, (float)GUI_HEIGHT); }
+	//virtual DWORD           GetNodeWidth() { return 4 + 256 + 4; }
+	//virtual DWORD           GetNodeHeight() { return 128; }
+	virtual int             GetProvokingType() { return PROVOKING_TYPE; }
+	virtual bool            GetMethodReplacement() { return METHOD_REPLACEMENT; }
+	virtual DWORD           GetCommandersNumber() { return NUMBER_OF_COMMANDERS; }
+	virtual DWORD           GetDecommandersNumber() { return NUMBER_OF_DECOMMANDERS; }
+	virtual LPWSTR          GetCommanderName(DWORD dwCommanderIndex);
+	virtual LPWSTR          GetDecommanderName(DWORD dwDecommanderIndex);
+	virtual DWORD           GetCommanderType(DWORD dwCommanderIndex);
+	virtual DWORD           GetDecommanderType(DWORD dwDecommanderIndex);
+	virtual void*           GetOutputPointer(DWORD dwCommanderIndex);
+	virtual void            SetInputPointer(DWORD dwDecommanderIndex, void* pData);
+	virtual bool            SupportsD3DMethod(int nD3DVersion, int nD3DInterface, int nD3DMethod);
+	virtual void*           Provoke(void* pThis, int eD3D, int eD3DInterface, int eD3DMethod, DWORD dwNumberConnected, int& nProvokerIndex);
+
+	/**
+	* Return value pointer (HRESULT).
+	***/
+	void* m_pvReturn;
+
+private:
+
+	/*** Constructor private methods ***/
+	void CreateShader(std::vector<Vireio_D3D11_Shader>* pasShaders, const void *pcShaderBytecode, SIZE_T unBytecodeLength, ID3D11ClassLinkage *pcClassLinkage, ID3D11DeviceChild** ppcShader, bool bOutputCode, char cPrefix);
+
+	/*** Constructor input pointers ***/
+	void** m_ppvShaderBytecode_VertexShader;
+	SIZE_T* m_pnBytecodeLength_VertexShader;
+	ID3D11ClassLinkage** m_ppcClassLinkage_VertexShader;
+	ID3D11VertexShader*** m_pppcVertexShader_DX11;
+	void** m_ppvShaderBytecode_PixelShader;
+	SIZE_T* m_pnBytecodeLength_PixelShader;
+	ID3D11ClassLinkage** m_ppcClassLinkage_PixelShader;
+	ID3D11PixelShader*** m_pppcPixelShader_DX11;
+	ID3D11VertexShader** m_ppcVertexShader_11;
+	ID3D11VertexShader** m_ppcPixelShader_11;
+	D3D11_BUFFER_DESC** m_ppsDesc_DX11;
+	D3D11_SUBRESOURCE_DATA** m_ppsInitialData_DX11;
+	ID3D11Buffer*** m_pppcBuffer_DX11;
+
+	/**
+	* The d3d11 vertex shader description vector.
+	* Contains all enumerated shader data structures.
+	***/
+	std::vector<Vireio_D3D11_Shader>* m_pasVShaders;
+	/**
+	* The d3d11 pixel shader description vector.
+	* Contains all enumerated shader data structures.
+	***/
+	std::vector<Vireio_D3D11_Shader>* m_pasPShaders;
+	/**
+	* Vireio menu.
+	***/
+	VireioSubMenu m_sMenu;
+	/**
+	* Frames to save the ini file.
+	***/
+	INT m_nIniFrameCount;
+};
+
+/**
+* Exported Constructor Method.
+***/
+extern "C" __declspec(dllexport) AQU_Nodus* AQU_Nodus_Create()
+{
+	VireioConstructorDx11* pVireioConstructorDx11 = new VireioConstructorDx11();
+	return static_cast<AQU_Nodus*>(pVireioConstructorDx11);
+}

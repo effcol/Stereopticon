@@ -1,0 +1,16 @@
+{
+  "id": "3dconsolebridge",
+  "name": "3D Console Bridge (NTM3D)",
+  "description": "Hardware bridge for routing stereo output to legacy/3D-Vision/HDMI 3D consumer hardware. Ships with the MS213x EDID patcher (forces a 3D-capable display profile onto the connected display), the NTM3D EDID + firmware binaries, and the bundled 3DToElse_NTM3D.fx ReShade shader (the NTM variant of 3DtoElse). Distinct from 3DGameBridge — that's a software ReShade addon for SR displays; this is hardware-bridge + shader bundle.",
+  "url": "https://github.com/NTM-3D",
+  "license": "See LICENSE in lib/3DConsoleBridge/ (NTM 3D, Creative Commons attribution)",
+  "graphics_api": ["any"],
+  "category": "hardware_bridge",
+  "bundled_assets": {
+    "reshade_shader": "3DToElse_NTM3D.fx",
+    "edid_patcher":   "MS213x_edid_patcher.py",
+    "edid_binary":    "NTM3D_edid.bin",
+    "firmware_binary": "NTM3D_firmware.bin"
+  },
+  "notes": "The 3DToElse_NTM3D.fx shader is the preferred 3DtoElse variant in Stereopticon — it carries NTM's extended output modes (HDMI Frame Packing, etc.) beyond BlueSkyDefender's original 3DtoElse.fx. The EDID/firmware pieces are only relevant if the user owns NTM3D hardware; the shader is independently useful."
+}

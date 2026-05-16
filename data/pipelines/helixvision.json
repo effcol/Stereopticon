@@ -1,0 +1,18 @@
+{
+  "id": "helixvision",
+  "name": "HelixVision",
+  "category": "vr_bridge",
+  "status": "legacy_active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/bo3b/HelixVision",
+  "authors": ["Bo3b"],
+  "rendering_method": null,
+  "summary": "A SteamVR driver that takes Geo-11 / 3D Vision stereo output and pipes it into a SteamVR headset for immersive viewing of 3D Vision fixes. Allows Geo-11 games to be played in a VR headset as a virtual cinema or stereo environment. The reverse of the UEVR→VRto3D pipeline.",
+  "input_format": "Geo-11 / 3DMigoto stereo frame pair",
+  "compatibility_notes": "Primarily of historical and enthusiast interest. Requires an active Geo-11 fix and SteamVR headset. Game performance must sustain VR framerates. Not actively maintained.",
+  "graphics_apis": ["dx11"],
+  "supported_outputs": {
+    "vr_native": []
+  }
+}

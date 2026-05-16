@@ -1,0 +1,59 @@
+{
+  "id": "limbo",
+  "title": "Limbo",
+  "developer": "Playdead",
+  "graphics_api": "dx9",
+  "steam_app_id": "48000",
+  "exe_name": "limbo.exe",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Limbo",
+  "fixes": [
+    {
+      "id": "limbo-anaglyph-shader",
+      "name": "Native Anaglyph 3D",
+      "type": "native",
+      "recommended": true,
+      "authors": ["Playdead", "Effcol"],
+      "url": "https://www.nexusmods.com/limbo/mods/2",
+      "download_url": "https://raw.githubusercontent.com/effcol/Anaglyph-to-SBS-or-TAB/main/Limbo/Limbo_Anaglyph_to_SBS_TAB.fx",
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "none",
+      "cost": "free",
+      "pros": "Uses Limbo's built-in Dual-View anaglyph rendering — not a depth fake.",
+      "cons": "Quality limited by the source anaglyph.",
+      "notes": "Limbo ships with a built-in red/cyan anaglyph mode. Shift+3+D activates it. Stereopticon converts that signal to your chosen output via a game-specific ReShade shader. Other anaglyph colours (green/magenta, amber/blue) are produced by converting to SBS first, then repacking via 3DtoElse.",
+      "activation": "After the game loads, press Shift+3+D to enable the built-in anaglyph mode.",
+      "issues": [
+        "Ghosting may be visible on high-contrast edges — adjust the intensity slider in the ReShade overlay"
+      ],
+      "reshade_shaders": ["Limbo_Anaglyph_to_SBS_TAB"],
+      "native_outputs": ["anaglyph"],
+      "anaglyph_variant": "red_cyan",
+
+      "pipeline_overrides": {
+        "anaglyph":                        [],
+        "anaglyph_red_cyan":               [],
+        "anaglyph_green_magenta":          ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Anaglyph GM)"],
+        "anaglyph_amber_blue":             ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Anaglyph AB)"],
+        "sbs":                             ["Limbo Anaglyph-to-SBS Shader"],
+        "tab":                             ["Limbo Anaglyph-to-SBS Shader"],
+        "interleaved":                     ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Interleaved Row)"],
+        "interleaved_row":                 ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Interleaved Row)"],
+        "interleaved_col":                 ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Interleaved Col)"],
+        "interleaved_checkerboard":        ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Interleaved Checkerboard)"],
+        "frame_sequential":                ["Limbo Anaglyph-to-SBS Shader"],
+        "frame_packing":                   ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Frame Packing)"],
+        "sr_weave":                        ["Limbo Anaglyph-to-SBS Shader", "3DGameBridge"],
+        "lkg_quilt":                       null,
+        "vr_native":                       null
+      },
+
+      "post_launch_keys": [
+        {
+          "delay_ms": 3000,
+          "keys": "shift+3+d",
+          "note": "Shift+3+D — activates Limbo's built-in anaglyph mode. Always required regardless of output."
+        }
+      ]
+    }
+  ]
+}

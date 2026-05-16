@@ -1,0 +1,23 @@
+{
+  "id": "reframework",
+  "name": "REFramework",
+  "category": "vr_injector",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/praydog/REFramework",
+  "authors": ["Praydog", "cursey"],
+  "rendering_method": "Dual-View Rendering",
+  "summary": "Mod framework, scripting platform, and VR injector for RE Engine games (Resident Evil 2/3/4/Village/8, Devil May Cry 5, Monster Hunter Rise/Wilds, and others). Injects Dual-View Rendering and 6DOF headtracking into RE Engine titles via dinput8.dll. The RE Engine counterpart to UEVR.",
+  "compatibility_notes": "RE Engine only. DX11 and DX12. Actively maintained by Praydog (same author as UEVR). Compatible with SteamVR and OpenXR runtimes.",
+  "graphics_apis": ["dx11", "dx12"],
+  "supported_outputs": {
+    "vr_native": [],
+    "sbs": ["VRto3D"],
+    "tab": ["VRto3D"],
+    "interleaved": ["VRto3D"],
+    "frame_sequential": ["WibbleWobbleVR"],
+    "anaglyph": ["VRto3D"],
+    "sr_weave": ["XRGameBridge"]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "frame_packing",
+  "name": "Frame Packing",
+  "category": "signal_format",
+  "status": "active",
+  "summary": "Left and right views packed vertically into a single oversized frame (1920×2205 for 1080p, 1280×1470 for 720p) with a blank zone between views. 3DTVs and projectors detect the format via HDMI handshake and enter 3D mode automatically. Traditionally required hardware GPU support, but can now be generated in software via the 3DtoElse ReShade shader on any GPU.",
+  "variants": [
+    {
+      "id": "frame_packing_1080p",
+      "name": "1080p (24 Hz)",
+      "description": "1920×2205 frame. 45 blank lines between views. Highest quality. Low framerate limits use to cinematic content."
+    },
+    {
+      "id": "frame_packing_720p",
+      "name": "720p (60 Hz)",
+      "description": "1280×1470 frame. 30 blank lines between views. Gaming-viable framerate at reduced resolution."
+    }
+  ],
+  "compatible_displays": ["hdmi14_3dtv", "hdmi14_3d_projector"],
+  "hardware_requirements": [
+    "HDMI 1.4 cable",
+    "3DTV or projector with HDMI Frame Packing support",
+    "ReShade (for software generation via 3DtoElse — works on any modern GPU)"
+  ],
+  "software_generation": true,
+  "software_generation_shader": "3DtoElse",
+  "notes": "Hardware GPU frame packing (NVAPI/AMD) is removed on modern GPUs (RTX 30+, RX 6000+). Software generation via 3DtoElse works on any GPU by rendering the packed frame directly — the TV receives the correct signal as long as your display resolution is set to the frame-packed resolution beforehand."
+}

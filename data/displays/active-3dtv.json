@@ -1,0 +1,142 @@
+{
+  "id": "active_3dtv",
+  "name": "Active/Shutter 3D TV",
+  "vendor": "various",
+  "type": "active_3d",
+  "os": ["windows"],
+  "description": "Active shutter 3D TVs that display full resolution per eye using synchronized LCD shutter glasses. Support frame-sequential (DLP Link, i-Sight) and HDMI frame packing.",
+  "native_input": "frame_sequential",
+
+  "notes": "Active 3D TVs provide full resolution in each eye and deliver significantly better quality than passive. Require DLP Link / i-Sight emulation or frame-packing support via HDMI or DP.",
+
+  "vrto3d_output_profiles": {
+    "sbs": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.065,
+      "convergence": 1.0,
+      "tab_enable": false,
+      "display_frequency": 120.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "use_open_track": false,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "Side-by-side output converted to frame-sequential by WibbleWobbleVR or DLP Link emulator."
+    },
+    "tab": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 1080,
+      "fov": 90.0,
+      "depth": 0.065,
+      "convergence": 1.0,
+      "tab_enable": true,
+      "display_frequency": 120.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "use_open_track": false,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "Top-and-bottom output converted to frame-sequential by WibbleWobbleVR."
+    },
+    "frame_packing": {
+      "display_index": 0,
+      "render_width": 1920,
+      "render_height": 2205,
+      "fov": 90.0,
+      "depth": 0.065,
+      "convergence": 1.0,
+      "tab_enable": true,
+      "framepack_offset": 45,
+      "display_frequency": 120.0,
+      "pitch_enable": false,
+      "yaw_enable": false,
+      "use_open_track": false,
+      "async_enable": false,
+      "auto_focus": true,
+      "notes": "HDMI frame-packed output at 1920x2205. Custom resolution must be configured in Nvidia Control Panel first."
+    }
+  },
+
+  "accepted_fix_outputs": {
+    "sbs": {
+      "steps": ["WibbleWobbleVR"],
+      "notes": "WibbleWobbleVR renders frame-sequential from SBS source for 3D Vision and DLP Link displays."
+    },
+    "tab": {
+      "steps": ["WibbleWobbleVR"],
+      "notes": "WibbleWobbleVR frame-packing from TaB source."
+    },
+    "frame_packing": {
+      "steps": [],
+      "notes": "Frame-packed 1920x2205 or 1280x1470 output. Configure custom resolution in Nvidia Control Panel."
+    },
+    "frame_sequential": {
+      "steps": [],
+      "notes": "Native frame-sequential output from game or ReShade. Primary output type for this display."
+    }
+  },
+
+  "vr_drivers": {
+    "vrto3d": {
+      "supported": true,
+      "notes": "VRto3D can render frame-packed content. See setup_notes for custom resolution requirements.",
+      "config_base": {
+        "display_frequency": 120,
+        "render_width": 1920,
+        "render_height": 2205,
+        "tab_enable": true,
+        "framepack_offset": 45
+      }
+    },
+    "xrgamebridge": {
+      "supported": false,
+      "notes": "XRGameBridge is SR display only."
+    }
+  },
+
+  "headtracking": {
+    "methods": ["none"],
+    "notes": "Active 3D TVs do not support head tracking. Intended for seated/fixed-view play."
+  },
+
+  "optional_software": ["WibbleWobbleVR", "3DToElse"],
+
+  "setup_notes": [
+    "For frame-sequential (DLP Link / i-Sight): Use WibbleWobbleVR with VRto3D profiles. Set launch_script in VRto3D to start the frame-sequential mode.",
+    "For frame-packing 1920x2205 @ 60Hz: Create custom resolution in Nvidia Control Panel with horizontal 1920-2750, vertical 2205 pixels.",
+    "For frame-packing 1280x1470 @ 60Hz: Create custom resolution with horizontal 1280-1650, vertical 1470 pixels.",
+    "Set display_index in VRto3D default_config.json to target the 3D TV display.",
+    "Enable 3DToElse in ReShade if using anaglyph or interlaced modes."
+  ],
+
+  "devices": [
+    {
+      "id": "nvidia_3dvision2",
+      "name": "NVIDIA 3D Vision 2",
+      "vendor": "NVIDIA",
+      "type": "dlp_link",
+      "notes": "Wireless DLP Link shutter glasses. Supports 120Hz active stereo.",
+      "recommendation": "Use WibbleWobbleVR for frame-sequential rendering"
+    },
+    {
+      "id": "samsung_active_3d",
+      "name": "Samsung Active 3D TV",
+      "vendor": "Samsung",
+      "resolutions": [{ "width": 1920, "height": 1080 }],
+      "refresh_hz": [60, 120],
+      "notes": "Supports HDMI 3D (frame-packed). Highly compatible with VRto3D."
+    },
+    {
+      "id": "panasonic_active_3d",
+      "name": "Panasonic/Viera Active 3D TV",
+      "vendor": "Panasonic",
+      "resolutions": [{ "width": 1920, "height": 1080 }],
+      "refresh_hz": [60, 120],
+      "notes": "Supports HDMI 3D and frame-packing."
+    }
+  ]
+}

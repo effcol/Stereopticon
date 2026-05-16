@@ -1,0 +1,15 @@
+{
+  "id": "d3d8to9",
+  "name": "d3d8to9",
+  "category": "api_wrapper",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/crosire/d3d8to9",
+  "authors": ["crosire"],
+  "rendering_method": null,
+  "summary": "Lightweight DirectX 8 to DirectX 9 API shim. Required prerequisite for HelixMod fixes on DirectX 8 games, converting DX8 calls to DX9 so that the d3d9.dll HelixMod hook can intercept them. Drop-in DLL.",
+  "compatibility_notes": "DX8 games only. For DX9 games, dgVoodoo2 or direct HelixMod injection is used instead.",
+  "graphics_apis": ["dx8"],
+  "supported_outputs": {}
+}

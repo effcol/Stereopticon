@@ -1,0 +1,36 @@
+{
+  "id": "portalvr",
+  "name": "PortalVR",
+  "description": "PortalVR streams PC games into a Quest 3 VR headset and outputs stereoscopic 3D to a connected Simulated Reality display. Uniquely requires both a Quest 3 and a compatible SR display running simultaneously.",
+  "summary": "PC \u2192 Quest 3 + SR display (paid)",
+  "category": "vr",
+  "supported_outputs": {
+    "sr_weave": [
+      "PortalVR"
+    ],
+    "vr_native": [
+      "PortalVR"
+    ]
+  },
+  "url": "https://portalvr.io/pcvr",
+  "cost": "paid",
+  "cost_url": "https://portalvr.io/pcvr",
+  "requirements": [
+    "Meta Quest 3 VR headset",
+    "Simulated Reality display (Acer SpatialLabs, Samsung Odyssey 3D, or compatible)",
+    "PortalVR subscription",
+    "PC with SteamVR"
+  ],
+  "platform": {
+    "os": [
+      "windows10",
+      "windows11"
+    ],
+    "gpu": [
+      "nvidia",
+      "amd"
+    ],
+    "note": "Requires SR Runtime installed for the connected SR display."
+  },
+  "notes": "PortalVR is unusual in requiring both a Quest 3 and an SR display \u2014 the Quest handles head tracking and the SR display shows the stereoscopic output. As of early 2026 it is in active development. Check portalvr.io for current game compatibility."
+}

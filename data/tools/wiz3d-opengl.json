@@ -1,0 +1,60 @@
+{
+  "id": "wiz3d_opengl",
+  "name": "wiz3D — OpenGL Quad-Buffer Stereo Handler",
+  "description": "wiz3D component (effcol) for OpenGL games that natively support quad-buffer stereoscopic rendering. wiz3D provides a surface for the game to render its left/right buffers onto, then re-outputs to any supported display format. Same capture-and-reroute trick as the 3D Vision Direct Mode and HD3D variants, but for the OpenGL pipeline. Absorbs what would otherwise be a standalone 'OpenGL Quad-Buffer Stereo' tool — wiz3D's wiz3D/opengl-quad-buffer-stereo/ variant IS that pipeline. Config via wiz3D_Config.xml.",
+  "url": "https://github.com/effcol/wiz3D",
+  "license": "LGPL-2.1 (not bundled — fetched at setup from upstream releases)",
+  "graphics_api": ["opengl"],
+  "graphics_api_status": {
+    "working":  ["opengl"],
+    "planned":  []
+  },
+  "config_file": "wiz3D_Config.xml",
+  "bundled": false,
+  "fetch_strategy": "github_release_latest",
+  "versions": {
+    "latest": {
+      "url": "https://github.com/effcol/wiz3D/releases/latest",
+      "default": true,
+      "fetch_strategy": "github_release_latest",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "wiz3d_output_classes": {
+        "sbs":              "SideBySideOutput",
+        "sbs_half":         "SideBySideOutput",
+        "anaglyph":         "AnaglyphOutput",
+        "interlaced":       "InterlacedOutput",
+        "frame_sequential": "ShutterOutput",
+        "sr_weave":         "SimulatedRealityWeaveOutput"
+      },
+      "wiz3d_advanced_outputs": [
+        "S3DOutput",
+        "S3DMarkedOutput",
+        "S3DShutterOutput",
+        "iZShutterOutput",
+        "CMOShutterOutput",
+        "DualProjectionOutput",
+        "DLP3DOutput",
+        "ATIDLP3DOutput",
+        "AMDHD3DOutput",
+        "StereoMirrorOutput",
+        "S3D120HzProjectorsOutput",
+        "VR920Output",
+        "Z800Output",
+        "LenovoOutput",
+        "ZalmanOutput",
+        "TaerimOutput",
+        "AvitridOutput"
+      ],
+      "notes": "Shares the wide output catalogue of the DX wrapper variant (vintage HMDs, passive 3D displays, shutter variants). Games select this variant when they natively support OpenGL quad-buffer stereo and want a modern display route."
+    }
+  }
+}

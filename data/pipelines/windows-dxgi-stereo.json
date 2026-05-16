@@ -1,0 +1,17 @@
+{
+  "id": "windows_dxgi_stereo",
+  "name": "Windows DXGI 1.2 Stereo 3D",
+  "category": "os_api",
+  "status": "limited",
+  "cost": "free",
+  "open_source": false,
+  "url": "https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-1-2-improvements",
+  "authors": ["Microsoft"],
+  "summary": "System-level stereoscopic framework introduced with Windows 8 (DirectX 11.1) as a vendor-agnostic 3D API. Allows the OS to manage the 3D swapchain directly. Natively used by the Windows Store (UWP) version of Rise of the Tomb Raider.",
+  "compatibility_notes": "Still present in Windows 11 but the '3D Display Mode' toggle only appears if the OS detects a display with a specific 3D EDID. Modern spatial displays (Acer SpatialLabs, Samsung Odyssey 3D) are not recognized. Community tool 3D Game Bridge bridges this gap for supported displays.",
+  "graphics_apis": ["dx11"],
+  "supported_outputs": {
+    "frame_sequential": [],
+    "sbs": []
+  }
+}

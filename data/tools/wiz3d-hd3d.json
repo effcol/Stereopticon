@@ -1,0 +1,47 @@
+{
+  "id": "wiz3d_hd3d",
+  "name": "wiz3D — AMD HD3D Output Handler",
+  "description": "wiz3D component (effcol) for DX11 games that render their own stereoscopic 3D internally and originally targeted AMD's HD3D output path. wiz3D intercepts the HD3D submission, then outputs the resulting stereo pair to any modern display format. Same architectural trick as the 3D Vision Direct Mode handler, but for AMD's HD3D pipeline.",
+  "url": "https://github.com/effcol/wiz3D",
+  "license": "LGPL-2.1 (not bundled — fetched at setup from upstream releases)",
+  "graphics_api": ["dx11"],
+  "graphics_api_status": {
+    "working":  [],
+    "planned":  ["dx11"]
+  },
+  "config_file": "HD3D_Config.xml",
+  "bundled": false,
+  "fetch_strategy": "github_release_latest",
+  "versions": {
+    "latest": {
+      "url": "https://github.com/effcol/wiz3D/releases/latest",
+      "default": true,
+      "fetch_strategy": "github_release_latest",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "interlaced",
+        "anaglyph",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "wiz3d_output_classes": {
+        "sbs":              "FullSideBySide",
+        "sbs_half":         "HalfSideBySide",
+        "tab":              "FullTopAndBottom",
+        "tab_half":         "HalfTopAndBottom",
+        "interlaced_row":   "RowInterleaved",
+        "interlaced_col":   "ColumnInterleaved",
+        "checkerboard":     "Checkerboard",
+        "anaglyph_rc":      "AnaglyphRedCyan",
+        "anaglyph_gm":      "AnaglyphGreenMagenta",
+        "anaglyph_ab":      "AnaglyphAmberBlue",
+        "sr_weave":         "SimulatedRealityWeave"
+      },
+      "anaglyph_variants_supported": ["red_cyan", "green_magenta", "amber_blue"],
+      "notes": "Pure DX11. Targets games that shipped with AMD HD3D as one of their stereoscopic output options. Game renders the stereo; wiz3D handles capture and modern-display routing."
+    }
+  }
+}

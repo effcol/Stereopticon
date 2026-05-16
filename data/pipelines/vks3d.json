@@ -1,0 +1,15 @@
+{
+  "id": "vks3d",
+  "name": "VKS3D",
+  "category": "vulkan_injector",
+  "status": "experimental",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/ThreeDeeJay/VKS3D",
+  "authors": ["ThreeDeeJay"],
+  "rendering_method": "Dual-View Rendering",
+  "summary": "An in-development universal stereoscopic 3D Vulkan driver by ThreeDeeJay. Currently marked as an AI proof-of-concept and not yet functional. Aims to provide Dual-View Rendering for Vulkan games similarly to Helifax's Vk3DVision, but as a fully open-source project with no NDA-encumbered code.",
+  "compatibility_notes": "Not yet functional — listed for tracking purposes. Do not use for actual game fixes. Watch the repository for progress updates.",
+  "graphics_apis": ["vulkan"],
+  "supported_outputs": {}
+}

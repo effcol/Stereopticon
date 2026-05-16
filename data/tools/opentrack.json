@@ -1,0 +1,40 @@
+{
+  "id": "opentrack",
+  "name": "OpenTrack",
+  "description": "Universal head-tracking hub. Reads from many tracker sources (neural webcam, IR LEDs, Wii Remote, Xreal AR glasses, SteamVR, Loop HeadCam, FreeTrack UDP chain) and outputs in many wire protocols (FreeTrack 2.0 UDP is the one Stereopticon uses for game / mod consumption). Stereopticon launches it with a generated profile and uses it as the central conduit for the Game-side headtracking pipeline.",
+  "url": "https://github.com/opentrack/opentrack",
+  "license": "GPL-3.0",
+  "bundled": false,
+  "fetch_strategy": "github_release_latest",
+  "github_repo": "opentrack/opentrack",
+  "asset_pattern": "opentrack-.*-win64-installer\\.exe|opentrack-.*-win64\\.7z",
+  "install_target": "resources/opentrack/",
+  "versions": {
+    "latest": {
+      "url": "https://github.com/opentrack/opentrack/releases/latest",
+      "default": true,
+      "fetch_strategy": "github_release_latest",
+      "notes": "Track the upstream latest. OpenTrack is stable enough that we don't need to pin a specific version."
+    }
+  },
+  "tracker_modules": {
+    "neuralnet":           { "label": "Neural webcam (no extra hardware)", "default_for": ["normal_3d"] },
+    "pt":                  { "label": "Point Tracker (IR LEDs / TrackHat)" },
+    "aruco":               { "label": "ArUco fiducial markers (webcam + printed marker)" },
+    "wii":                 { "label": "Wii Remote" },
+    "hatire":              { "label": "Hatire (Arduino / DIY IR hat)" },
+    "steamvr":             { "label": "SteamVR headset pose" },
+    "headcam":             { "label": "Loop HeadCam (iPhone)" },
+    "tracker-xreal-one":   { "label": "Xreal AR glasses", "default_for": ["ar_display"] },
+    "freetrack_passthrough": {
+      "label":       "FreeTrack passthrough (chained from SR-Bridge / Vireio plugin / Loop mod)",
+      "default_for": ["sr_display"]
+    }
+  },
+  "output_protocols": {
+    "freetrack":  { "label": "FreeTrack 2.0 UDP (default — what games/mods read)", "default": true },
+    "mouse":      { "label": "Mouse emulation" },
+    "vjoystick":  { "label": "Virtual joystick" },
+    "osc":        { "label": "OSC (Open Sound Control)" }
+  }
+}

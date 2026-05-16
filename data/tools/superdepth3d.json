@@ -1,0 +1,22 @@
+{
+  "id": "superdepth3d",
+  "name": "SuperDepth3D",
+  "description": "2D → pseudo-3D depth-buffer-based stereoscopic conversion ReShade shader by Jose Negrete (BlueSkyDefender). At the author's request, Stereopticon does NOT install or configure SuperDepth3D directly — it links users to BlueSkyDefender's GPUSelector app, which manages SuperDepth3D installation with per-game OverWatch profiles. Selecting this tool in Stereopticon opens GPUSelector (installing it on first use) and surfaces a note about following its workflow.",
+  "url": "https://github.com/BlueSkyDefender/Depth3D",
+  "license": "Creative Commons Attribution 3.0 Unported (CC BY 3.0) — see lib/<not-bundled>",
+  "category": "external_redirect",
+  "redirect": {
+    "target_tool":      "gpuselector",
+    "target_app_url":   "https://blueskydefender.github.io/GPUSelector",
+    "target_repo_url":  "https://github.com/BlueSkyDefender/GPUSelector",
+    "rationale":        "BlueSkyDefender explicitly asked that Stereopticon point users to GPUSelector rather than re-implementing SuperDepth3D installation logic. GPUSelector handles per-game OverWatch profile management with the author's own tested workflow."
+  },
+  "versions": {
+    "via_gpuselector": {
+      "default": true,
+      "url": "https://github.com/BlueSkyDefender/GPUSelector",
+      "native_outputs": ["sbs", "sbs_half", "tab", "tab_half", "anaglyph", "interlaced"],
+      "notes": "Output coverage depends on which SuperDepth3D mode GPUSelector configures for the game. Stereopticon surfaces the available outputs at fix-selection time but defers the actual configuration to GPUSelector."
+    }
+  }
+}

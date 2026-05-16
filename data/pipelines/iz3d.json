@@ -1,0 +1,21 @@
+{
+  "id": "iz3d",
+  "name": "iZ3D",
+  "category": "middleware",
+  "status": "defunct",
+  "deprecated_since": "2013",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/S-T-3-V-3/iZ3D",
+  "authors": ["iZ3D Inc.", "Community (open source fork)"],
+  "summary": "Early stereoscopic middleware wrapper contemporary with TriDef. Unlike TriDef, iZ3D released its source code before closing, making community revival possible. Still functional on Windows 7 with the final release. Supported DX9 and DX10 games, and was the primary middleware for AMD HD3D setups.",
+  "compatibility_notes": "Company defunct since 2013 but source code is open. Last release works on Windows 7. Incompatible with Windows 10+ in standard configuration. Community forks exist exploring modern compatibility. DX11, DX12, and Vulkan not supported. Potentially revivable given open source status.",
+  "graphics_apis": ["dx9", "dx10", "opengl"],
+  "community_successor": "geo11",
+  "supported_outputs": {
+    "sbs": [],
+    "anaglyph": [],
+    "frame_sequential": [],
+    "nvidia_3d_vision": []
+  }
+}

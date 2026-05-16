@@ -1,0 +1,61 @@
+{
+  "id": "ue3d",
+  "name": "UE3D Monitor Mode (Evil___Kermit fork)",
+  "description": "A modified fork of UEVR, VRto3D, and 3DGameBridge by Evil___Kermit that adds native SR/Leia display support with head-tracked window projection (Kooima generalized perspective). Adds motion parallax, Z stereo depth scaling, Z FOV modulation, and per-eye off-axis frustum shifts for tracked 3D displays.",
+  "summary": "UEVR fork + VRto3D + 3DGameBridge for SR/Leia displays",
+  "category": "vr",
+  "status": "pre-release",
+  "supported_outputs": {
+    "sr_weave": [
+      "UE3D \u2192 VRto3D \u2192 3DGameBridge (EK fork)"
+    ],
+    "sbs": [
+      "UE3D \u2192 VRto3D"
+    ],
+    "tab": [
+      "UE3D \u2192 VRto3D"
+    ],
+    "vr_native": [
+      "UE3D (standard VR path)"
+    ]
+  },
+  "url": "https://github.com/evilkermitreturns/UEVR",
+  "cost": "free",
+  "platform": {
+    "os": [
+      "windows10",
+      "windows11"
+    ],
+    "gpu": [
+      "nvidia",
+      "amd"
+    ],
+    "note": "Requires SteamVR, VRto3D driver, and 3DGameBridge ReShade addon \u2014 all from the Evil___Kermit forks."
+  },
+  "versions": {
+    "uevr_fork": {
+      "version": "v2.2",
+      "url": "https://github.com/evilkermitreturns/UEVR/releases/tag/v2.2",
+      "note": "Replace UEVRBackend.dll and openvr_api.dll in your UEVR install."
+    },
+    "vrto3d_fork": {
+      "version": "v2.0",
+      "url": "https://github.com/evilkermitreturns/VRto3D/releases/tag/v2.0",
+      "note": "Extract drivers folder into Steam/config/ and register with SteamVR."
+    },
+    "3dgamebridge_fork": {
+      "version": "v2.0",
+      "url": "https://github.com/evilkermitreturns/3DGameBridgeProjects/releases/tag/v2.0",
+      "note": "64-bit only. Place srReshade.addon64 in game folder alongside ReShade. Requires Leia SR Runtime."
+    }
+  },
+  "requirements": [
+    "SteamVR",
+    "UEVR v2.2 (evilkermitreturns fork \u2014 all three forks must match)",
+    "VRto3D v2.0 (evilkermitreturns fork)",
+    "3DGameBridge v2.0 (evilkermitreturns fork)",
+    "Leia SR Runtime (for eye tracking on SR displays)"
+  ],
+  "notes": "Pre-release. All three forks (UEVR, VRto3D, 3DGameBridge) must be from Evil___Kermit's repo as they communicate via shared memory (UE3D_SharedData protocol). The mainline UEVR, VRto3D, and 3DGameBridge builds are incompatible. Back up existing installs before replacing. The pipeline creator (oneup03) and Evil___Kermit are working toward merging these changes into mainline; use the standard UEVR pipeline until that happens unless you specifically need SR Leia head-tracking. Does not require VR headset for monitor output \u2014 SR display + SR Runtime only.",
+  "merge_status": "Pre-release. Planned for mainline UEVR/VRto3D merge when stable."
+}

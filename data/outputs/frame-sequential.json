@@ -1,0 +1,21 @@
+{
+  "id": "frame_sequential",
+  "name": "Frame Sequential",
+  "category": "timing_format",
+  "status": "active",
+  "summary": "Left and right eye frames are presented alternately at high refresh rate (typically 120Hz, 60Hz per eye). The display or glasses sync to the alternation. Used by active-shutter glasses systems, OLED panels with WibbleWobble, and some projectors.",
+  "variants": [
+    {
+      "id": "frame_seq_120hz",
+      "name": "120Hz (60Hz per eye)",
+      "description": "Standard frame sequential. Display runs at 120Hz, alternating left/right at 60Hz each. Used by Nvidia 3D Vision, active-shutter 3DTVs, and WibbleWobble OLED setups."
+    },
+    {
+      "id": "frame_seq_240hz",
+      "name": "240Hz (120Hz per eye)",
+      "description": "High-refresh variant for 240Hz displays. Smoother per-eye motion. Rare — requires a 240Hz display and compatible output pipeline."
+    }
+  ],
+  "compatible_displays": ["active_shutter_3dtv", "3d_vision_monitor", "oled_wibble_wobble", "active_shutter_projector"],
+  "hardware_requirements": ["120Hz+ display", "Active shutter glasses or compatible panel"]
+}

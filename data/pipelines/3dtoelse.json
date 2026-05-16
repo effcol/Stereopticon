@@ -1,0 +1,21 @@
+{
+  "id": "3dtoelse",
+  "name": "3DtoElse",
+  "category": "reshade_shader",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/BlueSkyDefender/AstrayFX",
+  "authors": ["BlueSkyDefender"],
+  "requires": ["reshade"],
+  "rendering_method": null,
+  "summary": "ReShade shader that converts an anaglyph stereo signal into SBS, TAB, or interleaved output. Used downstream of games or pipelines that only natively output anaglyph (e.g. FEZ, Limbo, some Geo-11 configurations). Not a rendering method — converts an existing stereo signal.",
+  "input_format": "Anaglyph (red/cyan)",
+  "compatibility_notes": "Input must be a red/cyan anaglyph frame. Some game-specific variants exist (FEZ, Limbo) that handle UI elements rendered outside the anaglyph pass.",
+  "graphics_apis": ["dx9", "dx10", "dx11"],
+  "supported_outputs": {
+    "sbs": [],
+    "tab": [],
+    "interleaved": []
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "id": "outer_worlds_2",
+  "title": "The Outer Worlds 2",
+  "developer": "Obsidian Entertainment",
+  "graphics_api": "dx12",
+  "steam_app_id": 2631400,
+  "exe_name": "TheOuterWorlds2-Win64-Shipping.exe",
+  "default_path": "C:\\Games\\The Outer Worlds 2\\TheOuterWorlds2-Win64-Shipping.exe",
+  "fixes": [
+    {
+      "id": "tow2_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "authors": [
+        "Praydog"
+      ],
+      "url": "https://github.com/praydog/UEVR",
+      "recommended": true,
+      "cost": "free",
+      "platform": {
+        "os": [
+          "windows10",
+          "windows11"
+        ],
+        "gpu": [
+          "nvidia",
+          "amd"
+        ]
+      },
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": [
+        "steamvr"
+      ],
+      "native_outputs": [
+        "vr_native"
+      ],
+      "pipeline_overrides": {
+        "sr_weave": [
+          "XRGameBridge"
+        ],
+        "sbs": [
+          "VRto3D"
+        ],
+        "tab": [
+          "VRto3D"
+        ]
+      },
+      "pros": "Full VR with headtracking. Community profile available.",
+      "cons": "High GPU requirement. DX12 title.",
+      "issues": [],
+      "notes": "Unreal Engine 5 title. Community profile from UEVR Discord recommended."
+    },
+    {
+      "id": "tow2_ue3d",
+      "name": "UE3D Monitor Mode (Evil___Kermit fork)",
+      "type": "ue3d",
+      "authors": [
+        "Evil___Kermit",
+        "Praydog",
+        "oneup03"
+      ],
+      "url": "https://github.com/evilkermitreturns/UEVR/releases/tag/v2.2",
+      "recommended": false,
+      "cost": "free",
+      "platform": {
+        "os": [
+          "windows10",
+          "windows11"
+        ],
+        "gpu": [
+          "nvidia",
+          "amd"
+        ],
+        "note": "Requires SteamVR, VRto3D (EK fork), and 3DGameBridge (EK fork). All three must be from Evil___Kermit's repo."
+      },
+      "display_restriction": {
+        "allowed_displays": [
+          "sr_display"
+        ],
+        "note": "UE3D Monitor Mode is designed specifically for SR/Leia displays with head tracking. Not useful on standard monitors."
+      },
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "leiatrack",
+      "native_outputs": [
+        "sr_weave"
+      ],
+      "pipeline_overrides": {
+        "sbs": [
+          "VRto3D (EK fork)"
+        ]
+      },
+      "pros": "Full Kooima-style window projection for SR displays — motion parallax, Z stereo depth, Z FOV modulation. Pre-configured game profile with Engine.ini stereo fixes included.",
+      "cons": "Pre-release. Requires three separate fork replacements (UEVR, VRto3D, 3DGameBridge). Must use exact matching versions. Incompatible with standard builds.",
+      "issues": [
+        "Enabling LookAround at the main menu may cause cropping — enable after loading into the game",
+        "Still requires SteamVR even though no headset is needed for monitor output",
+        "All three EK forks must be the exact matching versions (UE3D protocol v4.0)"
+      ],
+      "notes": "Requires UEVR v2.2 + VRto3D v2.0 + 3DGameBridge v2.0, all from evilkermitreturns on GitHub. A tested game profile (TheOuterWorlds2-Win64-Shipping.zip) and Engine.ini with shadow/lumen/lighting stereo fixes are included in the UEVR v2.2 release assets. Back up your existing UEVR/VRto3D/3DGameBridge installs before replacing. The plan is for these changes to eventually merge into mainline UEVR, VRto3D, and 3DGameBridge.",
+      "activation": "1. Back up existing UEVR, VRto3D, and 3DGameBridge installs.\n2. Download UEVR v2.2 from evilkermitreturns/UEVR and replace UEVRBackend.dll + openvr_api.dll.\n3. Download VRto3D v2.0 from evilkermitreturns/VRto3D and extract drivers to Steam/config/.\n4. Download 3DGameBridge v2.0 from evilkermitreturns/3DGameBridgeProjects and place srReshade.addon64 in the game folder.\n5. Extract the UEVR profile (TheOuterWorlds2-Win64-Shipping.zip) to %AppData%\\UnrealVRMod\\Profiles\\.\n6. Copy Engine.ini to %LocalAppData%\\Arkansas\\Saved\\Config\\Windows\\.\n7. Launch the game, then inject UEVR. In the Monitor 3D tab, enable LookAround after loading into gameplay.",
+      "ue3d_version": {
+        "uevr_fork": "v2.2 (evilkermitreturns)",
+        "vrto3d_fork": "v2.0 (evilkermitreturns)",
+        "3dgamebridge_fork": "v2.0 (evilkermitreturns)"
+      }
+    }
+  ]
+}

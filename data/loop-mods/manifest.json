@@ -1,0 +1,77 @@
+{
+  "_schema": "Loop / itsloopyo head-tracking mod catalogue. Source of truth for which games have a Loop mod available, the upstream repo, MelonLoader/BepInEx/etc. loader, and exe naming. Stereopticon's modules/adapters/loop.js + modules/loopInstaller.js consume this. To wire a game to its Loop mod, add a fix entry to data/games/<game>.json with type=loop_headtrack and loop_repo from this manifest.",
+  "_license": "All Loop mods are MIT-licensed. Stereopticon downloads installer ZIPs on-selection per-game (not bundled) — same pattern as Geo-11 and wiz3D fixes.",
+  "mods": {
+    "bioshock-remastered": {
+      "loop_repo": "itsloopyo/bioshock-remastered-headtracking",
+      "loader_type": "Shim",
+      "loader_notes": "xinput1_3.dll shim, no separate loader",
+      "exe_name": "BioShockHD.exe"
+    },
+    "dying-light-2": {
+      "loop_repo": "itsloopyo/dying-light-2-headtracking",
+      "loader_type": "ASILoader",
+      "exe_name": "DyingLightGame.exe"
+    },
+    "eternal-afternoon": {
+      "loop_repo": "itsloopyo/eternal-afternoon-headtracking",
+      "loader_type": "MonoCecil",
+      "exe_name": "Eternal Afternoon.exe"
+    },
+    "firewatch": {
+      "loop_repo": "itsloopyo/firewatch-headtracking",
+      "loader_type": "MelonLoader",
+      "loader_version_pin": "v0.5.7",
+      "loader_pin_reason": "v0.6.x incompatible with Unity 2017 Mono runtime",
+      "exe_name": "Firewatch.exe"
+    },
+    "gone-home": {
+      "loop_repo": "itsloopyo/gone-home-headtracking",
+      "loader_type": "MonoCecil",
+      "exe_name": "GoneHome.exe"
+    },
+    "green-hell": {
+      "loop_repo": "itsloopyo/green-hell-headtracking",
+      "loader_type": "MelonLoader",
+      "exe_name": "GreenHell.exe"
+    },
+    "obra-dinn": {
+      "loop_repo": "itsloopyo/obra-dinn-headtracking",
+      "loader_type": "BepInEx",
+      "loader_arch": "x86",
+      "loader_notes": "BepInEx 5 x86 — Obra Dinn is a 32-bit Unity 2017 build",
+      "exe_name": "Return of the Obra Dinn.exe"
+    },
+    "outer-wilds": {
+      "loop_repo": "itsloopyo/outer-wilds-headtracking",
+      "loader_type": "OWML",
+      "loader_notes": "Ships through OWML's mod manager — does not participate in install.cmd contract",
+      "owml_unique_name": "itsloopyo.OuterWildsHeadtracking",
+      "exe_name": "OuterWilds.exe"
+    },
+    "peak": {
+      "loop_repo": "itsloopyo/peak-headtracking",
+      "loader_type": "BepInEx",
+      "loader_notes": "BepInExPack (Thunderstore-wrapped)",
+      "exe_name": "PEAK.exe"
+    },
+    "resident-evil-requiem": {
+      "loop_repo": "itsloopyo/resident-evil-requiem-headtracking",
+      "loader_type": "REFramework",
+      "exe_name": "re9.exe"
+    },
+    "subnautica": {
+      "loop_repo": "itsloopyo/subnautica-headtracking",
+      "loader_type": "BepInEx",
+      "loader_arch": "x64",
+      "exe_name": "Subnautica.exe"
+    },
+    "valheim": {
+      "loop_repo": "itsloopyo/valheim-headtracking",
+      "loader_type": "BepInEx",
+      "loader_arch": "x64",
+      "loader_notes": "Subfolder install: BepInEx/plugins/ValheimHeadTracking/",
+      "exe_name": "valheim.exe"
+    }
+  }
+}

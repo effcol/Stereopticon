@@ -1,0 +1,27 @@
+{
+  "id": "nvidia_3d_vision",
+  "name": "Nvidia 3D Vision",
+  "category": "driver",
+  "status": "deprecated",
+  "deprecated_since": "2019-04",
+  "deprecated_version": "Driver 425.31",
+  "cost": "free",
+  "open_source": false,
+  "url": "https://www.nvidia.com/en-us/geforce/technologies/3d-vision/",
+  "authors": ["Nvidia"],
+  "summary": "Nvidia's proprietary stereoscopic ecosystem using active-shutter glasses, an IR emitter, and a dedicated stereo driver. Supported automatic 3D conversion for hundreds of DX9/10/11 games. Two modes: 3D Vision (120Hz DVI/DP monitor) and 3DTV Play (HDMI 1.4 3DTV).",
+  "compatibility_notes": "Official support ended April 2019 with driver 425.31. RTX 30-series and newer GPUs lack the 3D controller hardware code entirely. RTX 20-series is the last generation with functional (if unsupported) 3D Vision capability on driver 425.31. Requires Windows 10 1909 or older. Community successor is Geo-11.",
+  "hardware_requirements": [
+    "Nvidia GPU: GTX 10-series or older (full), RTX 20-series (limited, driver 425.31 only)",
+    "120Hz 3D Vision-certified monitor OR HDMI 1.4 3DTV",
+    "3D Vision glasses kit (active shutter + IR emitter)"
+  ],
+  "os_requirements": ["Windows 10 1909 or older"],
+  "graphics_apis": ["dx9", "dx10", "dx11"],
+  "community_successor": "geo11",
+  "supported_outputs": {
+    "nvidia_3d_vision": [],
+    "frame_sequential": [],
+    "anaglyph": []
+  }
+}

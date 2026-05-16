@@ -1,0 +1,17 @@
+{
+  "id": "ogl_3dvision_wrapper",
+  "name": "OpenGL 3D Vision Wrapper (Helifax)",
+  "description": "Wraps system opengl32.dll for specific OpenGL games and creates a hidden DirectX device (D3D9, per the Helifax-era context — unverified from binaries alone) that NVAPI's 3D Vision Automatic Mode targets. Result: OpenGL games render stereoscopic 3D output via NVIDIA's 3D Vision Automatic Mode path. Different mechanism from wiz3D OpenGL — wiz3D handles OpenGL quad-buffer-stereo games via its own injection, while this wrapper is for OpenGL games that don't have native QBS and need 3D Vision Automatic Mode as the bridge. Per-game shader-injection-point config in 3DVisionWrapper.ini.",
+  "url": "https://github.com/Helifax/OGL-3DVision-Wrapper",
+  "license": "tbd — source not currently in lib/, only binaries + per-game fixes",
+  "graphics_api": ["opengl"],
+  "category": "opengl_to_3dvision_bridge",
+  "platform": {
+    "os": ["windows10", "windows11"],
+    "gpu": ["nvidia"],
+    "note": "Requires NVIDIA 3D Vision Automatic Mode, which means an old NVIDIA driver (typically 417.xx or earlier) and a 3D Vision-certified monitor."
+  },
+  "config_file": "3DVisionWrapper.ini",
+  "deprecated": false,
+  "notes": "Game-specific fixes ship with their own pre-configured 3DVisionWrapper.ini + injection points (see lib/OGL-3DVision-Wrapper/Fixes/{Minecraft,Rage,Riddick,X-Plane10}/). wiz3D OpenGL is the preferred modern path for OpenGL games where the game already has native QBS; this wrapper covers the case where it doesn't."
+}
