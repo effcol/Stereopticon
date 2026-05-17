@@ -53,7 +53,14 @@ public:
 	/*** IDirect3D9 methods ***/
 	virtual UINT     WINAPI GetAdapterCount();
 	virtual HRESULT	 WINAPI GetAdapterIdentifier(UINT Adapter, DWORD Flags, D3DADAPTER_IDENTIFIER9* pIdentifier);
-	virtual UINT     WINAPI GetAdapterModeCount(UINT Adapter, D3DFORMAT Format);    STDMETHOD(EnumAdapterModes)(THIS_ UINT Adapter,D3DFORMAT Format,UINT Mode,D3DDISPLAYMODE* pMode) PURE;
+	virtual UINT     WINAPI GetAdapterModeCount(UINT Adapter, D3DFORMAT Format);
+	// Fixed in Phase 2: original v3 header inlined `STDMETHOD(EnumAdapterModes)... PURE` here, leaving
+	// the class abstract and unusable. Concrete forwarder implementation lives in Direct3D9Ex.cpp.
+	virtual HRESULT  WINAPI EnumAdapterModes(UINT Adapter, D3DFORMAT Format, UINT Mode, D3DDISPLAYMODE* pMode);
+	// IDirect3D9::RegisterSoftwareDevice — also pure in the COM contract, also missing
+	// from the original v3 header. Stub that returns D3DERR_INVALIDCALL (matches what
+	// the system d3d9.dll does for non-software-rast devices).
+	virtual HRESULT  WINAPI RegisterSoftwareDevice(void* pInitializeFunction);
 	virtual HRESULT	 WINAPI GetAdapterDisplayMode(UINT Adapter, D3DDISPLAYMODE* pMode);
 	virtual HRESULT	 WINAPI CheckDeviceType(UINT Adapter, D3DDEVTYPE DevType, D3DFORMAT AdapterFormat, D3DFORMAT BackBufferFormat, BOOL bWindowed);
 	virtual HRESULT	 WINAPI CheckDeviceFormat(UINT Adapter, D3DDEVTYPE DeviceType, D3DFORMAT AdapterFormat, DWORD Usage, D3DRESOURCETYPE RType, D3DFORMAT CheckFormat);    

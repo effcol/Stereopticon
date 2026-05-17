@@ -40,6 +40,21 @@
       "pros": "In the wiz3D catalogue but not yet tested by the maintainers.",
       "cons": "Has an iZ3D profile but no maintainer test report yet — your mileage may vary.",
       "notes": "Specifies 'King Arthur: The Druids' expansion pack"
+    },
+    {
+      "id": "king_arthur_the_role_playing_wargame_helixmod",
+      "name": "HelixMod",
+      "type": "helixmod",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
     }
   ],
   "steam_app_id": "24400"

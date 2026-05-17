@@ -1,0 +1,41 @@
+{
+  "id": "atlas",
+  "title": "ATLAS",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "atlas_helixmod",
+      "name": "3D Vision (HelixMod)",
+      "type": "helixmod",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Community rating: 2/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 2,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "atlas_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Community rating: 1/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 1,
+      "compat_mode": "VR"
+    }
+  ],
+  "steam_app_id": ""
+}

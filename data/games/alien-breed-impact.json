@@ -1,0 +1,27 @@
+{
+  "id": "alienbreedimpact",
+  "title": "Alien Breed: Impact",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "alien_breed_impact_tridef",
+      "name": "TriDef 3D Ignition",
+      "type": "tridef",
+      "cost": "paid",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D",
+      "deprecated": true
+    }
+  ],
+  "steam_app_id": ""
+}

@@ -29,6 +29,14 @@ Build/
 Release/
 Debug/
 release/
+releases/
+
+# Derived data bundles — rebuilt by scripts/build-data-bundle.js. Keep
+# data/games/*.json (the source of truth) checked in; the aggregated
+# bundle + sidebar projection regenerate from those + data/pipelines /
+# data/outputs in well under a second.
+data/_bundle.json
+data/_sidebar.json
 *.exe
 *.dll
 *.lib

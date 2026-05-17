@@ -32,6 +32,36 @@
       "cons": "Headtracking only — does not produce 3D output on its own.",
       "notes": "Reads OpenTrack-protocol UDP head pose on port 4242. Stereopticon's OpenTrack hub adapter handles emission. Pair with any Stereopticon stereo fix for the 3D side.",
       "loader_arch": "x64"
+    },
+    {
+      "id": "subnautica_geo11",
+      "name": "Geo-11",
+      "type": "geo11",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "subnautica_3dmigoto",
+      "name": "3DMigoto",
+      "type": "3dmigoto",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
     }
   ]
 }

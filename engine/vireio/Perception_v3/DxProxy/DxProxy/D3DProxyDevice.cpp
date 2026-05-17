@@ -48,7 +48,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Version.h"
 
-#pragma comment(lib, "d3dx9.lib")
+// d3dx9.lib removed in v5 modernization — D3DX functions now provided by
+// the Vireio_D3DX_Compat.h header (stubs + DirectXMath-backed helpers).
+// #pragma comment(lib, "d3dx9.lib")
 
 #define SMALL_FLOAT 0.001f
 #define	SLIGHTLY_LESS_THAN_ONE 0.999f
@@ -426,7 +428,7 @@ HRESULT WINAPI D3DProxyDevice::Reset(D3DPRESENT_PARAMETERS* pPresentationParamet
 	// if the device has been successfully reset we need to recreate any resources we created
 	if (hr == D3D_OK)  {
 		OnCreateOrRestore();
-		stereoView->PostReset();
+		if (stereoView) stereoView->PostReset();   // null in Bridge build
 	}
 	else {
 #ifdef _DEBUG
@@ -452,7 +454,10 @@ HRESULT WINAPI D3DProxyDevice::Present(CONST RECT* pSourceRect,CONST RECT* pDest
 	IDirect3DSurface9* pWrappedBackBuffer = NULL;
 	try {
 		m_activeSwapChains.at(0)->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &pWrappedBackBuffer);
-		if (stereoView->initialized)
+		// `stereoView` is nullptr in the HT-only Bridge build (VIREIO_HT_ONLY)
+		// — also defensively null-guard for the full build in case factory
+		// returned null on a deeply-broken init.
+		if (stereoView && stereoView->initialized)
 			stereoView->PrePresent(static_cast<D3D9ProxySurface*>(pWrappedBackBuffer));
 	}
 	catch (std::out_of_range) {
@@ -501,7 +506,8 @@ HRESULT WINAPI D3DProxyDevice::Present(CONST RECT* pSourceRect,CONST RECT* pDest
 		}
 	}
 
-	if (stereoView->initialized)
+	// Null-guard for VIREIO_HT_ONLY (Bridge build); also defensive in full.
+	if (stereoView && stereoView->initialized)
 		stereoView->PostPresent(static_cast<D3D9ProxySurface*>(pWrappedBackBuffer), this);
 
 	pWrappedBackBuffer->Release();
@@ -1209,7 +1215,8 @@ HRESULT WINAPI D3DProxyDevice::BeginScene()
 		// save screenshot before first clear() is called
 		if (screenshot>0)
 		{
-			if (screenshot==1)
+			// Screenshot is a stereo-only feature; Bridge build has no stereoView.
+			if (screenshot==1 && stereoView)
 				stereoView->SaveScreen();
 			screenshot--;
 		}
@@ -1351,7 +1358,7 @@ HRESULT WINAPI D3DProxyDevice::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D
 			pViewToSet = m_pCurrentView;
 		}
 
-		return BaseDirect3DDevice9::SetTransform(State, pViewToSet);
+		return BaseDirect3DDevice9::SetTransform(State, reinterpret_cast<const D3DMATRIX*>(pViewToSet));
 
 	}
 	else if(State == D3DTS_PROJECTION)
@@ -1427,10 +1434,10 @@ HRESULT WINAPI D3DProxyDevice::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D
 			pProjectionToSet = m_pCurrentProjection;
 		}
 
-		return BaseDirect3DDevice9::SetTransform(State, pProjectionToSet);
+		return BaseDirect3DDevice9::SetTransform(State, reinterpret_cast<const D3DMATRIX*>(pProjectionToSet));
 	}
 
-	return BaseDirect3DDevice9::SetTransform(State, pMatrix);
+	return BaseDirect3DDevice9::SetTransform(State, reinterpret_cast<const D3DMATRIX*>(pMatrix));
 }
 
 /**
@@ -2436,10 +2443,19 @@ void D3DProxyDevice::Init(ProxyConfig& cfg, ProxyHelper::UserConfig& userConfig)
 	m_pGameHandler->Load(config, m_spShaderViewAdjustment);
 
 	InitTracker();
+#ifdef VIREIO_HT_ONLY
+	// HT-only flavour (the OpenTrack-Bridge build): skip the stereo
+	// rendering pipeline entirely. SetTransform-based view-matrix head
+	// pose injection still runs (it lives in D3DProxyDevice itself, not
+	// in StereoView), so the user gets head tracking on top of whatever
+	// stereo mod they're pairing this with (wiz3D / Geo-11 / ReShade).
+	stereoView = nullptr;
+#else
 	stereoView = StereoViewFactory::Get(&config, m_spShaderViewAdjustment->HMDInfo(), tracker.get());
 	stereoView->HeadYOffset = 0;
 	stereoView->HeadZOffset = FLT_MAX;
-	stereoView->m_3DReconstructionMode = 1;	
+	stereoView->m_3DReconstructionMode = 1;
+#endif
 
 	m_maxDistortionScale = config.DistortionScale;
 
@@ -2628,7 +2644,8 @@ void D3DProxyDevice::HandleTracking()
 		// update view adjustment class
 		if (tracker->getStatus() >= MTS_OK)
 		{
-			if (!stereoView->m_disconnectedScreenView)
+			// stereoView is nullptr in the Bridge build — skip its branches.
+			if (stereoView && !stereoView->m_disconnectedScreenView)
 			{
 				//Roll implementation
 				switch (config.nRollImpl)
@@ -3373,7 +3390,7 @@ bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
 			m_pCurrentView = &m_rightView;
 		}
 
-		BaseDirect3DDevice9::SetTransform(D3DTS_VIEW, m_pCurrentView);
+		BaseDirect3DDevice9::SetTransform(D3DTS_VIEW, reinterpret_cast<const D3DMATRIX*>(m_pCurrentView));
 	}
 
 	// update projection transform for new side 
@@ -3386,7 +3403,7 @@ bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
 			m_pCurrentProjection = &m_rightProjection;
 		}
 
-		BaseDirect3DDevice9::SetTransform(D3DTS_PROJECTION, m_pCurrentProjection);
+		BaseDirect3DDevice9::SetTransform(D3DTS_PROJECTION, reinterpret_cast<const D3DMATRIX*>(m_pCurrentProjection));
 	}
 
 	// Apply active stereo shader constants
@@ -3684,7 +3701,7 @@ HRESULT D3DProxyDevice::SetStereoViewTransform(D3DXMATRIX pLeftMatrix, D3DXMATRI
 	}
 
 	if (apply)
-		return BaseDirect3DDevice9::SetTransform(D3DTS_VIEW, m_pCurrentView);
+		return BaseDirect3DDevice9::SetTransform(D3DTS_VIEW, reinterpret_cast<const D3DMATRIX*>(m_pCurrentView));
 	else
 		return D3D_OK;
 }
@@ -3718,7 +3735,7 @@ HRESULT D3DProxyDevice::SetStereoProjectionTransform(D3DXMATRIX pLeftMatrix, D3D
 	}
 
 	if (apply)
-		return BaseDirect3DDevice9::SetTransform(D3DTS_PROJECTION, m_pCurrentProjection);
+		return BaseDirect3DDevice9::SetTransform(D3DTS_PROJECTION, reinterpret_cast<const D3DMATRIX*>(m_pCurrentProjection));
 	else
 		return D3D_OK;
 }

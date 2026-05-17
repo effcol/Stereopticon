@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define _CRT_SECURE_NO_WARNINGS
 #include "Main.h"
 #include "Direct3D9.h"
+#include "Direct3D9Ex.h"
 #include <windows.h>
 #include <Shlwapi.h>
 
@@ -161,55 +162,53 @@ static bool LoadDll()
 
 IDirect3D9* WINAPI Direct3DCreate9(UINT nSDKVersion)
 {
-	// Log
 	Log("Direct3DCreate9(%d)\n", nSDKVersion);
 
 	// Load DLL
 	if(!LoadDll())
 		return NULL;
 
+	// Load user config — v5 reads directly from the per-game cfg file next
+	// to the proxy. No Inicio launcher dependency: the proxy works the
+	// moment d3d9.dll is dropped next to the game's exe.
 	ProxyHelper helper;
 	ProxyHelper::UserConfig userCfg;
 	helper.LoadUserConfig(userCfg);
 
-	IDirect3D9* pD3D = NULL;
-	IDirect3D9Ex *pD3DEx = NULL;
-	HRESULT hr = E_NOTIMPL;
+	IDirect3D9* pD3D = g_pfnDirect3DCreate9(nSDKVersion);
+	if (!pD3D) return NULL;
 
-	//OCULUS_DIRECT_TO_RIFT mode 111 - Need to define this somewhere central
-#ifdef _WIN64
-	if (userCfg.mode == 111 && ProxyHelper::IsProcessRunning("Perception_x64.exe"))
-#else
-	if (userCfg.mode == 111 && ProxyHelper::IsProcessRunning("Perception_Win32.exe"))
-#endif
-	{
-		//Try to create an ex interface
-		Log("g_pfnDirect3DCreate9Ex\n");
-		hr = g_pfnDirect3DCreate9Ex(nSDKVersion, &pD3DEx);
+	// Wrap and return.
+	return new BaseDirect3D9(pD3D);
+}
+
+// D3D9Ex variant — wraps IDirect3D9Ex and returns our BaseDirect3D9Ex
+// wrapper. Games that use D3D9Ex (Skyrim Special Edition's launcher,
+// some UE3 titles, etc.) load us via this entry instead of Direct3DCreate9.
+HRESULT WINAPI Direct3DCreate9Ex(UINT nSDKVersion, IDirect3D9Ex** ppD3D)
+{
+	Log("Direct3DCreate9Ex(%d)\n", nSDKVersion);
+
+	if (!ppD3D) return D3DERR_INVALIDCALL;
+	*ppD3D = nullptr;
+
+	if (!LoadDll()) return D3DERR_NOTAVAILABLE;
+	if (!g_pfnDirect3DCreate9Ex) return D3DERR_NOTAVAILABLE;
+
+	ProxyHelper helper;
+	ProxyHelper::UserConfig userCfg;
+	helper.LoadUserConfig(userCfg);
+
+	IDirect3D9Ex* pD3DEx = nullptr;
+	HRESULT hr = g_pfnDirect3DCreate9Ex(nSDKVersion, &pD3DEx);
+	if (FAILED(hr) || !pD3DEx) {
+		Log("Direct3DCreate9Ex - underlying call failed: 0x%08x\n", hr);
+		return hr;
 	}
 
-	if (FAILED(hr))
-	{
-		// Create real interface
-		Log("g_pfnDirect3DCreate9\n");
-		pD3D = g_pfnDirect3DCreate9(nSDKVersion);
-		if(!pD3D)
-			return NULL;
-	}
-	else
-	{
-		Log("Direct3DCreate9Ex - Succeeded\n");
-		hr = pD3DEx->QueryInterface(IID_IDirect3D9, reinterpret_cast<void**>(&pD3D));
-		if (FAILED(hr))
-		{
-			Log("pD3DEx->QueryInterface(IID_IDirect3D9, reinterpret_cast<void**>(&pD3D)); - Failed\n");
-		}
-	}
-
-	// Create and return proxy interface
-	BaseDirect3D9* pWrapper = new BaseDirect3D9(pD3D);
-
-	return pWrapper;
+	// Wrap with our proxy and hand back to the game.
+	*ppD3D = new BaseDirect3D9Ex(pD3DEx);
+	return S_OK;
 }
 
 int WINAPI D3DPERF_BeginEvent( D3DCOLOR col, LPCWSTR wszName )
@@ -255,16 +254,25 @@ void Log(const char* szFormat, ...)
 	_vsnprintf(szBuff, sizeof(szBuff), szFormat, arg);
 	va_end(arg);
 
-	static FILE* pFile = NULL;
-	if(!pFile)
-		pFile = fopen("F:\\GitHub\\Perception\\D3D9Proxy.log", "w");
-
 	OutputDebugString(szBuff);
 	OutputDebugString("\n");
-	if(pFile) {
+
+	// Write to %TEMP%\Vireio_d3d9.log so the proxy is self-contained — no
+	// dependency on a hard-coded developer path (the legacy F:\GitHub\... was
+	// the original maintainer's machine). DebugView etc. still see every
+	// line via OutputDebugString above.
+	static FILE* pFile = NULL;
+	if (!pFile) {
+		char tmpPath[MAX_PATH];
+		DWORD n = GetTempPathA(MAX_PATH, tmpPath);
+		if (n > 0 && n < MAX_PATH) {
+			char logPath[MAX_PATH + 32];
+			_snprintf(logPath, sizeof(logPath), "%sVireio_d3d9.log", tmpPath);
+			pFile = fopen(logPath, "w");
+		}
+	}
+	if (pFile) {
 		fwrite(szBuff, 1, strlen(szBuff), pFile);
 		fflush(pFile);
-	} else {
-		OutputDebugString("Couldn't open log file for writing.\n");
 	}
 }

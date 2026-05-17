@@ -1,0 +1,26 @@
+{
+  "id": "maxpayne2thefallofmaxpayne",
+  "title": "Max Payne 2: The Fall of Max Payne",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "max_payne_2_the_fall_of_max_payne_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 8. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "3D"
+    }
+  ],
+  "steam_app_id": ""
+}

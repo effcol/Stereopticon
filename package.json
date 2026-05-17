@@ -2,7 +2,7 @@
   "name": "stereopticon",
   "productName": "Stereopticon",
   "description": "Open-source stereo 3D + headtracking launcher. Continuation of Vireio Perception (v1-v4) extended into a one-stop hub for Geo-11, Wiz3D, UEVR, VRto3D, ReShade, OpenTrack and SR-display tooling.",
-  "version": "5.0.0-alpha.1",
+  "version": "0.0.1",
   "author": "effcol",
   "main": "src/main.js",
   "scripts": {

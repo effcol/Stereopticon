@@ -1,0 +1,97 @@
+{
+  "id": "elitedangerous",
+  "title": "Elite Dangerous",
+  "developer": "Frontier Developments",
+  "graphics_api": "dx11",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Elite Dangerous\\Products\\elite-dangerous-64\\EliteDangerous64.exe",
+  "exe_name": "EliteDangerous64.exe",
+  "fixes": [
+    {
+      "id": "elite_dangerous_native",
+      "name": "Native Stereo (built-in)",
+      "type": "native_stereo",
+      "cost": "free",
+      "authors": [
+        "Frontier Developments"
+      ],
+      "url": "https://www.elitedangerous.com/",
+      "license": "Proprietary (game engine)",
+      "recommended": true,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "6dof",
+      "headtracking_method": "native",
+      "native_outputs": [
+        "vr_native",
+        "sbs",
+        "tab",
+        "frame_sequential"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Built-in stereo + 6DOF VR headtracking via OpenVR/SteamVR. No injection, no wrapper — game engine renders both eyes itself.",
+      "cons": "VR mode is locked behind launching via SteamVR/OpenVR. Flat-screen stereo (3D Vision Automatic, SBS) was supported historically but support is uneven on modern drivers.",
+      "notes": "One of the strongest native VR titles in the catalogue. For OpenTrack head-only (without HMD), use any free-look application to feed yaw/pitch into the game's HOTAS bindings."
+    },
+    {
+      "id": "elite_dangerous_3dmigoto",
+      "name": "3DMigoto",
+      "type": "3dmigoto",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "elite_dangerous_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 10. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "elite_dangerous_helixmod",
+      "name": "3D Vision (HelixMod)",
+      "type": "helixmod",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 10. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "elite_dangerous_tridef",
+      "name": "TriDef 3D Ignition",
+      "type": "tridef",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D",
+      "deprecated": true
+    }
+  ],
+  "steam_app_id": "359320"
+}

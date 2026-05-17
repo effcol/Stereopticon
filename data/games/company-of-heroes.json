@@ -40,6 +40,52 @@
       "pros": "In the wiz3D catalogue but not yet tested by the maintainers.",
       "cons": "Has an iZ3D profile but no maintainer test report yet — your mileage may vary.",
       "notes": ""
+    },
+    {
+      "id": "company_of_heroes_helixmod",
+      "name": "3D Vision (HelixMod)",
+      "type": "helixmod",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "company_of_heroes_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "company_of_heroes_tridef",
+      "name": "TriDef 3D Ignition",
+      "type": "tridef",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D",
+      "deprecated": true
     }
   ],
   "steam_app_id": "228200"

@@ -11,22 +11,48 @@
       "id": "octo_uevr",
       "name": "UEVR",
       "type": "uevr",
-      "authors": ["Praydog", "K4thos"],
+      "authors": [
+        "Praydog",
+        "K4thos"
+      ],
       "url": "https://github.com/praydog/UEVR",
       "download_url": "https://uevr-profiles.com/download/octopath2.zip",
       "download_note": "",
       "recommended": true,
       "rendering_method": "Dual-View Rendering",
-      "headtracking": ["steamvr"],
-      "native_outputs": ["vr_native"],
+      "headtracking": [
+        "steamvr"
+      ],
+      "native_outputs": [
+        "vr_native"
+      ],
       "pipeline_overrides": {
-        "sr_weave": ["XRGameBridge"],
-        "lkg_quilt": ["HoloUEVR Plugin"]
+        "sr_weave": [
+          "XRGameBridge"
+        ],
+        "lkg_quilt": [
+          "HoloUEVR Plugin"
+        ]
       },
       "pros": "Full VR immersion with free camera. SR displays get native SR Weave with headtracking via XRGameBridge.",
       "cons": "High GPU requirement, setup complex.",
       "issues": [],
       "notes": "Best played with gamepad. For Looking Glass output, HoloUEVR plugin is preferred over the VRto3D+Refract path as it produces a true multi-view quilt rather than reprojected views."
+    },
+    {
+      "id": "octopath_traveler_ii_geo11",
+      "name": "Geo-11",
+      "type": "geo11",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 5/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 5,
+      "compat_mode": "3D"
     }
   ]
 }

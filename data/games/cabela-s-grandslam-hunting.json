@@ -1,0 +1,26 @@
+{
+  "id": "cabelasgrandslamhunting",
+  "title": "Cabela's GrandSlam Hunting",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "cabela_s_grandslam_hunting_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
+    }
+  ],
+  "steam_app_id": ""
+}

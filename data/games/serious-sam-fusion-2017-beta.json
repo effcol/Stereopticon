@@ -1,0 +1,26 @@
+{
+  "id": "serioussamfusion2017beta",
+  "title": "Serious Sam Fusion 2017 (beta)",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "serious_sam_fusion_2017_beta_geo11",
+      "name": "Geo-11",
+      "type": "geo11",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 5/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 5,
+      "compat_mode": "3D"
+    }
+  ],
+  "steam_app_id": ""
+}

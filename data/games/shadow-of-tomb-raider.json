@@ -2,7 +2,10 @@
   "id": "sotr",
   "title": "Shadow of the Tomb Raider",
   "developer": "Eidos Montréal",
-  "graphics_api": ["dx11", "dx12"],
+  "graphics_api": [
+    "dx11",
+    "dx12"
+  ],
   "default_path": "C:\\Games\\Shadow of the Tomb Raider\\SOTR.exe",
   "exe_name": "SOTTR.exe",
   "steam_app_id": "750920",
@@ -11,18 +14,70 @@
       "id": "sotr_native",
       "name": "Native Stereoscopic 3D",
       "type": "native",
-      "authors": ["Eidos Montréal"],
+      "authors": [
+        "Eidos Montréal"
+      ],
       "url": "https://www.pcgamingwiki.com/wiki/Shadow_of_the_Tomb_Raider",
       "recommended": true,
       "rendering_method": "Dual-View Rendering",
       "headtracking": "None",
-      "native_outputs": ["sbs", "tab"],
+      "native_outputs": [
+        "sbs",
+        "tab"
+      ],
       "pipeline_overrides": {},
       "activation": "Enable in launcher settings before starting the game",
       "pros": "Zero performance loss, native UI depth, no mods required.",
       "cons": "Limited output options — SBS and TAB only.",
-      "issues": ["RTX shadows render incorrectly in 3D mode"],
+      "issues": [
+        "RTX shadows render incorrectly in 3D mode"
+      ],
       "notes": "One of the rare games with first-party stereoscopic support. Enable before launching — cannot be toggled in-game."
+    },
+    {
+      "id": "shadow_of_the_tomb_raider_vorpx",
+      "name": "vorpX",
+      "type": "vorpx",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Output: OpenVR + OpenXR. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "VR"
+    },
+    {
+      "id": "shadow_of_the_tomb_raider_superdepth3d",
+      "name": "SuperDepth3D",
+      "type": "superdepth3d",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Depth Map Reprojection",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "shadow_of_the_tomb_raider_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D"
     }
   ]
 }

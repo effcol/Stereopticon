@@ -211,9 +211,9 @@ public:
 	static HRESULT RegGetString(HKEY hKey, LPCTSTR szValueName, std::string &resultStr);
 	std::string GetBaseDir();
 	std::string GetTargetExe();
-	std::string GetPath(char* path);
+	std::string GetPath(const char* path);
 	std::string GetTargetPath();
-	std::string GetTargetPath(char* path);
+	std::string GetTargetPath(const char* path);
 	bool  LoadUserConfig(UserConfig &userConfig);
 	bool  SaveUserConfig(int mode = -1);
 	bool  SaveUserConfigMirrorMode(int mode);

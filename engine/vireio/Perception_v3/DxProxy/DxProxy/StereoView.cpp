@@ -36,7 +36,7 @@ using namespace vireio;
 * Tiny debug helper.
 * Outputs debug info if object reference counter is not zero when release.
 ***/
-inline void releaseCheck(char* object, int newRefCount)
+inline void releaseCheck(const char* object, int newRefCount)
 {
 //#ifdef _DEBUG
 	if (newRefCount > 0) {
@@ -697,9 +697,9 @@ void StereoView::SetState()
 {
 	SHOW_CALL("StereoView::SetState");
 	D3DXMATRIX	identity;
-	m_pActualDevice->SetTransform(D3DTS_WORLD, D3DXMatrixIdentity(&identity));
-	m_pActualDevice->SetTransform(D3DTS_VIEW, &identity);
-	m_pActualDevice->SetTransform(D3DTS_PROJECTION, &identity);
+	m_pActualDevice->SetTransform(D3DTS_WORLD, reinterpret_cast<const D3DMATRIX*>(D3DXMatrixIdentity(&identity)));
+	m_pActualDevice->SetTransform(D3DTS_VIEW,  reinterpret_cast<const D3DMATRIX*>(&identity));
+	m_pActualDevice->SetTransform(D3DTS_PROJECTION, reinterpret_cast<const D3DMATRIX*>(&identity));
 	m_pActualDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 	m_pActualDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	m_pActualDevice->SetRenderState(D3DRS_ZENABLE,  D3DZB_TRUE);

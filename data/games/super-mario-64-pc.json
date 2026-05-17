@@ -1,0 +1,41 @@
+{
+  "id": "supermario64pc",
+  "title": "Super Mario 64 PC",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "super_mario_64_pc_geo11",
+      "name": "Geo-11",
+      "type": "geo11",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 5/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 5,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "super_mario_64_pc_3dmigoto",
+      "name": "3DMigoto",
+      "type": "3dmigoto",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
+    }
+  ],
+  "steam_app_id": ""
+}

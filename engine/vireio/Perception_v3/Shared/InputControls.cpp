@@ -66,9 +66,9 @@ static std::array<std::string, 256> GetKeyNameList()
 	keyNameList[0x27] = "RIGHT ARROW key";
 	keyNameList[0x28] = "DOWN ARROW key";
 	keyNameList[0x29] = "SELECT key";
-	keyNameList[0x2A] = "PRINT key";
+	keyNameList[0x2A] = " PRINT key";
 	keyNameList[0x2B] = "EXECUTE key";
-	keyNameList[0x2C] = "PRINT SCREEN key";
+	keyNameList[0x2C] = " PRINT SCREEN key";
 	keyNameList[0x2D] = "INS key";
 	keyNameList[0x2E] = "DEL key";
 	keyNameList[0x2F] = "HELP key";

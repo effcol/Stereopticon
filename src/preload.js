@@ -38,9 +38,12 @@ getDisplaySoftwareStatus:  (familyId, deviceId)        =>
     gameScanAll: (targets)                   => ipcRenderer.invoke('game:scanAll', { targets }),
  
     // Data
-    loadGames:     () => ipcRenderer.invoke('games:loadAll'),
-    loadPipelines: () => ipcRenderer.invoke('pipelines:loadAll'),
-    loadOutputs:   () => ipcRenderer.invoke('outputs:loadAll'),
+    loadGames:        () => ipcRenderer.invoke('games:loadAll'),
+    loadPipelines:    () => ipcRenderer.invoke('pipelines:loadAll'),
+    loadOutputs:      () => ipcRenderer.invoke('outputs:loadAll'),
+    // Lazy-load: light sidebar projection + per-game detail fetch.
+    loadGamesSidebar: ()    => ipcRenderer.invoke('games:loadSidebar'),
+    loadGameOne:      (id)  => ipcRenderer.invoke('games:loadOne', { id }),
     loadDisplay:   (displayId) => ipcRenderer.invoke('displays:loadOne', { displayId }),
     launchWithUEVR: (exePath) => ipcRenderer.invoke('game:launchWithUEVR', { exePath }),
 
@@ -119,6 +122,7 @@ getDisplaySoftwareStatus:  (familyId, deviceId)        =>
     // External / dialog
     openExternal:        (url) => ipcRenderer.invoke('shell:openExternal', url),
     openUrl:             (url) => ipcRenderer.invoke('shell:openExternal', url),
+    openLocalPath:       (p)   => ipcRenderer.invoke('shell:openPath', p),
     openDirectoryDialog: ()    => ipcRenderer.invoke('dialog:openDirectory'),
 
     // Window controls

@@ -1,11 +1,46 @@
 {
   "id": "deusexhumanrevolution",
   "title": "Deus Ex: Human Revolution",
-  "developer": "Unknown (Vireio v3 catalogue)",
+  "developer": "Eidos Montréal",
   "graphics_api": "dx9",
-  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Deus Ex: Human Revolution\\dxhr.exe",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Deus Ex Human Revolution\\dxhr.exe",
   "exe_name": "dxhr.exe",
   "fixes": [
+    {
+      "id": "deus_ex_human_revolution_wiz3d",
+      "name": "wiz3D (AMD HD3D native)",
+      "type": "wiz3d_hd3d",
+      "cost": "free",
+      "authors": [
+        "effcol",
+        "iZ3D (original)",
+        "bo3b (open-source release)"
+      ],
+      "url": "https://github.com/effcol/wiz3D",
+      "license": "LGPL-2.1",
+      "recommended": true,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "pipeline_overrides": {},
+      "wiz3d_status": "working",
+      "wiz3d_section": "AMD HD3D Native Games",
+      "wiz3d_api_raw": "DX9",
+      "wiz3d_bits": "x86",
+      "wiz3d_iz3d_profile": true,
+      "pros": "Game has undocumented AMD HD3D native stereo support — wiz3D unlocks it on non-AMD GPUs too. No shader patching needed; the game renders both eyes itself.",
+      "cons": "May still benefit from a per-game iZ3D Shader Fix for HUD depth.",
+      "notes": "Undocumented AMD HD3D native support — wiz3D acts as the enabler. iZ3D profile present."
+    },
     {
       "id": "deus_ex_human_revolution_vireio",
       "name": "Vireio Perception",
@@ -19,7 +54,7 @@
       ],
       "url": "https://github.com/OpenSourceVR/Vireio-Perception",
       "license": "LGPL-3.0",
-      "recommended": true,
+      "recommended": false,
       "rendering_method": "Dual-View Rendering",
       "headtracking": "6dof",
       "headtracking_method": "opentrack",
@@ -38,10 +73,91 @@
         "frame_sequential"
       ],
       "pipeline_overrides": {},
-      "pros": "Open-source stereo + 6DOF headtracking. Per-game shader profile bundled in the Vireio v3 catalogue.",
-      "cons": "Older driver lineage — DX9 / DX11 only. Some shader effects may render at screen depth.",
+      "pros": "Open-source stereo + 6DOF headtracking via OpenTrack. Per-game shader profile bundled in the Vireio v3 catalogue.",
+      "cons": "Alternative path — wiz3D HD3D native is usually the preferred route for this title.",
       "notes": "Profile maps to Vireio v3 rule file 'DXHRDC.xml'. Architecture: 32bit."
+    },
+    {
+      "id": "deus_ex_human_revolution_helixmod",
+      "name": "3D Vision (HelixMod)",
+      "type": "helixmod",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "deus_ex_human_revolution_vorpx",
+      "name": "vorpX",
+      "type": "vorpx",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Output: OpenVR + OpenXR. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "VR"
+    },
+    {
+      "id": "deus_ex_human_revolution_tridef",
+      "name": "TriDef 3D Ignition",
+      "type": "tridef",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D",
+      "deprecated": true
+    },
+    {
+      "id": "deusexhumanrevolution_wiz3d_3dvision_dm",
+      "name": "wiz3D (AMD 3D Vision Direct Mode (wiz3D)",
+      "type": "wiz3d_3dvision_dm",
+      "cost": "free",
+      "authors": [
+        "effcol",
+        "iZ3D (original)",
+        "bo3b (open-source release)"
+      ],
+      "url": "https://github.com/effcol/wiz3D",
+      "license": "LGPL-2.1",
+      "recommended": false,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half",
+        "anaglyph",
+        "interlaced",
+        "frame_sequential",
+        "sr_weave"
+      ],
+      "pipeline_overrides": {},
+      "wiz3d_status": "working",
+      "wiz3d_section": "AMD HD3D Native Games",
+      "wiz3d_api_raw": "DX9",
+      "wiz3d_bits": "x86",
+      "wiz3d_iz3d_profile": true,
+      "pros": "Game has undocumented AMD HD3D native stereo support — wiz3D unlocks it on non-AMD GPUs too. No shader patching needed; the game renders both eyes itself.",
+      "cons": "May still benefit from a per-game iZ3D Shader Fix for HUD depth.",
+      "notes": "Cross-mapped from HD3D native — wiz3D can also drive the original Nvidia 3D Vision Direct Mode for this game (Sniper Elite + Zombie Army franchises excepted)."
     }
   ],
-  "steam_app_id": "337000"
+  "steam_app_id": "28050"
 }

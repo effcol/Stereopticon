@@ -1,0 +1,27 @@
+{
+  "id": "romanceofthethreekingdomsxi",
+  "title": "Romance of the Three Kingdoms XI",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "romance_of_the_three_kingdoms_xi_tridef",
+      "name": "TriDef 3D Ignition",
+      "type": "tridef",
+      "cost": "paid",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D",
+      "deprecated": true
+    }
+  ],
+  "steam_app_id": ""
+}

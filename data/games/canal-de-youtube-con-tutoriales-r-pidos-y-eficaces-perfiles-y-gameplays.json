@@ -1,0 +1,26 @@
+{
+  "id": "canaldeyoutubecontutorialesrpidosyeficacesperfilesygameplays",
+  "title": "Canal de Youtube con tutoriales rÃ¡pidos y eficaces, perfiles y gameplays",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "canal_de_youtube_con_tutoriales_r_pidos_y_eficaces_perfiles_y_gameplays_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Community rating: 5/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 5,
+      "compat_mode": "VR"
+    }
+  ],
+  "steam_app_id": ""
+}

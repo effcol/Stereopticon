@@ -1,0 +1,71 @@
+{
+  "id": "oriandtheblindforest",
+  "title": "Ori and the Blind Forest",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "ori_and_the_blind_forest_geo11",
+      "name": "Geo-11",
+      "type": "geo11",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 5/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 5,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "ori_and_the_blind_forest_3dmigoto",
+      "name": "3DMigoto",
+      "type": "3dmigoto",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "ori_and_the_blind_forest_vorpx",
+      "name": "vorpX",
+      "type": "vorpx",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Output: OpenVR + OpenXR. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "VR"
+    },
+    {
+      "id": "ori_and_the_blind_forest_superdepth3d",
+      "name": "SuperDepth3D",
+      "type": "superdepth3d",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Depth Map Reprojection",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 10. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "3D"
+    }
+  ],
+  "steam_app_id": ""
+}

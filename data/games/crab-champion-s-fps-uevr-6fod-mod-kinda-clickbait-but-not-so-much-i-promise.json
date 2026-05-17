@@ -1,0 +1,26 @@
+{
+  "id": "crabchampionsfpsuevr6fodmodkindaclickbaitbutnotsomuchipromise",
+  "title": "Crab Champion's FPS UEVR 6FOD mod ! (kinda clickbait but not so much I promise)",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "crab_champion_s_fps_uevr_6fod_mod_kinda_clickbait_but_not_so_much_i_promise_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "VR"
+    }
+  ],
+  "steam_app_id": ""
+}

@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RADIANS_TO_DEGREES(rad) ((float) rad * (float) (180.0 / PI))
 
 #include <math.h>
+#include <cmath>
 #include <windows.h>
 
 enum MotionTrackerStatus
@@ -70,11 +71,11 @@ public:
 	virtual void setMultipliers(float yaw, float pitch, float roll);
 	virtual bool setMouseEmulation(bool emulateMouse);
 	virtual bool getMouseEmulation();
-	virtual char* GetTrackerDescription() {return "No Tracker";}
+	virtual const char* GetTrackerDescription() {return "No Tracker";}
 	virtual bool SupportsPositionTracking() {return false;}
 
 	/*** MotionTracker public methods ***/
-	bool isEqual(float a, float b){ return abs(a-b) < 0.001; };
+	bool isEqual(float a, float b){ return std::fabs(a-b) < 0.001; };
 
 	/**
 	* Orientation, as received from tracker.
@@ -150,10 +151,11 @@ public:
 	static enum TrackerTypes
 	{
 		DISABLED = 0,         /**< Tracking disabled. */
-		HILLCREST = 10,       /**< Hillcrest Labs. Freespace. */
-		FREETRACK = 20,       /**< FreeTrack optical motion tracking. */
+		HILLCREST = 10,       /**< Hillcrest Labs. Freespace. (Removed in v5.) */
+		FREETRACK = 20,       /**< FreeTrack — legacy FreeTrackClient.dll shared-memory IPC. */
 		SHAREDMEMTRACK = 30,  /**< Shared memory tracking. */
-		OCULUSTRACK = 40      /**< Oculus Rift tracking. */
+		OCULUSTRACK = 40,     /**< Oculus → now OpenXR HMD pose in v5. */
+		OPENTRACK_UDP = 50    /**< OpenTrack via FreeTrack 2.0 UDP, default port 4242. v5 default. */
 	};
 
 protected:

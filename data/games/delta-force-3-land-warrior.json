@@ -1,0 +1,26 @@
+{
+  "id": "deltaforce3landwarrior",
+  "title": "Delta Force 3: Land Warrior",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "delta_force_3_land_warrior_helixmod",
+      "name": "3D Vision (HelixMod)",
+      "type": "helixmod",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Community rating: 2/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 2,
+      "compat_mode": "3D"
+    }
+  ],
+  "steam_app_id": ""
+}

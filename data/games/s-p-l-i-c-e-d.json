@@ -1,0 +1,26 @@
+{
+  "id": "spliced",
+  "title": "S.P.L.I.C.E.D.",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "s_p_l_i_c_e_d_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "VR"
+    }
+  ],
+  "steam_app_id": ""
+}

@@ -49,7 +49,7 @@ public:
 	void destroy();
 	int  getOrientationAndPosition(float* yaw, float* pitch, float* roll, float* x, float* y, float* z);
 	MotionTrackerStatus getStatus();
-	virtual char* GetTrackerDescription() {return "FreeTrackTracker";}
+	virtual const char* GetTrackerDescription() {return "FreeTrackTracker";}
 	
 private:
 	/**

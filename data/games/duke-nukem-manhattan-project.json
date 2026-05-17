@@ -40,6 +40,21 @@
       "pros": "Tested working with wiz3D — stereo 3D output confirmed.",
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "May need convergance and seperation adjusting for best settings."
+    },
+    {
+      "id": "duke_nukem_manhattan_project_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 8. Community rating: 5/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 5,
+      "compat_mode": "3D"
     }
   ],
   "steam_app_id": "1328350"

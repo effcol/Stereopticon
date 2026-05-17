@@ -1,0 +1,95 @@
+{
+  "id": "deusexmankinddivided",
+  "title": "Deus Ex: Mankind Divided",
+  "developer": "Eidos Montréal",
+  "graphics_api": "dx12",
+  "default_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Deus Ex Mankind Divided\\DXMD.exe",
+  "exe_name": "DXMD.exe",
+  "fixes": [
+    {
+      "id": "deus_ex_mankind_divided_native",
+      "name": "Native Stereo (built-in)",
+      "type": "native_stereo",
+      "cost": "free",
+      "authors": [
+        "Eidos Montréal"
+      ],
+      "url": "https://store.steampowered.com/app/337000/",
+      "license": "Proprietary (game engine)",
+      "recommended": true,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [
+        "sbs",
+        "sbs_half",
+        "tab",
+        "tab_half"
+      ],
+      "pipeline_overrides": {},
+      "pros": "Game ships with an in-engine stereoscopic 3D output mode in DX11 mode — pick from side-by-side / top-and-bottom in the in-game options. No injection or wrapper required.",
+      "cons": "DX12 mode does not expose the stereo option; force DX11 via launch options if it's not auto-selected. HUD elements may sit at screen depth.",
+      "notes": "Native stereo is exposed under Display → Stereoscopic 3D in the game settings (DX11 path)."
+    },
+    {
+      "id": "deus_ex_mankind_divided_helixmod",
+      "name": "3D Vision (HelixMod)",
+      "type": "helixmod",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "deus_ex_mankind_divided_vorpx",
+      "name": "vorpX",
+      "type": "vorpx",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Output: OpenVR + OpenXR. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "VR"
+    },
+    {
+      "id": "deus_ex_mankind_divided_superdepth3d",
+      "name": "SuperDepth3D",
+      "type": "superdepth3d",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Depth Map Reprojection",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 10. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "deus_ex_mankind_divided_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D"
+    }
+  ],
+  "steam_app_id": "337000"
+}

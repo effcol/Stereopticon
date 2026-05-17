@@ -29,10 +29,12 @@
           "nvidia",
           "amd"
         ],
-        "note": "Co-op game \u2014 both players would need VR rigs for full VR. Single-player VR works normally."
+        "note": "Co-op game — both players would need VR rigs for full VR. Single-player VR works normally."
       },
       "rendering_method": "Dual-View Rendering",
-      "headtracking": ["steamvr"],
+      "headtracking": [
+        "steamvr"
+      ],
       "native_outputs": [
         "vr_native"
       ],

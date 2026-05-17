@@ -1,0 +1,41 @@
+{
+  "id": "takeonhelicopters",
+  "title": "Take-on helicopters",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "take_on_helicopters_vorpx",
+      "name": "vorpX",
+      "type": "vorpx",
+      "cost": "paid",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Output: OpenVR + OpenXR. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "VR"
+    },
+    {
+      "id": "take_on_helicopters_helixmod",
+      "name": "3D Vision (HelixMod)",
+      "type": "helixmod",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Community rating: 2/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 2,
+      "compat_mode": "3D"
+    }
+  ],
+  "steam_app_id": ""
+}

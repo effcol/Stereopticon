@@ -1,0 +1,15 @@
+; Module-definition file for the dinput8.dll proxy variant.
+;
+; Intentionally empty (no EXPORTS section).
+;
+; The dinput8 forwarders are emitted via #pragma comment(linker,
+; "/EXPORT:Name=dinput8_orig.Name") in src/main.cpp under the
+; PROXY_SLOT_dinput8 compile flag. We tried the .def-file forwarder
+; syntax first but MSVC link rejected `dinput8_orig.X` references with
+; LNK2001 because there's no import library it can verify them against.
+;
+; The .def file is kept (and referenced from CMakeLists) so the build
+; system still has a single per-variant entry point even though it's
+; currently empty for this slot.
+
+EXPORTS

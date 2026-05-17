@@ -5,21 +5,67 @@ const fs   = require('fs');
 const os   = require('os');
 const { scanGame, scanAllGames } = require('../modules/gameRegistry');
 const { execSync } = require('child_process');
-const DATA_DIR = path.join(__dirname, '..', 'data');
-function loadAllGames() {
-    return fs.readdirSync(path.join(DATA_DIR,'games')).filter(f=>f.endsWith('.json'))
-        .map(f=>{try{return JSON.parse(fs.readFileSync(path.join(DATA_DIR,'games',f),'utf8'));}catch{return null;}}).filter(Boolean);
+const DATA_DIR     = path.join(__dirname, '..', 'data');
+const BUNDLE_PATH  = path.join(DATA_DIR, '_bundle.json');
+const SIDEBAR_PATH = path.join(DATA_DIR, '_sidebar.json');
+
+// In-memory cache. The full bundle (5 MB+, 7,500 games) is parsed once per
+// app launch and held forever. Per-game lookup is a Map for O(1) detail
+// fetches; the sidebar projection is sent over IPC at startup so the
+// renderer can paint the 7,500-row list with ~70% less data than the
+// full bundle. Rebuild via: node scripts/build-data-bundle.js
+let _bundleCache  = null;
+let _sidebarCache = null;
+let _gameById     = null;
+
+function _readJsonFile(file) {
+    try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
+    catch { return null; }
 }
-function loadAllPipelines() {
-    return fs.readdirSync(path.join(DATA_DIR,'pipelines')).filter(f=>f.endsWith('.json'))
-        .map(f=>{try{return JSON.parse(fs.readFileSync(path.join(DATA_DIR,'pipelines',f),'utf8'));}catch{return null;}}).filter(Boolean);
+
+function _readBundle() {
+    if (_bundleCache) return _bundleCache;
+    const fromFile = fs.existsSync(BUNDLE_PATH) && _readJsonFile(BUNDLE_PATH);
+    if (fromFile && Array.isArray(fromFile.games)) { _bundleCache = fromFile; }
+    else {
+        // Cold fallback: build in-memory by walking data/.
+        console.warn('[data] Bundle missing or invalid — walking data/ directly. Run scripts/build-data-bundle.js to speed up.');
+        const readDir = (name) => {
+            const dir = path.join(DATA_DIR, name);
+            if (!fs.existsSync(dir)) return [];
+            return fs.readdirSync(dir).filter(f => f.endsWith('.json'))
+                .map(f => _readJsonFile(path.join(dir, f))).filter(Boolean);
+        };
+        _bundleCache = { games: readDir('games'), pipelines: readDir('pipelines'), outputs: readDir('outputs') };
+    }
+    _gameById = new Map();
+    for (const g of _bundleCache.games || []) _gameById.set(g.id, g);
+    return _bundleCache;
 }
-function loadAllOutputs() {
-    const dir = path.join(DATA_DIR,'outputs');
-    if (!fs.existsSync(dir)) return [];
-    return fs.readdirSync(dir).filter(f=>f.endsWith('.json'))
-        .map(f=>{try{return JSON.parse(fs.readFileSync(path.join(dir,f),'utf8'));}catch{return null;}}).filter(Boolean);
+
+function _readSidebar() {
+    if (_sidebarCache) return _sidebarCache;
+    const fromFile = fs.existsSync(SIDEBAR_PATH) && _readJsonFile(SIDEBAR_PATH);
+    if (fromFile && Array.isArray(fromFile.games)) { _sidebarCache = fromFile; return _sidebarCache; }
+    // Cold fallback: derive sidebar projection from the full bundle.
+    const b = _readBundle();
+    _sidebarCache = {
+        games:     (b.games || []).map(g => ({
+            id: g.id, title: g.title, steam_app_id: g.steam_app_id || '',
+            native_outputs: [], has_headtracking: false, has_native_stereo: false,
+            rendering_methods: [], recommended_fix_type: '', fix_count: (g.fixes || []).length,
+        })),
+        pipelines: b.pipelines || [],
+        outputs:   b.outputs   || [],
+    };
+    return _sidebarCache;
 }
+
+function loadAllGames()     { return _readBundle().games     || []; }
+function loadAllPipelines() { return _readBundle().pipelines || []; }
+function loadAllOutputs()   { return _readBundle().outputs   || []; }
+function loadSidebar()      { return _readSidebar(); }
+function loadOneGame(id)    { _readBundle(); return _gameById?.get(id) || null; }
 const { installFix, installUEVRProfile, installUE3D, readUEVRConfig, writeUEVRConfig, readVRto3DConfig, writeVRto3DConfig, installVRto3D, isVRto3DInstalled, getVRto3DConfigDir, writeVRto3DGameProfile } = require('../modules/installer');
 const { getFullState, applyAndSave, resetToDefaults, snapshotDefaults } = require('../modules/iniEditor');
 const { markInstalled, markUninstalled, isInstalled, getInstallRecord,
@@ -72,6 +118,10 @@ ipcMain.handle('display:writeSetting', (_, { profileId, settingId, value }) => {
 ipcMain.handle('games:loadAll',     () => loadAllGames());
 ipcMain.handle('pipelines:loadAll', () => loadAllPipelines());
 ipcMain.handle('outputs:loadAll',   () => loadAllOutputs());
+// Lazy-load API: light sidebar projection for fast startup, full detail
+// fetched on demand when the user picks a game.
+ipcMain.handle('games:loadSidebar', () => loadSidebar());
+ipcMain.handle('games:loadOne',     (_, { id }) => loadOneGame(id));
 
 // Load a specific display profile by ID (for VRto3D display output configs)
 ipcMain.handle('displays:loadOne', (_, { displayId }) => {
@@ -642,6 +692,21 @@ ipcMain.handle('dialog:openDirectory', async () => {
 
 // ── External URLs ─────────────────────────────────────────────
 ipcMain.handle('shell:openExternal', (_, url) => shell.openExternal(url));
+// Reveal a local folder in Explorer/Finder. Used by the game-list right-
+// click "Browse local files" action. Falls back to the parent directory if
+// the exact path doesn't exist (e.g. user passed an exe that hasn't been
+// downloaded yet).
+ipcMain.handle('shell:openPath', async (_, p) => {
+    if (!p) return { success: false, error: 'no path' };
+    try {
+        const stat = fs.existsSync(p) ? fs.statSync(p) : null;
+        const target = (stat && stat.isFile()) ? path.dirname(p) : p;
+        const result = await shell.openPath(target);
+        return { success: result === '', error: result };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+});
 
 // ── Window controls ───────────────────────────────────────────
 // Sender-based window lookup — getFocusedWindow() can return null if focus

@@ -1,0 +1,26 @@
+{
+  "id": "runnerheroesthecurseofnightandday",
+  "title": "RUNNER HEROES: The curse of night and day",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "runner_heroes_the_curse_of_night_and_day_3dmigoto",
+      "name": "3DMigoto",
+      "type": "3dmigoto",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
+    }
+  ],
+  "steam_app_id": ""
+}

@@ -1,0 +1,26 @@
+{
+  "id": "sonicuefangameadvpackseason2arcadiacoastdemo",
+  "title": "Sonic UE Fan Game (AdvPack Season 2: Arcadia Coast Demo)",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "sonic_ue_fan_game_advpack_season_2_arcadia_coast_demo_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "VR"
+    }
+  ],
+  "steam_app_id": ""
+}

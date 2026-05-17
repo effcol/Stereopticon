@@ -67,7 +67,7 @@ public:
 	int  getOrientationAndPosition(float* yaw, float* pitch, float* roll, float* x, float* y, float* z);
 	void updateOrientationAndPosition();
 	MotionTrackerStatus getStatus();
-	char* GetTrackerDescription() {return "SharedMemoryTracker";}
+	const char* GetTrackerDescription() {return "SharedMemoryTracker";}
 	
 private:
 	/*** SharedMemoryTracker private methods ***/

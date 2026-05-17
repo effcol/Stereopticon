@@ -1,0 +1,24 @@
+{
+  "id": "supermario3dworldcemu",
+  "title": "Super Mario 3D World, Cemu",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [],
+  "steam_app_id": "",
+  "compat_database": {
+    "source": "3D/VR Compatibility Database (Airtable, used with permission)",
+    "entries": [
+      {
+        "software": "Mesa GLon12",
+        "graphics_api": "OpenGL",
+        "output": "",
+        "rating": 1,
+        "mode": "3D",
+        "stereoscopy": "Geo 3D",
+        "raw": "OpenGL > Mesa GLon12"
+      }
+    ]
+  }
+}

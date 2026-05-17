@@ -1079,7 +1079,11 @@ StereoShaderConstant<> ShaderModificationRepository::CreateStereoConstantFrom(co
 		else
 		{
 			modification = ShaderConstantModificationFactory::CreateVector4Modification(rule->m_operationToApply, m_spAdjustmentMatrices);
-			pData = D3DXVECTOR4(0,0,0,0);
+			// Legacy code: `pData = D3DXVECTOR4(0,0,0,0);` relied on D3DXVECTOR4's
+			// implicit `operator FLOAT*` (gone in the modernized shim to keep
+			// operator[] unambiguous). Use a static zero vector instead.
+			static const float kZeroVec4[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+			pData = const_cast<float*>(kZeroVec4);
 
 			return StereoShaderConstant<>(StartReg, pData, Count, modification);
 		}

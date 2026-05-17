@@ -1,0 +1,26 @@
+{
+  "id": "geometrydash",
+  "title": "Geometry Dash",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "geometry_dash_superdepth3d",
+      "name": "SuperDepth3D",
+      "type": "superdepth3d",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Depth Map Reprojection",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "3D"
+    }
+  ],
+  "steam_app_id": ""
+}

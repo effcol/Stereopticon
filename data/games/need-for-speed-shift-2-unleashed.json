@@ -40,6 +40,22 @@
       "pros": "Tested working with wiz3D — stereo 3D output confirmed.",
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": ""
+    },
+    {
+      "id": "need_for_speed_shift_2_unleashed_tridef",
+      "name": "TriDef 3D Ignition",
+      "type": "tridef",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D",
+      "deprecated": true
     }
   ]
 }

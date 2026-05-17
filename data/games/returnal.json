@@ -12,16 +12,25 @@
       "name": "UEVR",
       "type": "uevr",
       "cost": "free",
-      "authors": ["Praydog"],
+      "authors": [
+        "Praydog"
+      ],
       "url": "https://helixmod.blogspot.com/2025/04/returnal-uevr-vrto3d.html",
       "download_url": "https://github.com/oneup03/VRto3D/raw/refs/heads/main/game_configs/uevr/Returnal-Win64-Shipping.zip",
       "download_note": "",
       "recommended": true,
       "rendering_method": "Dual-View Rendering",
-      "headtracking": ["steamvr", "openxr"],
-      "native_outputs": ["vr_native"],
+      "headtracking": [
+        "steamvr",
+        "openxr"
+      ],
+      "native_outputs": [
+        "vr_native"
+      ],
       "pipeline_overrides": {
-        "sr_weave": ["XRGameBridge"]
+        "sr_weave": [
+          "XRGameBridge"
+        ]
       },
       "pros": "Full VR immersion with 6DOF headtracking. On SR displays, XRGameBridge provides native SR Weave output with LeiaID camera headtracking.",
       "cons": "DX12 — some UEVR features limited vs DX11 titles. High GPU requirement.",

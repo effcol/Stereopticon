@@ -192,101 +192,101 @@ public:
 	{
 		switch (mod)
 		{
-			case ShaderConstantModificationFactory::MatDoNothing:
+			case MatDoNothing:
 				return std::make_shared<MatrixDoNothing>(mod, adjustmentMatrices);
-			case ShaderConstantModificationFactory::MatSimpleTranslate:
+			case MatSimpleTranslate:
 				return std::make_shared<ShaderMatrixModification>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatOrthographicSquash:
+			case MatOrthographicSquash:
 				return std::make_shared<MatrixOrthoSquash>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatHudSlide:
+			case MatHudSlide:
 				return std::make_shared<MatrixHudSlide>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatGuiSquash:
+			case MatGuiSquash:
 				return std::make_shared<MatrixGuiSquash>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatSurfaceRefractionTransform:
+			case MatSurfaceRefractionTransform:
 				return std::make_shared<MatrixSurfaceRefractionTransform>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatGatheredOrthographicSquash:
+			case MatGatheredOrthographicSquash:
 				return std::make_shared<MatrixGatheredOrthoSquash>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatOrthographicSquashShifted:
+			case MatOrthographicSquashShifted:
 				return std::make_shared<MatrixOrthoSquashShifted>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatOrthographicSquashHud:
+			case MatOrthographicSquashHud:
 				return std::make_shared<MatrixOrthoSquashHud>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatConvergenceOffset:
+			case MatConvergenceOffset:
 				return std::make_shared<MatrixConvOffsetAdjustment>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatSimpleTranslateIgnoreOrtho:
+			case MatSimpleTranslateIgnoreOrtho:
 				return std::make_shared<MatrixIgnoreOrtho>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatRollOnly:
+			case MatRollOnly:
 				return std::make_shared<MatrixRollOnly>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatRollOnlyNegative:
+			case MatRollOnlyNegative:
 				return std::make_shared<MatrixRollOnlyNegative>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatRollOnlyHalf:
+			case MatRollOnlyHalf:
 				return std::make_shared<MatrixRollOnlyHalf>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatNoRoll:
+			case MatNoRoll:
 				return std::make_shared<MatrixNoRoll>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatSimpleTranslateNoPositional:
+			case MatSimpleTranslateNoPositional:
 				return std::make_shared<MatrixNoPositional>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatNoStereoSeparate:
+			case MatNoStereoSeparate:
 				return std::make_shared<MatrixNoStereoSeparate>(mod, adjustmentMatrices, transpose);
-			case ShaderConstantModificationFactory::MatRoll:
+			case MatRoll:
 				return std::make_shared<MatrixRoll>(mod, adjustmentMatrices, transpose);
 				break;
-			case ShaderConstantModificationFactory::MatRollNegative:
+			case MatRollNegative:
 				return std::make_shared<MatrixRollNegative>(mod, adjustmentMatrices, transpose);
 				break;
-			case ShaderConstantModificationFactory::MatRollConvergence:
+			case MatRollConvergence:
 				return std::make_shared<MatrixRollConvergence>(mod, adjustmentMatrices, transpose);
 				break;
-			case ShaderConstantModificationFactory::MatRollNegativeConvergence:
+			case MatRollNegativeConvergence:
 				return std::make_shared<MatrixRollNegativeConvergence>(mod, adjustmentMatrices, transpose);
 				break;
-			case ShaderConstantModificationFactory::MatShadowFix1:
+			case MatShadowFix1:
 				return std::make_shared<MatrixShadowFix1>(mod, adjustmentMatrices, transpose);
 				break;
-			case ShaderConstantModificationFactory::MatShadowFix2:
+			case MatShadowFix2:
 				return std::make_shared<MatrixShadowFix2>(mod, adjustmentMatrices, transpose);
 				break;
-			case ShaderConstantModificationFactory::MatShadowFix3:
+			case MatShadowFix3:
 				return std::make_shared<MatrixShadowFix3>(mod, adjustmentMatrices, transpose);
 				break;
-			case ShaderConstantModificationFactory::MatShadowFix4:
+			case MatShadowFix4:
 				return std::make_shared<MatrixShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatShadowFix5:
+			case MatShadowFix5:
 				return std::make_shared<MatrixShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatShadowFix6:
+			case MatShadowFix6:
 				return std::make_shared<MatrixShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatShadowFix7:
+			case MatShadowFix7:
 				return std::make_shared<MatrixShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatShadowFix8:
+			case MatShadowFix8:
 				return std::make_shared<MatrixShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatTransformShadowFix1:
+			case MatTransformShadowFix1:
 				return std::make_shared<MatrixTransformShadowFix1>(mod, adjustmentMatrices, transpose);
 				break;
-			case ShaderConstantModificationFactory::MatTransformShadowFix2:
+			case MatTransformShadowFix2:
 				return std::make_shared<MatrixTransformShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatTransformShadowFix3:
+			case MatTransformShadowFix3:
 				return std::make_shared<MatrixTransformShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatTransformShadowFix4:
+			case MatTransformShadowFix4:
 				return std::make_shared<MatrixTransformShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatTransformShadowFix5:
+			case MatTransformShadowFix5:
 				return std::make_shared<MatrixTransformShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatTransformShadowFix6:
+			case MatTransformShadowFix6:
 				return std::make_shared<MatrixTransformShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatTransformShadowFix7:
+			case MatTransformShadowFix7:
 				return std::make_shared<MatrixTransformShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatTransformShadowFix8:
+			case MatTransformShadowFix8:
 				return std::make_shared<MatrixTransformShadowFix1>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
-			case ShaderConstantModificationFactory::MatTransformToRotation:
+			case MatTransformToRotation:
 				return std::make_shared<MatrixTransformToRotation>(mod, adjustmentMatrices, transpose); // RESERVED
 				break;
 			default:
@@ -302,81 +302,81 @@ public:
 	{
 		switch (unModID)
 		{
-			case ShaderConstantModificationFactory::MatDoNothing:
+			case MatDoNothing:
 				return std::wstring(L"MatDoNothing");
-			case ShaderConstantModificationFactory::MatSimpleTranslate:
+			case MatSimpleTranslate:
 				return std::wstring(L"MatSimpleTranslate");
-			case ShaderConstantModificationFactory::MatOrthographicSquash:
+			case MatOrthographicSquash:
 				return std::wstring(L"MatOrthographicSquash");
-			case ShaderConstantModificationFactory::MatHudSlide:
+			case MatHudSlide:
 				return std::wstring(L"MatHudSlide");
-			case ShaderConstantModificationFactory::MatGuiSquash:
+			case MatGuiSquash:
 				return std::wstring(L"MatGuiSquash");
-			case ShaderConstantModificationFactory::MatSurfaceRefractionTransform:
+			case MatSurfaceRefractionTransform:
 				return std::wstring(L"MatSurfaceRefractionTransform");
-			case ShaderConstantModificationFactory::MatGatheredOrthographicSquash:
+			case MatGatheredOrthographicSquash:
 				return std::wstring(L"MatGatheredOrthographicSquash");
-			case ShaderConstantModificationFactory::MatOrthographicSquashShifted:
+			case MatOrthographicSquashShifted:
 				return std::wstring(L"MatOrthographicSquashShifted");
-			case ShaderConstantModificationFactory::MatOrthographicSquashHud:
+			case MatOrthographicSquashHud:
 				return std::wstring(L"MatOrthographicSquashHud");
-			case ShaderConstantModificationFactory::MatConvergenceOffset:
+			case MatConvergenceOffset:
 				return std::wstring(L"MatConvergenceOffset");
-			case ShaderConstantModificationFactory::MatSimpleTranslateIgnoreOrtho:
+			case MatSimpleTranslateIgnoreOrtho:
 				return std::wstring(L"MatSimpleTranslateIgnoreOrtho");
-			case ShaderConstantModificationFactory::MatRollOnly:
+			case MatRollOnly:
 				return std::wstring(L"MatRollOnly");
-			case ShaderConstantModificationFactory::MatRollOnlyNegative:
+			case MatRollOnlyNegative:
 				return std::wstring(L"MatRollOnlyNegative");
-			case ShaderConstantModificationFactory::MatRollOnlyHalf:
+			case MatRollOnlyHalf:
 				return std::wstring(L"MatRollOnlyHalf");
-			case ShaderConstantModificationFactory::MatNoRoll:
+			case MatNoRoll:
 				return std::wstring(L"MatNoRoll");
-			case ShaderConstantModificationFactory::MatSimpleTranslateNoPositional:
+			case MatSimpleTranslateNoPositional:
 				return std::wstring(L"MatSimpleTranslateNoPositional");
-			case ShaderConstantModificationFactory::MatNoStereoSeparate:
+			case MatNoStereoSeparate:
 				return std::wstring(L"MatNoStereoSeparate");
-			case ShaderConstantModificationFactory::MatRoll:
+			case MatRoll:
 				return std::wstring(L"MatRoll");
-			case ShaderConstantModificationFactory::MatRollNegative:
+			case MatRollNegative:
 				return std::wstring(L"MatRollNegative");
-			case ShaderConstantModificationFactory::MatRollConvergence:
+			case MatRollConvergence:
 				return std::wstring(L"MatRollConvergence");
-			case ShaderConstantModificationFactory::MatRollNegativeConvergence:
+			case MatRollNegativeConvergence:
 				return std::wstring(L"MatRollNegativeConvergence");
-			case ShaderConstantModificationFactory::MatShadowFix1:
+			case MatShadowFix1:
 				return std::wstring(L"MatShadowFix1");
-			case ShaderConstantModificationFactory::MatShadowFix2:
+			case MatShadowFix2:
 				return std::wstring(L"MatShadowFix2");
-			case ShaderConstantModificationFactory::MatShadowFix3:
+			case MatShadowFix3:
 				return std::wstring(L"MatShadowFix3");
-			case ShaderConstantModificationFactory::MatShadowFix4:
+			case MatShadowFix4:
 				return std::wstring(L"MatShadowFix4");
-			case ShaderConstantModificationFactory::MatShadowFix5:
+			case MatShadowFix5:
 				return std::wstring(L"MatShadowFix5");
-			case ShaderConstantModificationFactory::MatShadowFix6:
+			case MatShadowFix6:
 				return std::wstring(L"MatShadowFix6");
-			case ShaderConstantModificationFactory::MatShadowFix7:
+			case MatShadowFix7:
 				return std::wstring(L"MatShadowFix7");
-			case ShaderConstantModificationFactory::MatShadowFix8:
+			case MatShadowFix8:
 				return std::wstring(L"MatShadowFix8");
-			case ShaderConstantModificationFactory::MatTransformShadowFix1:
+			case MatTransformShadowFix1:
 				return std::wstring(L"MatTransformShadowFix1");
-			case ShaderConstantModificationFactory::MatTransformShadowFix2:
+			case MatTransformShadowFix2:
 				return std::wstring(L"MatTransformShadowFix2");
-			case ShaderConstantModificationFactory::MatTransformShadowFix3:
+			case MatTransformShadowFix3:
 				return std::wstring(L"MatTransformShadowFix3");
-			case ShaderConstantModificationFactory::MatTransformShadowFix4:
+			case MatTransformShadowFix4:
 				return std::wstring(L"MatTransformShadowFix4");
-			case ShaderConstantModificationFactory::MatTransformShadowFix5:
+			case MatTransformShadowFix5:
 				return std::wstring(L"MatTransformShadowFix5");
-			case ShaderConstantModificationFactory::MatTransformShadowFix6:
+			case MatTransformShadowFix6:
 				return std::wstring(L"MatTransformShadowFix6");
-			case ShaderConstantModificationFactory::MatTransformShadowFix7:
+			case MatTransformShadowFix7:
 				return std::wstring(L"MatTransformShadowFix7");
-			case ShaderConstantModificationFactory::MatTransformShadowFix8:
+			case MatTransformShadowFix8:
 				return std::wstring(L"MatTransformShadowFix8");
-			case ShaderConstantModificationFactory::MatTransformToRotation:
+			case MatTransformToRotation:
 				return std::wstring(L"MatTransformToRotation");
 				break;
 		}

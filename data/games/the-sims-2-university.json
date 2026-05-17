@@ -40,6 +40,21 @@
       "pros": "In the wiz3D catalogue but not yet tested by the maintainers.",
       "cons": "Has an iZ3D profile but no maintainer test report yet — your mileage may vary.",
       "notes": "Targets \"Sims2EP1.exe\", might just be expansion pack or all of The Sims 2."
+    },
+    {
+      "id": "the_sims_2_university_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
     }
   ],
   "steam_app_id": "2537590"

@@ -10,16 +10,16 @@ class DirectInput
 {
 public: 	
 	bool active;	
-	bool DirectInput::Init(HINSTANCE hinst, HWND hwnd);		
-	bool DirectInput::IsDown(int button);
-	bool DirectInput::IsUp(int button);
-	void DirectInput::GetCoords(int* x, int* y);
-	int DirectInput::GetWheel();
-	void DirectInput::Activate();
-	void DirectInput::Deactivate();
-	void DirectInput::Shutdown();
+	bool Init(HINSTANCE hinst, HWND hwnd);		
+	bool IsDown(int button);
+	bool IsUp(int button);
+	void GetCoords(int* x, int* y);
+	int GetWheel();
+	void Activate();
+	void Deactivate();
+	void Shutdown();
 private:
-	int DirectInput::ReadMouse();	
+	int ReadMouse();	
 	LPDIRECTINPUT8 lpdi;
 	LPDIRECTINPUTDEVICE8 lpdimouse;
 	DIMOUSESTATE2 mousestate;

@@ -18,7 +18,7 @@
       ],
       "url": "https://github.com/effcol/wiz3D",
       "license": "LGPL-2.1",
-      "recommended": false,
+      "recommended": true,
       "rendering_method": "Dual-View Rendering",
       "headtracking": "None",
       "native_outputs": [

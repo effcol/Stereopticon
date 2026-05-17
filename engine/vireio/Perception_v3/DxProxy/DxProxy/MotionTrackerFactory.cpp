@@ -29,20 +29,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "MotionTrackerFactory.h"
 
-//HACK - Have to do this to stop certain types that are redefined by OVR_Types.h from causing an issue
-#ifndef x64
-#ifdef _WIN32
-#undef _WIN32
-#include "FreeSpaceTracker.h"
-#define  _WIN32
-#else
-#include "FreeSpaceTracker.h"
-#endif
-#endif //!x64
-
+// FreeSpaceTracker include removed — FreeSpace SDK (Phidget) is no longer
+// installable on modern Windows. FreeTrackTracker remains as the canonical
+// UDP-based head pose source.
 #include "FreeTrackTracker.h"
 #include "SharedMemoryTracker.h"
-#include "OculusTracker.h"
+// Oculus tracker retired in v5 modernization; OpenXRTracker replaces it.
+#include "OpenXRTracker.h"
+// OpenTrack UDP — v5 default tracker. Reads FreeTrack 2.0 UDP packets
+// directly, no FreeTrackClient.dll shared-memory dependency.
+#include "OpenTrackUDPTracker.h"
 
 /**
 *  Get motion tracker. 
@@ -57,11 +53,9 @@ MotionTracker* MotionTrackerFactory::Get(ProxyConfig& config)
 	case MotionTracker::DISABLED:
 		newTracker = new MotionTracker();
 		break;
-#ifndef x64
-	case MotionTracker::HILLCREST:
-		newTracker = new FreeSpaceTracker();
-		break;
-#endif
+	// HILLCREST/FreeSpaceTracker case removed in v5 modernization (legacy
+	// Phidget SDK no longer available). Falls through to the default below,
+	// which returns a base MotionTracker that emits no head pose.
 	case MotionTracker::FREETRACK:
 		newTracker = new FreeTrackTracker();
 		break;
@@ -69,7 +63,13 @@ MotionTracker* MotionTrackerFactory::Get(ProxyConfig& config)
 		newTracker = new SharedMemoryTracker();
 		break;
 	case MotionTracker::OCULUSTRACK:
-		newTracker = new OculusTracker();
+		// OCULUSTRACK enum retained for back-compat — now routes through
+		// OpenXR via OpenXRTracker (replaces the deleted LibOVR path).
+		newTracker = new OpenXRTracker();
+		break;
+	case MotionTracker::OPENTRACK_UDP:
+		// v5 default — reads OpenTrack's FreeTrack 2.0 UDP output on port 4242.
+		newTracker = new OpenTrackUDPTracker();
 		break;
 	default:
 		newTracker = new MotionTracker();

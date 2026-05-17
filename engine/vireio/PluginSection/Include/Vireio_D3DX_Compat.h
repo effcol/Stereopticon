@@ -64,15 +64,73 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 
-// Storage-shape type aliases.
-// All of these have identical memory layout to the original D3DX types
+// Storage-shape wrappers.
+// All have identical memory layout to the original D3DX types
 // (verified: D3DXMATRIX = 16 floats row-major; D3DXVECTORn = n floats;
 // D3DXCOLOR = {r,g,b,a} floats; D3DXQUATERNION = {x,y,z,w} floats).
-typedef DirectX::XMFLOAT2     D3DXVECTOR2;
-typedef DirectX::XMFLOAT3     D3DXVECTOR3;
-typedef DirectX::XMFLOAT4     D3DXVECTOR4;
-typedef DirectX::XMFLOAT4     D3DXQUATERNION;
-typedef DirectX::XMFLOAT4     D3DXPLANE;
+//
+// We inherit from the DirectXMath storage types to get the named members
+// (.x .y .z .w) and constructors, then add:
+//   * operator[] for the legacy D3DX subscript pattern (vec[0] / vec[1]).
+//   * Implicit float*/const float* conversion for raw pointer math.
+// The original D3DX types backed their named members with a `float[N]`
+// union; modern XMFLOATN does not, so subscripts and pointer-decay don't
+// compile against bare typedefs without help.
+
+// operator[] only — NOT also `operator float*`. Defining both creates
+// ambiguity in expressions like `vec[i]` (subscript via [] vs decay-then-
+// subscript). v3 code uses []; the D3DXVec* helpers in this shim take
+// pointers to the wrapper types so they don't need the float* conversion.
+// If a callsite needs raw floats, use `&vec.x`.
+#define VIREIO_D3DXVEC_COMMON(N)                                          \
+    float&       operator[](std::size_t i)       noexcept { return (&this->x)[i]; } \
+    const float& operator[](std::size_t i) const noexcept { return (&this->x)[i]; }
+
+struct D3DXVECTOR2 : public DirectX::XMFLOAT2 {
+    D3DXVECTOR2() noexcept = default;
+    D3DXVECTOR2(const DirectX::XMFLOAT2& o) noexcept : DirectX::XMFLOAT2(o) {}
+    D3DXVECTOR2(float fx, float fy) noexcept : DirectX::XMFLOAT2(fx, fy) {}
+    explicit D3DXVECTOR2(const float* p) noexcept : DirectX::XMFLOAT2(p) {}
+    VIREIO_D3DXVEC_COMMON(2)
+};
+
+struct D3DXVECTOR3 : public DirectX::XMFLOAT3 {
+    D3DXVECTOR3() noexcept = default;
+    D3DXVECTOR3(const DirectX::XMFLOAT3& o) noexcept : DirectX::XMFLOAT3(o) {}
+    D3DXVECTOR3(float fx, float fy, float fz) noexcept : DirectX::XMFLOAT3(fx, fy, fz) {}
+    explicit D3DXVECTOR3(const float* p) noexcept : DirectX::XMFLOAT3(p) {}
+    VIREIO_D3DXVEC_COMMON(3)
+};
+
+struct D3DXVECTOR4 : public DirectX::XMFLOAT4 {
+    D3DXVECTOR4() noexcept = default;
+    D3DXVECTOR4(const DirectX::XMFLOAT4& o) noexcept : DirectX::XMFLOAT4(o) {}
+    D3DXVECTOR4(float fx, float fy, float fz, float fw) noexcept : DirectX::XMFLOAT4(fx, fy, fz, fw) {}
+    explicit D3DXVECTOR4(const float* p) noexcept : DirectX::XMFLOAT4(p) {}
+    VIREIO_D3DXVEC_COMMON(4)
+};
+
+// D3DXQUATERNION shares the storage shape but is logically distinct in
+// the original API. v3 code occasionally implicit-converts between the
+// two; supply a conversion constructor so those sites compile.
+struct D3DXQUATERNION : public DirectX::XMFLOAT4 {
+    D3DXQUATERNION() noexcept = default;
+    D3DXQUATERNION(const DirectX::XMFLOAT4& o) noexcept : DirectX::XMFLOAT4(o) {}
+    D3DXQUATERNION(float fx, float fy, float fz, float fw) noexcept : DirectX::XMFLOAT4(fx, fy, fz, fw) {}
+    explicit D3DXQUATERNION(const float* p) noexcept : DirectX::XMFLOAT4(p) {}
+    D3DXQUATERNION(const D3DXVECTOR4& v) noexcept : DirectX::XMFLOAT4(v.x, v.y, v.z, v.w) {}
+    VIREIO_D3DXVEC_COMMON(4)
+};
+
+// D3DXPLANE: original named members are {a, b, c, d}, but we map onto the
+// same {x, y, z, w} storage so DirectXMath helpers can still operate on it.
+struct D3DXPLANE : public DirectX::XMFLOAT4 {
+    D3DXPLANE() noexcept = default;
+    D3DXPLANE(const DirectX::XMFLOAT4& o) noexcept : DirectX::XMFLOAT4(o) {}
+    D3DXPLANE(float fa, float fb, float fc, float fd) noexcept : DirectX::XMFLOAT4(fa, fb, fc, fd) {}
+    explicit D3DXPLANE(const float* p) noexcept : DirectX::XMFLOAT4(p) {}
+    VIREIO_D3DXVEC_COMMON(4)
+};
 
 // D3DXMATRIX wears two hats in the original D3DX SDK:
 //   1. It IS-A D3DMATRIX (inherits) so D3DXMATRIX* trivially passes where D3DMATRIX*
@@ -269,6 +327,164 @@ inline HRESULT D3DXLoadVolumeFromVolume(IDirect3DVolume9* pDestVolume, const PAL
 // compile shim routes through D3DCompile (modern, in Windows SDK).
 typedef ID3DBlob*  LPD3DXBUFFER;
 typedef LPCSTR     D3DXHANDLE;
+
+// ───────────────────────────── D3DX-9 effect / font interface stubs ─────────────────────────────
+// v3's StereoView uses ID3DXEffect (the legacy effect/FX framework) and
+// ID3DXFont for on-screen text. The full implementations lived in d3dx9.lib
+// (removed from the Windows SDK in 2012). We declare minimal interfaces
+// here so v3's source COMPILES under the modernized toolchain. Runtime
+// stereo rendering and HUD text will return failure codes until those
+// systems are replaced (likely with D3DCompile + a custom text renderer)
+// in a follow-up sprint.
+#define D3DXFX_DONOTSAVESTATE (1 << 0)
+#define D3DXFX_DONOTSAVESHADERSTATE (1 << 1)
+#define D3DXFX_DONOTSAVESAMPLERSTATE (1 << 2)
+#define D3DX_DEFAULT 0xFFFFFFFF
+#define D3DXSPRITE_ALPHABLEND 0x00000010
+
+struct ID3DXBuffer : public IUnknown
+{
+    virtual LPVOID STDMETHODCALLTYPE GetBufferPointer(void) = 0;
+    virtual DWORD  STDMETHODCALLTYPE GetBufferSize(void) = 0;
+};
+
+struct ID3DXEffect : public IUnknown
+{
+    virtual HRESULT STDMETHODCALLTYPE OnLostDevice() = 0;
+    virtual HRESULT STDMETHODCALLTYPE OnResetDevice() = 0;
+    virtual HRESULT STDMETHODCALLTYPE SetTechnique(D3DXHANDLE hTechnique) = 0;
+    virtual HRESULT STDMETHODCALLTYPE Begin(UINT* pPasses, DWORD Flags) = 0;
+    virtual HRESULT STDMETHODCALLTYPE BeginPass(UINT iPass) = 0;
+    virtual HRESULT STDMETHODCALLTYPE EndPass() = 0;
+    virtual HRESULT STDMETHODCALLTYPE End() = 0;
+    virtual D3DXHANDLE STDMETHODCALLTYPE GetParameterByName(D3DXHANDLE hParent, LPCSTR pName) = 0;
+    virtual HRESULT STDMETHODCALLTYPE SetInt(D3DXHANDLE hParameter, INT n) = 0;
+    virtual HRESULT STDMETHODCALLTYPE SetFloat(D3DXHANDLE hParameter, FLOAT f) = 0;
+    virtual HRESULT STDMETHODCALLTYPE SetMatrix(D3DXHANDLE hParameter, const D3DXMATRIX* pMatrix) = 0;
+    virtual HRESULT STDMETHODCALLTYPE SetVector(D3DXHANDLE hParameter, const D3DXVECTOR4* pVector) = 0;
+    virtual HRESULT STDMETHODCALLTYPE SetTexture(D3DXHANDLE hParameter, IDirect3DBaseTexture9* pTexture) = 0;
+};
+
+struct ID3DXSprite : public IUnknown
+{
+    virtual HRESULT STDMETHODCALLTYPE Begin(DWORD Flags) = 0;
+    virtual HRESULT STDMETHODCALLTYPE End() = 0;
+    virtual HRESULT STDMETHODCALLTYPE Draw(IDirect3DTexture9* pTexture, const RECT* pSrcRect, const D3DXVECTOR3* pCenter, const D3DXVECTOR3* pPosition, D3DCOLOR Color) = 0;
+    virtual HRESULT STDMETHODCALLTYPE Flush() = 0;
+    virtual HRESULT STDMETHODCALLTYPE OnLostDevice() = 0;
+    virtual HRESULT STDMETHODCALLTYPE OnResetDevice() = 0;
+    virtual HRESULT STDMETHODCALLTYPE SetTransform(const D3DXMATRIX* pTransform) = 0;
+};
+
+struct ID3DXFont : public IUnknown
+{
+    virtual HRESULT STDMETHODCALLTYPE OnLostDevice() = 0;
+    virtual HRESULT STDMETHODCALLTYPE OnResetDevice() = 0;
+    virtual INT     STDMETHODCALLTYPE DrawText(ID3DXSprite* pSprite, LPCSTR pString, INT Count, LPRECT pRect, DWORD Format, D3DCOLOR Color) = 0;
+};
+
+// Legacy typedef-style aliases. v3 freely mixes the LP* form with the
+// raw interface pointer; both need to resolve.
+typedef ID3DXSprite*  LPD3DXSPRITE;
+typedef ID3DXFont*    LPD3DXFONT;
+typedef ID3DXEffect*  LPD3DXEFFECT;
+typedef ID3DXBuffer*  LPD3DXBUFFER_LEGACY;   // The LPD3DXBUFFER alias already exists above (mapped to ID3DBlob*).
+
+inline HRESULT D3DXCreateSprite(IDirect3DDevice9*, ID3DXSprite** ppSprite)
+{
+    if (ppSprite) *ppSprite = nullptr;
+    return E_NOTIMPL;
+}
+
+// Error code that v3 code checks against. Original D3DX value: 0x88760B59.
+#ifndef D3DXERR_INVALIDDATA
+#define D3DXERR_INVALIDDATA MAKE_HRESULT(1, 0x876, 0x0B59)
+#endif
+
+// Shader assemble / disassemble stubs. v3's DataGatherer + ShaderModificationRepository
+// call these for debug dumps; runtime functionality returns failure but at least
+// the source compiles. A real reimplementation would route through D3DCompile.
+// v3 source passes `ID3DXBuffer**`, the legacy interface — accept that
+// shape rather than `LPD3DXBUFFER*` (which is ID3DBlob** in this shim).
+inline HRESULT D3DXAssembleShaderFromFileA(LPCSTR, const void*, void*, DWORD, ID3DXBuffer** ppShader, ID3DXBuffer** ppErrorMsgs)
+{
+    if (ppShader)    *ppShader    = nullptr;
+    if (ppErrorMsgs) *ppErrorMsgs = nullptr;
+    return E_NOTIMPL;
+}
+inline HRESULT D3DXAssembleShaderFromFileW(LPCWSTR, const void*, void*, DWORD, ID3DXBuffer** ppShader, ID3DXBuffer** ppErrorMsgs)
+{
+    if (ppShader)    *ppShader    = nullptr;
+    if (ppErrorMsgs) *ppErrorMsgs = nullptr;
+    return E_NOTIMPL;
+}
+#ifdef UNICODE
+#define D3DXAssembleShaderFromFile D3DXAssembleShaderFromFileW
+#else
+#define D3DXAssembleShaderFromFile D3DXAssembleShaderFromFileA
+#endif
+
+inline HRESULT D3DXDisassembleShader(const DWORD* /*pShader*/, BOOL /*EnableColorCode*/, LPCSTR /*pComments*/, ID3DXBuffer** ppDisassembly)
+{
+    if (ppDisassembly) *ppDisassembly = nullptr;
+    return E_NOTIMPL;
+}
+// Some v3 sources pass `LPD3DXBUFFER*` (which is `ID3DBlob**` in this shim)
+// rather than the new `ID3DXBuffer**`. Provide an overload so both compile.
+inline HRESULT D3DXDisassembleShader(const DWORD* /*pShader*/, BOOL /*EnableColorCode*/, LPCSTR /*pComments*/, LPD3DXBUFFER* ppDisassembly)
+{
+    if (ppDisassembly) *ppDisassembly = nullptr;
+    return E_NOTIMPL;
+}
+
+// D3DXSaveSurfaceToFile + image-file-format enum used by StereoView's
+// screenshot path. Compile-only stub.
+enum D3DXIMAGE_FILEFORMAT {
+    D3DXIFF_BMP = 0, D3DXIFF_JPG = 1, D3DXIFF_TGA = 2, D3DXIFF_PNG = 3,
+    D3DXIFF_DDS = 4, D3DXIFF_PPM = 5, D3DXIFF_DIB = 6, D3DXIFF_HDR = 7, D3DXIFF_PFM = 8,
+};
+inline HRESULT D3DXSaveSurfaceToFileA(LPCSTR, D3DXIMAGE_FILEFORMAT, IDirect3DSurface9*, const PALETTEENTRY*, const RECT*) { return E_NOTIMPL; }
+inline HRESULT D3DXSaveSurfaceToFileW(LPCWSTR, D3DXIMAGE_FILEFORMAT, IDirect3DSurface9*, const PALETTEENTRY*, const RECT*) { return E_NOTIMPL; }
+#ifdef UNICODE
+#define D3DXSaveSurfaceToFile D3DXSaveSurfaceToFileW
+#else
+#define D3DXSaveSurfaceToFile D3DXSaveSurfaceToFileA
+#endif
+
+// D3DXCreateEffectFromFile* stubs — they always fail. Compile-only.
+inline HRESULT D3DXCreateEffectFromFileA(IDirect3DDevice9*, LPCSTR, const void*, void*, DWORD, void*, ID3DXEffect** ppEffect, ID3DXBuffer** ppCompilationErrors)
+{
+    if (ppEffect)            *ppEffect = nullptr;
+    if (ppCompilationErrors) *ppCompilationErrors = nullptr;
+    return E_NOTIMPL;
+}
+inline HRESULT D3DXCreateEffectFromFileW(IDirect3DDevice9*, LPCWSTR, const void*, void*, DWORD, void*, ID3DXEffect** ppEffect, ID3DXBuffer** ppCompilationErrors)
+{
+    if (ppEffect)            *ppEffect = nullptr;
+    if (ppCompilationErrors) *ppCompilationErrors = nullptr;
+    return E_NOTIMPL;
+}
+#ifdef UNICODE
+#define D3DXCreateEffectFromFile D3DXCreateEffectFromFileW
+#else
+#define D3DXCreateEffectFromFile D3DXCreateEffectFromFileA
+#endif
+
+inline HRESULT D3DXCreateFontA(IDirect3DDevice9*, INT, UINT, UINT, UINT, BOOL, DWORD, DWORD, DWORD, DWORD, LPCSTR, ID3DXFont** ppFont)
+{
+    if (ppFont) *ppFont = nullptr;
+    return E_NOTIMPL;
+}
+inline HRESULT D3DXCreateFontW(IDirect3DDevice9*, INT, UINT, UINT, UINT, BOOL, DWORD, DWORD, DWORD, DWORD, LPCWSTR, ID3DXFont** ppFont)
+{
+    if (ppFont) *ppFont = nullptr;
+    return E_NOTIMPL;
+}
+#ifdef UNICODE
+#define D3DXCreateFont D3DXCreateFontW
+#else
+#define D3DXCreateFont D3DXCreateFontA
+#endif
 
 struct D3DXCONSTANT_DESC
 {

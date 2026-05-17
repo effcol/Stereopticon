@@ -47,7 +47,7 @@ private:
 	std::string port;															// port number to listen on
 
 
-	bool SocketTracker::CreateSockets();
+	bool CreateSockets();
 
 	bool CreateMsgThread();
 	static DWORD WINAPI MsgThread(LPVOID pvParam);

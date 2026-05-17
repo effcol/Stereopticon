@@ -18,7 +18,7 @@
       ],
       "url": "https://github.com/effcol/wiz3D",
       "license": "LGPL-2.1",
-      "recommended": false,
+      "recommended": true,
       "rendering_method": "Dual-View Rendering",
       "headtracking": "None",
       "native_outputs": [
@@ -40,6 +40,21 @@
       "pros": "In the wiz3D catalogue but not yet tested by the maintainers.",
       "cons": "Has an iZ3D profile but no maintainer test report yet — your mileage may vary.",
       "notes": "Check [3D/VR Compatibility Database](https://airtable.com/appByPZJsOQSVGDID/shrAfMuGs1IOIEpRT?uMgeK=recNbODkwtnnqlQqO) to enable the game's native stereo 3D."
+    },
+    {
+      "id": "flightgear_helixmod",
+      "name": "3D Vision (HelixMod)",
+      "type": "helixmod",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: OpenGL. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D"
     }
   ]
 }

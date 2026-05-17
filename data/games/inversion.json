@@ -40,6 +40,21 @@
       "pros": "Tested with wiz3D — playable but with known caveats.",
       "cons": "See notes for the specific issues.",
       "notes": "Might need to implement more 3D Vison features or shader fix."
+    },
+    {
+      "id": "inversion_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 5/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 5,
+      "compat_mode": "3D"
     }
   ],
   "steam_app_id": "1505430"

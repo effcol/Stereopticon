@@ -18,7 +18,7 @@
       ],
       "url": "https://github.com/effcol/wiz3D",
       "license": "LGPL-2.1",
-      "recommended": false,
+      "recommended": true,
       "rendering_method": "Dual-View Rendering",
       "headtracking": "None",
       "native_outputs": [
@@ -40,6 +40,21 @@
       "pros": "In the wiz3D catalogue but not yet tested by the maintainers.",
       "cons": "Has an iZ3D profile but no maintainer test report yet — your mileage may vary.",
       "notes": ""
+    },
+    {
+      "id": "america_s_army_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Community rating: 2/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 2,
+      "compat_mode": "3D"
     }
   ],
   "steam_app_id": "4700"

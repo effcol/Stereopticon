@@ -20,11 +20,51 @@ const path  = require('path');
 const fs    = require('fs');
 const { spawn } = require('child_process');
 
-// Resolve + install the standalone HT proxy DLL into the game folder.
-// Looks for the prebuilt vireio-ht.dll under engine/vireio-ht-proxy/build/
-// (Release first, Debug fallback). Drops it into the game folder as the
-// d3d9.dll proxy, alongside a default vireio-ht.ini.
-async function installVireioHtProxy(gameContext) {
+const BRIDGE_PROJECT_DIR = 'Vireio-Perception-OpenTrack-Bridge';
+
+// Resolve where the OpenTrack-Bridge binaries live. Prefer the curated
+// releases/ folder (LGPL-v3 distribution location), then fall back to local
+// CMake build outputs for developer workflows.
+function findProxyBinary(projectRoot, slot) {
+    // `slot` is the system DLL we're masquerading as: 'd3d9' or 'dinput8'.
+    // The Bridge ships in two ways:
+    //   * Phase 3+ canonical: the v3-carve-out at engine/vireio/Perception_v3/
+    //     built with VIREIO_HT_ONLY → outputs d3d9.dll only (no dinput8 yet).
+    //   * Legacy from-scratch: engine/Vireio-Perception-OpenTrack-Bridge/ has
+    //     the original scaffolding with both d3d9 + dinput8 slot variants.
+    //     Kept as a fallback until the v3-carve-out gains the dinput8 slot.
+    const filename = `${slot}.dll`;
+    const candidates = [
+        // v3 carve-out (Phase 3) — canonical going forward.
+        path.join(projectRoot, 'engine', 'vireio', 'Perception_v3', 'Release-Bridge', 'Perception', 'bin', filename),
+        path.join(projectRoot, 'engine', 'vireio', 'Perception_v3', 'Release-Bridge', filename),
+        // From-scratch scaffolding (LEGACY — retires once the v3 carve-out
+        // covers all slots). Currently the only source of the dinput8 variant.
+        path.join(projectRoot, 'engine', BRIDGE_PROJECT_DIR, 'releases', slot, filename),
+        path.join(projectRoot, 'engine', BRIDGE_PROJECT_DIR, 'build', 'Release', filename),
+        path.join(projectRoot, 'engine', BRIDGE_PROJECT_DIR, 'build', 'Debug',   filename),
+        path.join(projectRoot, 'engine', BRIDGE_PROJECT_DIR, 'build', filename),
+    ];
+    return candidates.find(fs.existsSync) || null;
+}
+
+// Decide which proxy slot is free in the game folder. d3d9 is preferred; we
+// fall back to dinput8 when another stereo mod (wiz3D / Geo-11 / ReShade)
+// has already claimed d3d9.dll. Returns { slot, collision: bool }.
+function pickProxySlot(gamePath) {
+    const d3d9Exists    = fs.existsSync(path.join(gamePath, 'd3d9.dll'));
+    const dinput8Exists = fs.existsSync(path.join(gamePath, 'dinput8.dll'));
+    if (!d3d9Exists)    return { slot: 'd3d9',    collision: false };
+    if (!dinput8Exists) return { slot: 'dinput8', collision: true  };
+    // Both slots occupied — caller must surface a warning.
+    return { slot: null, collision: true };
+}
+
+// Resolve + install the Vireio-Perception-OpenTrack-Bridge DLL into the
+// game folder. Auto-picks d3d9 or dinput8 slot based on what's already in
+// the folder. For the dinput8 slot, also stages a copy of the real system
+// dinput8.dll as `dinput8_orig.dll` so the forwarders resolve.
+async function installVireioOpenTrackBridge(gameContext) {
     const r = { success: true, applied: [], errors: [], warnings: [] };
     if (!gameContext?.gamePath) {
         r.success = false;
@@ -32,31 +72,56 @@ async function installVireioHtProxy(gameContext) {
         return r;
     }
     const projectRoot = path.join(__dirname, '..', '..');
-    const proxyCandidates = [
-        path.join(projectRoot, 'engine', 'vireio-ht-proxy', 'build', 'Release', 'vireio-ht.dll'),
-        path.join(projectRoot, 'engine', 'vireio-ht-proxy', 'build', 'Debug',   'vireio-ht.dll'),
-        path.join(projectRoot, 'engine', 'vireio-ht-proxy', 'build', 'vireio-ht.dll'),
-    ];
-    const dll = proxyCandidates.find(fs.existsSync);
-    if (!dll) {
-        r.warnings.push(
-            'Vireio HT proxy DLL not built. Run `cmake -S engine/vireio-ht-proxy -B engine/vireio-ht-proxy/build -A Win32 && cmake --build engine/vireio-ht-proxy/build --config Release` first. Skipping HT-only deploy.'
+    const { slot, collision } = pickProxySlot(gameContext.gamePath);
+    if (!slot) {
+        r.success = false;
+        r.errors.push(
+            'Both d3d9.dll and dinput8.dll slots are occupied in the game folder. ' +
+            'Manually choose a free proxy slot (winmm.dll / version.dll) and build that variant.'
         );
         return r;
     }
-    const targetDll = path.join(gameContext.gamePath, 'd3d9.dll');
+    if (collision) {
+        r.warnings.push(`d3d9.dll already present (likely a stereo fix) — installing OpenTrack-Bridge via dinput8.dll slot instead.`);
+    }
+
+    const dll = findProxyBinary(projectRoot, slot);
+    if (!dll) {
+        r.warnings.push(
+            `Vireio OpenTrack Bridge (${slot} variant) not built. Run ` +
+            `\`cmake -S engine/${BRIDGE_PROJECT_DIR} -B engine/${BRIDGE_PROJECT_DIR}/build -A Win32 && ` +
+            `cmake --build engine/${BRIDGE_PROJECT_DIR}/build --config Release\` first, ` +
+            `or drop the prebuilt binary into engine/${BRIDGE_PROJECT_DIR}/releases/${slot}/. Skipping HT-only deploy.`
+        );
+        return r;
+    }
+    const targetDll = path.join(gameContext.gamePath, `${slot}.dll`);
     const targetIni = path.join(gameContext.gamePath, 'vireio-ht.ini');
     try {
         fs.copyFileSync(dll, targetDll);
-        r.applied.push(`Vireio HT proxy → ${targetDll}`);
-        const iniSrc = path.join(projectRoot, 'engine', 'vireio-ht-proxy', 'vireio-ht.ini.sample');
+        r.applied.push(`Vireio OpenTrack Bridge (${slot}) → ${targetDll}`);
+
+        // dinput8 variant forwards its exports to dinput8_orig.dll — stage a
+        // copy of the real system DLL into the game folder under that name.
+        if (slot === 'dinput8') {
+            const sysDll  = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'dinput8.dll');
+            const origDll = path.join(gameContext.gamePath, 'dinput8_orig.dll');
+            if (fs.existsSync(sysDll) && !fs.existsSync(origDll)) {
+                fs.copyFileSync(sysDll, origDll);
+                r.applied.push(`Staged real system dinput8.dll → ${origDll}`);
+            } else if (!fs.existsSync(sysDll)) {
+                r.warnings.push(`Could not find ${sysDll} to stage as dinput8_orig.dll — input forwarding may fail.`);
+            }
+        }
+
+        const iniSrc = path.join(projectRoot, 'engine', BRIDGE_PROJECT_DIR, 'vireio-ht.ini.sample');
         if (fs.existsSync(iniSrc) && !fs.existsSync(targetIni)) {
             fs.copyFileSync(iniSrc, targetIni);
             r.applied.push(`Vireio HT default ini → ${targetIni}`);
         }
     } catch (e) {
         r.success = false;
-        r.errors.push(`Failed to copy Vireio HT proxy: ${e.message}`);
+        r.errors.push(`Failed to copy Vireio OpenTrack Bridge: ${e.message}`);
     }
     return r;
 }
@@ -97,7 +162,7 @@ async function applyConfig(ctx) {
     // standalone d3d9.dll proxy. Handle it first so we don't error on a
     // missing engine build for users who just want headtracking.
     if (isHtOnly) {
-        const proxyRes = await installVireioHtProxy(gameContext);
+        const proxyRes = await installVireioOpenTrackBridge(gameContext);
         result.applied .push(...proxyRes.applied);
         result.warnings.push(...proxyRes.warnings);
         result.errors  .push(...proxyRes.errors);

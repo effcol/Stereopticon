@@ -130,6 +130,21 @@
       "cons": "High GPU requirement. Less polished than TrueGame fix for flat displays.",
       "issues": [],
       "notes": "For flat 3D displays, Geo-12/NewAxis is the better choice. UEVR shines with VR headsets."
+    },
+    {
+      "id": "ghostwire_tokyo_3dmigoto",
+      "name": "3DMigoto",
+      "type": "3dmigoto",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 11. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
     }
   ]
 }

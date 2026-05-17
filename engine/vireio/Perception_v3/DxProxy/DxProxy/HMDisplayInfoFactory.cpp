@@ -36,11 +36,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <utility>
 #include <sstream>
 
-#include "..\..\LibOVR\include\OVR.h"
-
+// LibOVR removed; OpenXR HMD info replaces the OCULUS_DIRECT_MODE path.
 #include "HMDisplayInfo.h"
 #include "HMDisplayInfo_Default.h"
-#include "HMDisplayInfo_OculusRift.h"
+#include "HMDisplayInfo_OpenXR.h"
 
 
 HMDisplayInfo* HMDisplayInfoFactory::CreateHMDisplayInfo(int /*StereoView::StereoTypes*/ stereoType)
@@ -63,8 +62,9 @@ HMDisplayInfo* HMDisplayInfoFactory::CreateHMDisplayInfo(int /*StereoView::Stere
 		return new HMDisplayInfo_Default();
 		break;
 	case StereoView::OCULUS_DIRECT_MODE:
-		return new HMDisplayInfo_OculusRift();
-		break;	
+		// OCULUS_DIRECT_MODE retained for back-compat — now backed by OpenXR.
+		return new HMDisplayInfo_OpenXR();
+		break;
 	default:
 		return new HMDisplayInfo_Default();
 		break;

@@ -1,0 +1,26 @@
+{
+  "id": "demonslayerkimetsunoyaibathehinokamichronicles",
+  "title": "Demon Slayer -Kimetsu no Yaiba- The Hinokami Chronicles",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "demon_slayer_kimetsu_no_yaiba_the_hinokami_chronicles_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "VR"
+    }
+  ],
+  "steam_app_id": ""
+}

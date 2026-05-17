@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
 * Debug output helper.
 ***/
-void releaseCheckO(char* object, int newRefCount)
+void releaseCheckO(const char* object, int newRefCount)
 {
 	if (newRefCount > 0) {
 		char buf[128];

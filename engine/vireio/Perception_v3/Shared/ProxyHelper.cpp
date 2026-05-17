@@ -361,7 +361,7 @@ string ProxyHelper::GetTargetPath()
 * @param newFolder The folder string returned.
 * @param path The Vireio sub-path.
 ***/
-string ProxyHelper::GetPath(char* path)
+string ProxyHelper::GetPath(const char* path)
 {
 	return retprintf("%s%s", GetBaseDir().c_str(), path);
 }
@@ -371,7 +371,7 @@ string ProxyHelper::GetPath(char* path)
 * @param newFolder The folder string returned.
 * @param path The target sub-path.
 ***/
-string ProxyHelper::GetTargetPath(char* path)
+string ProxyHelper::GetTargetPath(const char* path)
 {
 	return retprintf("%s%s", GetTargetPath().c_str(), path);
 }
@@ -1295,8 +1295,11 @@ ProxyConfig::ProxyConfig()
 	VRboostPath = "";
 	is64bit = false;
 	
-	stereo_mode = 0;
-	tracker_mode = 0;
+	// v5 defaults: drop-in d3d9.dll Just Works without any per-game config.
+	// SIDE_BY_SIDE = 20 (most universally compatible passive stereo format),
+	// OPENTRACK_UDP = 50 (FreeTrack 2.0 over UDP — what OpenTrack emits).
+	stereo_mode = 20;
+	tracker_mode = 50;
 	fIPD = IPD_DEFAULT;
 	fAspectMultiplier = 1.777f;
 	display_adapter = 0;

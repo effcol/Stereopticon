@@ -40,6 +40,52 @@
       "pros": "Tested working with wiz3D — stereo 3D output confirmed.",
       "cons": "Some shader effects may still benefit from a per-game shader fix.",
       "notes": "May need shader fix."
+    },
+    {
+      "id": "wheelman_helixmod",
+      "name": "HelixMod",
+      "type": "helixmod",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "wheelman_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Community rating: 2/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 2,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "wheelman_tridef",
+      "name": "TriDef 3D Ignition",
+      "type": "tridef",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D",
+      "deprecated": true
     }
   ],
   "steam_app_id": "21780"

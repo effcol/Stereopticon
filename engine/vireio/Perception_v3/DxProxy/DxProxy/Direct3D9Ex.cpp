@@ -108,6 +108,17 @@ UINT WINAPI BaseDirect3D9Ex::GetAdapterModeCount(UINT Adapter, D3DFORMAT Format)
 	return m_pD3DEx->GetAdapterModeCount(Adapter, Format);
 }
 
+// Phase 2 — added so BaseDirect3D9Ex is concrete (was pure in the v3 header).
+HRESULT WINAPI BaseDirect3D9Ex::EnumAdapterModes(UINT Adapter, D3DFORMAT Format, UINT Mode, D3DDISPLAYMODE* pMode)
+{
+	return m_pD3DEx->EnumAdapterModes(Adapter, Format, Mode, pMode);
+}
+
+HRESULT WINAPI BaseDirect3D9Ex::RegisterSoftwareDevice(void* pInitializeFunction)
+{
+	return m_pD3DEx->RegisterSoftwareDevice(pInitializeFunction);
+}
+
 /**
 * Base GetAdapterDisplayMode functionality.
 ***/

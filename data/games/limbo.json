@@ -12,7 +12,10 @@
       "name": "Native Anaglyph 3D",
       "type": "native",
       "recommended": true,
-      "authors": ["Playdead", "Effcol"],
+      "authors": [
+        "Playdead",
+        "Effcol"
+      ],
       "url": "https://www.nexusmods.com/limbo/mods/2",
       "download_url": "https://raw.githubusercontent.com/effcol/Anaglyph-to-SBS-or-TAB/main/Limbo/Limbo_Anaglyph_to_SBS_TAB.fx",
       "rendering_method": "Dual-View Rendering",
@@ -25,28 +28,60 @@
       "issues": [
         "Ghosting may be visible on high-contrast edges — adjust the intensity slider in the ReShade overlay"
       ],
-      "reshade_shaders": ["Limbo_Anaglyph_to_SBS_TAB"],
-      "native_outputs": ["anaglyph"],
+      "reshade_shaders": [
+        "Limbo_Anaglyph_to_SBS_TAB"
+      ],
+      "native_outputs": [
+        "anaglyph"
+      ],
       "anaglyph_variant": "red_cyan",
-
       "pipeline_overrides": {
-        "anaglyph":                        [],
-        "anaglyph_red_cyan":               [],
-        "anaglyph_green_magenta":          ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Anaglyph GM)"],
-        "anaglyph_amber_blue":             ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Anaglyph AB)"],
-        "sbs":                             ["Limbo Anaglyph-to-SBS Shader"],
-        "tab":                             ["Limbo Anaglyph-to-SBS Shader"],
-        "interleaved":                     ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Interleaved Row)"],
-        "interleaved_row":                 ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Interleaved Row)"],
-        "interleaved_col":                 ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Interleaved Col)"],
-        "interleaved_checkerboard":        ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Interleaved Checkerboard)"],
-        "frame_sequential":                ["Limbo Anaglyph-to-SBS Shader"],
-        "frame_packing":                   ["Limbo Anaglyph-to-SBS Shader", "3DtoElse (Frame Packing)"],
-        "sr_weave":                        ["Limbo Anaglyph-to-SBS Shader", "3DGameBridge"],
-        "lkg_quilt":                       null,
-        "vr_native":                       null
+        "anaglyph": [],
+        "anaglyph_red_cyan": [],
+        "anaglyph_green_magenta": [
+          "Limbo Anaglyph-to-SBS Shader",
+          "3DtoElse (Anaglyph GM)"
+        ],
+        "anaglyph_amber_blue": [
+          "Limbo Anaglyph-to-SBS Shader",
+          "3DtoElse (Anaglyph AB)"
+        ],
+        "sbs": [
+          "Limbo Anaglyph-to-SBS Shader"
+        ],
+        "tab": [
+          "Limbo Anaglyph-to-SBS Shader"
+        ],
+        "interleaved": [
+          "Limbo Anaglyph-to-SBS Shader",
+          "3DtoElse (Interleaved Row)"
+        ],
+        "interleaved_row": [
+          "Limbo Anaglyph-to-SBS Shader",
+          "3DtoElse (Interleaved Row)"
+        ],
+        "interleaved_col": [
+          "Limbo Anaglyph-to-SBS Shader",
+          "3DtoElse (Interleaved Col)"
+        ],
+        "interleaved_checkerboard": [
+          "Limbo Anaglyph-to-SBS Shader",
+          "3DtoElse (Interleaved Checkerboard)"
+        ],
+        "frame_sequential": [
+          "Limbo Anaglyph-to-SBS Shader"
+        ],
+        "frame_packing": [
+          "Limbo Anaglyph-to-SBS Shader",
+          "3DtoElse (Frame Packing)"
+        ],
+        "sr_weave": [
+          "Limbo Anaglyph-to-SBS Shader",
+          "3DGameBridge"
+        ],
+        "lkg_quilt": null,
+        "vr_native": null
       },
-
       "post_launch_keys": [
         {
           "delay_ms": 3000,
@@ -54,6 +89,36 @@
           "note": "Shift+3+D — activates Limbo's built-in anaglyph mode. Always required regardless of output."
         }
       ]
+    },
+    {
+      "id": "limbo_3d-vision",
+      "name": "Native 3D Vision",
+      "type": "3d-vision",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Native Stereo Output",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
+    },
+    {
+      "id": "limbo_superdepth3d",
+      "name": "SuperDepth3D",
+      "type": "superdepth3d",
+      "cost": "free",
+      "recommended": false,
+      "rendering_method": "Depth Map Reprojection",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "3D"
     }
   ]
 }

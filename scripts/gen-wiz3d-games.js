@@ -160,11 +160,15 @@ const CONS_BY_STATUS = {
     untested: 'Has an iZ3D profile but no maintainer test report yet — your mileage may vary.',
 };
 
+// wiz3D's "wrapper" variants do per-eye view-matrix injection (dual-view).
+// HD3D / 3D Vision Direct Mode / OpenGL quad-buffer all ride the game's
+// own native stereo pipeline — wiz3D just unlocks the path. Renderer
+// surfaces these under "Native Stereo Output" + the Native filter.
 const SECTION_TO_RENDER_METHOD = {
     wiz3d_wrapper:      'Dual-View Rendering',
-    wiz3d_hd3d:         'Dual-View Rendering',
-    wiz3d_3dvision_dm:  'Dual-View Rendering',
-    wiz3d_opengl:       'Dual-View Rendering',
+    wiz3d_hd3d:         'Native Stereo Output',
+    wiz3d_3dvision_dm:  'Native Stereo Output',
+    wiz3d_opengl:       'Native Stereo Output',
 };
 
 function makeFix(g) {

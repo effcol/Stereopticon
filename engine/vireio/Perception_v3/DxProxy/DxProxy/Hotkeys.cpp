@@ -374,7 +374,7 @@ void D3DProxyDevice::HandleControls()
 							break;
 
 						std::string axisName = VRboostAxisString(axes[i].Axis);
-						sprintf_s(popup.line[i+1], "      %s:      0x%"PR_SIZET"x", axisName.c_str(), axes[i].Address);
+						sprintf_s(popup.line[i+1], "      %s:      0x%" PR_SIZET"x", axisName.c_str(), axes[i].Address);
 
 						i++;
 					}

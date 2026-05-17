@@ -18,7 +18,7 @@
       ],
       "url": "https://github.com/effcol/wiz3D",
       "license": "LGPL-2.1",
-      "recommended": false,
+      "recommended": true,
       "rendering_method": "Dual-View Rendering",
       "headtracking": "None",
       "native_outputs": [
@@ -40,6 +40,22 @@
       "pros": "In the wiz3D catalogue but not yet tested by the maintainers.",
       "cons": "Has an iZ3D profile but no maintainer test report yet — your mileage may vary.",
       "notes": ""
+    },
+    {
+      "id": "cryostasis_tridef",
+      "name": "TriDef 3D Ignition",
+      "type": "tridef",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "3D",
+      "deprecated": true
     }
   ],
   "steam_app_id": "1262350"

@@ -55,7 +55,9 @@ let primarySelectCache = null;
 let subSelectCache     = null;
 let pipelineInfoCache  = null;
 
-function getDetailArea()    { return detailAreaCache = detailAreaCache || document.getElementById('detail-area'); }
+// detail-content is now the inner writable area; detail-area is the outer
+// scroll container that also holds config-bar as a sibling of detail-content.
+function getDetailArea()    { return detailAreaCache = detailAreaCache || document.getElementById('detail-content'); }
 function getConfigBar()     { return configBarCache = configBarCache || document.getElementById('config-bar'); }
 function getPrimarySelect() { return primarySelectCache = primarySelectCache || document.getElementById('primaryOutput'); }
 function getSubSelect()     { return subSelectCache = subSelectCache || document.getElementById('subOutput'); }
@@ -411,10 +413,137 @@ function getEffectiveOutputId(primary, sub) {
 }
 
 function getEffectiveOutputIdFromSelects() {
+    // Phase 2b: per-game override wins over the global Settings value.
+    if (selectedGame) {
+        const ov = getOutputOverride(selectedGame.id);
+        if (ov && ov.primary) return getEffectiveOutputId(ov.primary, ov.sub);
+    }
     const primary = primarySelect?.value;
     const sub     = subSelect?.value;
     return getEffectiveOutputId(primary, sub);
 }
+
+// ── Per-game output override (Phase 2b) ──────────────────────
+// Stored as { [gameId]: { primary, sub } } in localStorage. Absence of an
+// entry means "use the global setting". A NON-null entry overrides the
+// global Settings → Display & Output selection for this game only.
+const SETTINGS_OVERRIDES_KEY = 'stereopticon.outputOverrides';
+
+function loadAllOverrides() {
+    try { return JSON.parse(localStorage.getItem(SETTINGS_OVERRIDES_KEY) || '{}'); }
+    catch { return {}; }
+}
+function saveAllOverrides(map) {
+    try { localStorage.setItem(SETTINGS_OVERRIDES_KEY, JSON.stringify(map)); } catch {}
+}
+function getOutputOverride(gameId) {
+    if (!gameId) return null;
+    return loadAllOverrides()[gameId] || null;
+}
+function setOutputOverride(gameId, primary, sub) {
+    if (!gameId) return;
+    const m = loadAllOverrides();
+    m[gameId] = { primary: primary || '', sub: sub || '' };
+    saveAllOverrides(m);
+}
+function clearOutputOverride(gameId) {
+    if (!gameId) return;
+    const m = loadAllOverrides();
+    delete m[gameId];
+    saveAllOverrides(m);
+}
+
+// Mirror the global primaryOutput's option list into the override dropdown.
+// Called whenever the global dropdown gets new options (game selection or
+// fix change), or when the override bar is first revealed.
+function cloneOptionsInto(srcSel, destSel) {
+    if (!srcSel || !destSel) return;
+    destSel.innerHTML = '';
+    for (const o of srcSel.options) {
+        const opt = document.createElement('option');
+        opt.value = o.value;
+        opt.textContent = o.textContent;
+        destSel.appendChild(opt);
+    }
+}
+
+// Populate the override bar based on the currently selected game and the
+// current override state. Idempotent — safe to call repeatedly.
+window.renderOutputOverrideBar = function() {
+    const game = selectedGame;
+    const bar  = document.getElementById('outputOverrideBar');
+    if (!bar) return;
+    if (!game) { bar.style.display = 'none'; return; }
+    bar.style.display = 'flex';
+
+    const ov         = getOutputOverride(game.id);
+    const isOn       = !!(ov && ov.primary);
+    const pill       = document.getElementById('outputOverrideToggle');
+    const inline     = document.getElementById('outputOverrideInline');
+    const dot        = pill?.querySelector('.ov-dot');
+    const label      = pill?.querySelector('.ov-label');
+    const overridePri = document.getElementById('overridePrimary');
+    const overrideSub = document.getElementById('overrideSub');
+
+    if (pill) {
+        pill.style.borderColor = isOn ? 'var(--teal-border)' : 'var(--glass-border)';
+        pill.style.color       = isOn ? 'var(--teal)'        : 'var(--text-dim)';
+        if (dot)   dot.style.background  = isOn ? 'var(--teal)' : 'var(--text-faint)';
+        if (label) label.textContent      = isOn ? 'Overridden for this game' : 'Using global output';
+    }
+    if (inline) inline.style.display = isOn ? 'inline-flex' : 'none';
+
+    // Mirror options from the global selects. Do this every time so the
+    // override dropdown stays in sync as the user adds/removes outputs
+    // (e.g. SR display becoming available mid-session).
+    cloneOptionsInto(primarySelect, overridePri);
+    cloneOptionsInto(subSelect,     overrideSub);
+
+    if (isOn && overridePri) {
+        if ([...overridePri.options].some(o => o.value === ov.primary)) {
+            overridePri.value = ov.primary;
+        }
+        if (overrideSub && ov.sub && [...overrideSub.options].some(o => o.value === ov.sub)) {
+            overrideSub.value = ov.sub;
+        }
+    } else if (overridePri && primarySelect) {
+        // Override OFF: pre-fill with current global so toggling ON feels
+        // intuitive (the dropdowns reflect what the game is currently using).
+        overridePri.value = primarySelect.value || overridePri.value;
+        if (overrideSub && subSelect) overrideSub.value = subSelect.value || overrideSub.value;
+    }
+};
+
+window.toggleOutputOverride = function() {
+    const game = selectedGame;
+    if (!game) return;
+    const ov = getOutputOverride(game.id);
+    if (ov && ov.primary) {
+        clearOutputOverride(game.id);
+    } else {
+        // Snapshot the current global as the initial override value.
+        const p = primarySelect?.value || '';
+        const s = subSelect?.value     || '';
+        setOutputOverride(game.id, p, s);
+    }
+    renderOutputOverrideBar();
+    // Re-render the pipeline so the new effective output is reflected.
+    if (typeof updateSubOptions === 'function') updateSubOptions();
+};
+
+// When the override dropdowns change, persist + re-render the pipeline.
+document.addEventListener('DOMContentLoaded', () => {
+    const overridePri = document.getElementById('overridePrimary');
+    const overrideSub = document.getElementById('overrideSub');
+    const onChange = () => {
+        const game = selectedGame;
+        if (!game || !overridePri) return;
+        setOutputOverride(game.id, overridePri.value, overrideSub?.value || '');
+        if (typeof updateSubOptions === 'function') updateSubOptions();
+    };
+    overridePri?.addEventListener('change', onChange);
+    overrideSub?.addEventListener('change', onChange);
+});
 
 function getPipelineSteps(fixType, outputId) {
     const po = selectedProfile.pipeline_overrides;
@@ -1782,11 +1911,15 @@ window.closeUevrSettingsModal = function() { const m = document.getElementById('
 // ─── STARTUP ────────────────────────────────────────────────
 async function init() {
     try {
-        const [games, pipelines, outputs] = await Promise.all([
-            window.api.loadGames(),
-            window.api.loadPipelines(),
-            window.api.loadOutputs(),
-        ]);
+        // Lazy-load architecture: pull the light SIDEBAR projection at startup
+        // (id/title/filter-relevant fields only — ~70% smaller than full
+        // bundle). Full per-game data is fetched on demand via loadGameOne(id)
+        // when the user selects a game. Massive cold-start speedup for the
+        // 7,500-game catalogue.
+        const sidebar = await window.api.loadGamesSidebar();
+        const games = (sidebar && sidebar.games) || [];
+        const pipelines = (sidebar && sidebar.pipelines) || await window.api.loadPipelines();
+        const outputs   = (sidebar && sidebar.outputs)   || await window.api.loadOutputs();
         pipelines.forEach(p => { PIPELINES[p.id] = p; GLOBAL_PIPELINES[p.id] = p.supported_outputs || {}; });
         outputs.forEach(o => {
             OUTPUT_DEFINITIONS[o.id] = { label: o.name, status: o.status || 'active', subs: o.variants ? o.variants.map(v => v.name) : ['Standard'] };
@@ -1801,22 +1934,64 @@ async function init() {
 
         gamesData = games;
         await loadInstallState();
+
+        // Hydrate scan results from the last launch immediately — the
+        // sidebar's availability tier ("installed" / "available") is derived
+        // from _scannedPaths, and scanning 445 games from disk takes seconds.
+        // Cached values give an instant first-render; we re-scan in the
+        // background and re-render if results change.
+        const SCAN_CACHE_KEY = 'stereopticon.scanCache.v1';
+        const SCAN_CACHE_TTL_MS = 24 * 60 * 60 * 1000;   // 24h
+        let cachedScan = null;
+        try {
+            const raw = localStorage.getItem(SCAN_CACHE_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed && parsed.ts && (Date.now() - parsed.ts) < SCAN_CACHE_TTL_MS) {
+                    cachedScan = parsed.paths || {};
+                }
+            }
+        } catch {}
+        if (cachedScan) {
+            window._scannedPaths = cachedScan;
+        }
+
         renderSidebar(gamesData);
         autoSelectDisplayFromDetection();
-        // Background game path scan — 1.5s delay lets the UI paint first
+        // Background game path scan. Wait a beat so the UI paints first.
+        // If we hydrated from cache, this becomes a freshness check; if we
+        // didn't, it's the first scan since install.
+        // Filter the scan to plausibly-installable games only — anything
+        // without a Steam app ID AND without an exe_name has nothing to
+        // probe for. This drops the scan from 7,500 → ~500 candidates, the
+        // dominant chunk of "took ages to be usable after launch".
+        const scanCandidates = gamesData
+            .filter(g => g.steam_app_id || g.exe_name || g.default_path)
+            .map(g => ({
+                id:          g.id,
+                title:       g.title,
+                exeName:     g.exe_name || g.fixes?.[0]?.exe_name || null,
+                steamAppId:  g.steam_app_id || null,
+            }));
+        // Defer the scan until after the user can actually interact (1.5s)
+        // and run it in the background. Cached results from previous launches
+        // already power the sidebar; this just freshens them.
         setTimeout(async () => {
             try {
-                    const targets = gamesData.map(g => ({
-        id:          g.id,
-        title:       g.title,
-        exeName:     g.exe_name || g.fixes?.[0]?.exe_name || null,
-        steamAppId:  g.steam_app_id || null,   // ← ADD THIS
-    }));
-                window._scannedPaths = await window.api.gameScanAll(targets);
-                // Re-render sidebar with availability tiers now populated
-                renderSidebar(gamesData);
+                const fresh = await window.api.gameScanAll(scanCandidates);
+                window._scannedPaths = fresh;
+                try {
+                    localStorage.setItem(SCAN_CACHE_KEY, JSON.stringify({
+                        ts:    Date.now(),
+                        paths: fresh,
+                        count: gamesData.length,
+                    }));
+                } catch {}
+                const cachedKeys = cachedScan ? Object.keys(cachedScan).sort().join(',') : '';
+                const freshKeys  = Object.keys(fresh).sort().join(',');
+                if (cachedKeys !== freshKeys) renderSidebar(gamesData);
             } catch { /* silent */ }
-        }, 0);
+        }, 1500);
     } catch (e) {
         console.error('Failed to load data:', e);
         detailArea.innerHTML = `<div style="color:var(--danger);padding:20px;">Error loading data: ${e.message}</div>`;
@@ -1828,25 +2003,30 @@ function filterAndSortGames(games) {
     const src = Array.isArray(games) ? games : gamesData;
     if (!Array.isArray(src) || src.length === 0) return [];
 
+    const hidden          = loadHiddenGames();
+    const showVrOnly      = isShowVrOnly();
+    const showDeprecated  = isShowDeprecated();
+    const excluded        = loadExcludedFilters();   // Set<filterId>
+
+    // Build the predicates each excluded filter implies, ONCE per filter
+    // call. Then for every game, check if it satisfies any excluded
+    // predicate → if so, hide it.
+    const excludePredicates = [...excluded].map(buildFilterPredicate).filter(Boolean);
+
+    // Predicate for the currently active (positive) filter, if any.
+    const activePred = (filterMode === 'all') ? null : buildFilterPredicate(filterMode);
+
     let filtered = src.filter(game => {
         if (!game || typeof game.title !== 'string') return false;
-        if (!game.fixes || !Array.isArray(game.fixes)) game.fixes = [];
-
+        if (hidden.has(game.id)) return false;
+        if (!showVrOnly && game.is_vr_only) return false;
+        if (!showDeprecated && game.is_deprecated_only) return false;
         if (!game.title.toLowerCase().includes(searchTerm.toLowerCase())) return false;
-        if (filterMode === 'installed') {
-            if (!installedGameIds.has(game.id)) return false;
-        } else if (filterMode === 'headtracking') {
-            const hasHeadtracking = game.fixes.some(f => supportsHeadtracking(f));
-            if (!hasHeadtracking) return false;
-        } else if (filterMode !== 'all') {
-            const hasNative = game.fixes.some(f => Array.isArray(f.native_outputs) && f.native_outputs.includes(filterMode));
-            const hasPipeline = game.fixes.some(f => {
-                if (!f || !f.type) return false;
-                const r = GLOBAL_PIPELINES[f.type];
-                return r && r[filterMode] !== undefined;
-            });
-            if (!hasNative && !hasPipeline) return false;
-        }
+        if (filterMode === 'installed' && !installedGameIds.has(game.id)) return false;
+        // Excluded filters: game is hidden if ANY excluded predicate matches.
+        for (const p of excludePredicates) { if (p(game)) return false; }
+        // Positive filter (if any non-'all' / non-'installed' chip is active).
+        if (activePred && filterMode !== 'installed' && !activePred(game)) return false;
         return true;
     });
     if (sortMode === 'alpha') filtered.sort((a, b) => a.title.localeCompare(b.title));
@@ -1909,14 +2089,52 @@ function gameInitial(title) {
         .toUpperCase();
 }
 
-// Five canonical rendering methods. Each fix profile's free-form
-// `rendering_method` is mapped to whichever of these fits its mod type;
+// Fix types that produce stereo by riding the game's own native stereo
+// pipeline (AMD HD3D, OpenGL quad-buffer stereo, Nvidia 3D Vision Direct
+// Mode) — the game itself renders both eyes; wiz3D (or a similar shim)
+// just unlocks the path. Built-in stereo modes like Elite Dangerous'
+// OpenVR output and Mankind Divided's in-engine SBS also count.
+const NATIVE_STEREO_TYPES = new Set([
+    'wiz3d_hd3d',
+    'wiz3d_opengl',
+    'wiz3d_3dvision_dm',
+    'native_stereo',
+    'native_legacy',
+]);
+
+function isNativeStereo(fix) {
+    if (!fix) return false;
+    if (NATIVE_STEREO_TYPES.has(fix.type)) return true;
+    return /^native stereo output$/i.test(String(fix.rendering_method || ''));
+}
+
+// Five canonical rendering methods. "Native Stereo Output" was unified
+// into "Dual-View Rendering" — the render-path classification is the same.
+// Games with native built-in stereo are surfaced via the Features → "Native
+// stereo" filter, not as a separate rendering method.
 // loop_headtrack fixes don't render stereo so they return '—'.
 const RENDERING_METHODS = ['Multi-View Rendering', 'Dual-View Rendering', 'Sequential-View Rendering', 'Depth Map Reprojection', 'AI Reprojection'];
+
+// Mapping for the `stereoscopy` field that the 3D/VR Compatibility Database
+// uses. The Airtable source labels its two camps "Geo 3D" (geometry-based,
+// renders true left/right eyes) and "Depth3D" (single-view + depth-buffer
+// reprojection). Translate those to our canonical labels so the renderer
+// shows consistent terminology across all data sources.
+function normaliseStereoscopy(stereoscopy) {
+    const s = String(stereoscopy || '').trim().toLowerCase().replace(/\s+/g, '');
+    if (s === 'geo3d')   return 'Dual-View Rendering';
+    if (s === 'depth3d') return 'Depth Map Reprojection';
+    if (s === 'none')    return 'None';
+    return stereoscopy || '';
+}
 
 function normaliseRenderingMethod(fix) {
     if (!fix) return '—';
     if (fix.type === 'loop_headtrack') return '—';
+    // Native-stereo fix types use the same Dual-View render path; the
+    // distinction is preserved as a Feature flag (filter chip), not as a
+    // separate rendering method.
+    if (isNativeStereo(fix)) return 'Dual-View Rendering';
     // 1) If the fix already declares one of the canonical names, accept it.
     const raw = String(fix.rendering_method || '');
     for (const m of RENDERING_METHODS) {
@@ -1931,7 +2149,8 @@ function normaliseRenderingMethod(fix) {
     if (/multi.?view|quilt|holograph|looking.?glass/i.test(raw)) return 'Multi-View Rendering';
     if (/sequential|shutter|frame.?sequential|page.?flip/i.test(raw)) return 'Sequential-View Rendering';
     if (/dual.?view|side.?by.?side|stereo|geometry|injection|camera|view.?matrix|wrapper/i.test(raw)) return 'Dual-View Rendering';
-    // 3) Default by mod family.
+    // 3) Default by mod family. wiz3d_wrapper still uses dual-view rendering;
+    //    the native variants are caught by step 0 above.
     if (/^geo|^helix|^3dmigoto|^wiz3d|^tridef|^iz3d|^vorpx/i.test(t)) return 'Dual-View Rendering';
     if (/^reshade|^superdepth|^rendepth/i.test(t)) return 'Depth Map Reprojection';
     if (/^ue3d|^uevr|^vrto3d|^vireio/i.test(t)) return 'Dual-View Rendering';
@@ -1952,15 +2171,77 @@ function compatClassFor(game) {
 function activeFilterLabel() {
     if (sortMode === 'recent' && filterMode === 'all') return 'Recent';
     const labels = {
-        installed:        'Installed',
-        sr_weave:         'SR',
-        vr_native:        'VR',
-        sbs:              'SBS',
-        frame_sequential: 'Active shutter',
-        anaglyph:         'Anaglyph',
-        headtracking:     'Head tracking',
+        installed:                  'Installed',
+        sr_weave:                   'Simulated Reality',
+        vr_native:                  'Virtual Reality',
+        sbs:                        'Full Side-by-Side',
+        sbs_half:                   'Half Side-by-Side',
+        tab:                        'Full Top-and-Bottom',
+        tab_half:                   'Half Top-and-Bottom',
+        frame_sequential:           'Active shutter',
+        interlaced:                 'Interlaced',
+        anaglyph:                   'Anaglyph',
+        native_stereo:              'Native stereo',
+        headtracking:               'Head tracking',
+        render_dual_view:           'Dual-View',
+        render_depth_reproj:        'Depth Reproject',
+        render_multi_view:          'Multi-View',
+        render_sequential:          'Sequential',
+        render_ai_reproj:           'AI Reproject',
     };
     return (filterMode !== 'all' && labels[filterMode]) ? labels[filterMode] : '';
+}
+
+// ── Sidebar — virtualized (windowed) rendering ────────────────
+// With 7,000+ games in the catalogue, rendering every nav-item to the DOM
+// makes scrolling janky and first-paint slow. Instead: a tall spacer
+// gives the scrollbar the right total height, and only the rows that
+// actually fall within the viewport (+ a small buffer above/below) get
+// DOM elements. Same UI as before — feels like one continuous list —
+// without the per-item DOM cost. Approach mirrors what Steam, Discord,
+// Spotify, VS Code's file tree, and GOG Galaxy all do.
+
+const SIDEBAR_ITEM_HEIGHT = 36;     // px — set in CSS to match (see .nav-item-v rule)
+const SIDEBAR_BUFFER_ROWS = 6;      // extra rows above/below viewport
+
+function _sidebarItemHTML(game, topPx) {
+    const isInstalled = installedGameIds.has(game.id);
+    const isAvailable = window._scannedPaths?.[game.id] || (selectedGame && selectedGame.id === game.id && getInstallPath());
+    const classes = ['nav-item', 'nav-item-v',
+        isInstalled ? 'installed' : (isAvailable ? 'available' : ''),
+        (selectedGame && game.id === selectedGame.id) ? 'active' : '',
+    ].filter(Boolean).join(' ');
+    const grad      = gameGradient(game.id);
+    const posterUrl = gameArtUrl(game, 'poster');
+    const headerUrl = gameArtUrl(game, 'header');
+    const initial   = gameInitial(game.title);
+    const artLayers = [posterUrl, headerUrl].filter(Boolean).map(u => `url('${u}') center/cover`).join(',');
+    const artDiv    = artLayers ? `<div class="game-thumb-art" style="background:${artLayers};"></div>` : '';
+    const safeTitle = String(game.title).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    // Right-click on the row opens a context menu (Hide / Browse local files).
+    // No always-visible buttons on the row itself — keeps the list clean.
+    return `<div class="${classes}" data-game-id="${game.id}" style="top:${topPx}px;">
+        <div class="game-thumb" data-initial="${initial}" style="background:linear-gradient(135deg,${grad.from},${grad.to});">${artDiv}</div>
+        <span class="game-title">${safeTitle}</span>
+        <span class="game-compat-dot ${compatClassFor(game)}"></span>
+    </div>`;
+}
+
+function _renderSidebarWindow() {
+    const list = safeGetEl('sidebar-list');
+    if (!list) return;
+    const filtered = list._filtered || [];
+    const spacer   = list._spacer;
+    if (!spacer) return;
+    const scrollTop = list.scrollTop;
+    const viewportH = list.clientHeight || 600;
+    const startIdx  = Math.max(0, Math.floor(scrollTop / SIDEBAR_ITEM_HEIGHT) - SIDEBAR_BUFFER_ROWS);
+    const endIdx    = Math.min(filtered.length, Math.ceil((scrollTop + viewportH) / SIDEBAR_ITEM_HEIGHT) + SIDEBAR_BUFFER_ROWS);
+    let html = '';
+    for (let i = startIdx; i < endIdx; i++) {
+        html += _sidebarItemHTML(filtered[i], i * SIDEBAR_ITEM_HEIGHT);
+    }
+    spacer.innerHTML = html;
 }
 
 function renderSidebar(games) {
@@ -1977,36 +2258,89 @@ function renderSidebar(games) {
         console.error('sidebar-list element is missing');
         return;
     }
-    list.innerHTML = '';
+
+    list._filtered = filtered;
+
     if (filtered.length === 0) {
         list.innerHTML = '<div style="padding:14px;color:var(--text-dim);font-size:12px;">No games found (check your data/game JSON files or your filters).</div>';
+        list._spacer = null;
+        return;
     }
-    filtered.forEach(game => {
-        const isInstalled = installedGameIds.has(game.id);
-        const isAvailable = window._scannedPaths?.[game.id] || getInstallPath();
-        const div = document.createElement('div');
-        div.className = 'nav-item' + (isInstalled ? ' installed' : (isAvailable ? ' available' : ''));
-        if (selectedGame && game.id === selectedGame.id) div.classList.add('active');
-        const grad      = gameGradient(game.id);
-        const posterUrl = gameArtUrl(game, 'poster');
-        const headerUrl = gameArtUrl(game, 'header');
-        const initial   = gameInitial(game.title);
-        const artLayers = [posterUrl, headerUrl].filter(Boolean).map(u => `url('${u}') center/cover`).join(',');
-        const artDiv    = artLayers ? `<div class="game-thumb-art" style="background:${artLayers};"></div>` : '';
-        div.innerHTML = `
-            <div class="game-thumb" data-initial="${initial}" style="background:linear-gradient(135deg,${grad.from},${grad.to});">${artDiv}</div>
-            <span class="game-title">${game.title}</span>
-            <span class="game-compat-dot ${compatClassFor(game)}"></span>
-        `;
-        div.onclick = () => {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            div.classList.add('active');
-            selectGame(game);
-            localStorage.setItem(`recent_${game.id}`, Date.now().toString());
-        };
-        list.appendChild(div);
-    });
+
+    // One-time scaffold install: spacer + delegated click + scroll listener.
+    let spacer = list._spacer;
+    if (!spacer || !list.contains(spacer)) {
+        list.innerHTML = '<div class="vlist-spacer" style="position:relative;width:100%;"></div>';
+        spacer = list.firstElementChild;
+        list._spacer = spacer;
+        list.addEventListener('scroll', _renderSidebarWindow, { passive: true });
+        list.addEventListener('click', (e) => {
+            const item = e.target.closest('.nav-item');
+            if (!item) return;
+            const id = item.dataset.gameId;
+            const g  = (list._filtered || []).find(x => x.id === id);
+            if (g) {
+                selectGame(g);
+                try { localStorage.setItem(`recent_${g.id}`, Date.now().toString()); } catch {}
+            }
+        });
+        list.addEventListener('contextmenu', (e) => {
+            const item = e.target.closest('.nav-item');
+            if (!item) return;
+            e.preventDefault();
+            const id = item.dataset.gameId;
+            const g  = (list._filtered || []).find(x => x.id === id);
+            if (g) showGameContextMenu(e.clientX, e.clientY, g);
+        });
+        window.addEventListener('resize', () => _renderSidebarWindow(), { passive: true });
+    }
+
+    spacer.style.height = (filtered.length * SIDEBAR_ITEM_HEIGHT) + 'px';
+    list.scrollTop = 0;             // reset to top on every filter/sort change
+    _renderSidebarWindow();
+    _renderAzStrip(filtered);
+
     if (!selectedGame && filtered.length > 0 && !searchTerm && filterMode === 'all') selectGame(filtered[0]);
+}
+
+// A-Z jump strip — renders the alphabet down the right edge of the
+// sidebar. Click a letter to scroll the virtualized list to the first
+// game starting with it. Letters with no matching games render dim.
+function _firstLetterIndex(games) {
+    const map = new Map();
+    games.forEach((g, i) => {
+        const c = String(g.title || '?').toUpperCase().replace(/^(THE\s+|A\s+|AN\s+)/, '');
+        const ch = c[0] || '#';
+        const key = /[A-Z]/.test(ch) ? ch : '#';
+        if (!map.has(key)) map.set(key, i);
+    });
+    return map;
+}
+
+function _renderAzStrip(filtered) {
+    const strip = document.getElementById('azStrip');
+    if (!strip) return;
+    if (!filtered || filtered.length < 30) { strip.style.display = 'none'; return; }
+    strip.style.display = 'flex';
+    const idxMap = _firstLetterIndex(filtered);
+    const letters = ['#', ...Array.from({length: 26}, (_, i) => String.fromCharCode(65 + i))];
+    strip.innerHTML = letters.map(L => {
+        const present = idxMap.has(L);
+        return `<span class="${present ? '' : 'disabled'}" data-letter="${L}">${L}</span>`;
+    }).join('');
+    // Delegated click handler — installed once.
+    if (!strip._wired) {
+        strip._wired = true;
+        strip.addEventListener('click', (e) => {
+            const el = e.target.closest('span[data-letter]');
+            if (!el || el.classList.contains('disabled')) return;
+            const list = document.getElementById('sidebar-list');
+            if (!list) return;
+            const idx = _firstLetterIndex(list._filtered || []).get(el.dataset.letter);
+            if (idx === undefined) return;
+            list.scrollTop = idx * SIDEBAR_ITEM_HEIGHT;
+        });
+    }
 }
 
 const searchBox = safeGetEl('searchBox');
@@ -2060,35 +2394,199 @@ const FILTER_GROUPS = [
         { id: 'recent',      label: 'Recently played',   icon: '↻', sort: 'recent' },
     ]},
     { title: 'Output', items: [
-        { id: 'sr_weave',    label: 'SR display',        icon: '◈' },
-        { id: 'vr_native',   label: 'VR output',         icon: '⊡' },
-        { id: 'sbs',         label: 'Side-by-side',      icon: '▥' },
-        { id: 'frame_sequential', label: 'Active shutter', icon: '▣' },
-        { id: 'anaglyph',    label: 'Anaglyph',          icon: '◍' },
+        { id: 'sr_weave',         label: 'Simulated Reality',   icon: '◈' },
+        { id: 'vr_native',        label: 'Virtual Reality',     icon: '⊡' },
+        { id: 'sbs',              label: 'Full Side-by-Side',   icon: '▥' },
+        { id: 'sbs_half',         label: 'Half Side-by-Side',   icon: '▥' },
+        { id: 'tab',              label: 'Full Top-and-Bottom', icon: '▤' },
+        { id: 'tab_half',         label: 'Half Top-and-Bottom', icon: '▤' },
+        { id: 'frame_sequential', label: 'Active shutter',      icon: '▣' },
+        { id: 'interlaced',       label: 'Interlaced',          icon: '☰' },
+        { id: 'anaglyph',         label: 'Anaglyph',            icon: '◍' },
     ]},
     { title: 'Features', items: [
-        { id: 'headtracking', label: 'Head tracking',    icon: '◐' },
+        { id: 'native_stereo', label: 'Native stereo',     icon: '◆' },
+        { id: 'headtracking',  label: 'Head tracking',     icon: '◐' },
+    ]},
+    { title: 'Rendering', items: [
+        { id: 'render_dual_view',       label: 'Dual-View Rendering',      icon: '⊟' },
+        { id: 'render_depth_reproj',    label: 'Depth Map Reprojection',   icon: '◭' },
+        { id: 'render_multi_view',      label: 'Multi-View Rendering',     icon: '◫' },
+        { id: 'render_sequential',      label: 'Sequential-View',          icon: '▣' },
+        { id: 'render_ai_reproj',       label: 'AI Reprojection',          icon: '✦' },
+    ]},
+    { title: 'Mods', items: [
+        { id: 'mod_uevr',         label: 'UEVR',                       icon: '⊕' },
+        { id: 'mod_geo11',        label: 'Geo-11',                     icon: '◆' },
+        { id: 'mod_3dmigoto',     label: '3DMigoto',                   icon: '◇' },
+        { id: 'mod_wiz3d',        label: 'wiz3D',                      icon: '✦' },
+        { id: 'mod_hd3d',         label: 'AMD HD3D Native',            icon: '▦' },
+        { id: 'mod_ogl_qbs',      label: 'OpenGL Quad-Buffer',         icon: '▣' },
+        { id: 'mod_3dv_dm',       label: '3D Vision Direct Mode',      icon: '◈' },
+        { id: 'mod_3d_vision',    label: '3D Vision Automatic Mode',   icon: '◐' },
+        { id: 'mod_helixmod',     label: 'HelixMod',                   icon: '⊞' },
+        { id: 'mod_helixvision',  label: 'HelixVision',                icon: '⊠' },
+        { id: 'mod_vorpx',        label: 'vorpX',                      icon: '⊡' },
+        { id: 'mod_tridef',       label: 'TriDef 3D',                  icon: '△' },
+        { id: 'mod_superdepth3d', label: 'SuperDepth3D',               icon: '◭' },
+        { id: 'mod_3dgame_bridge',label: '3DGame Bridge',              icon: '⊟' },
+        { id: 'mod_vireio',       label: 'Vireio Perception',          icon: '◉' },
     ]},
 ];
+
+const RENDER_FILTER_TO_METHOD = {
+    render_dual_view:     'Dual-View Rendering',
+    render_depth_reproj:  'Depth Map Reprojection',
+    render_multi_view:    'Multi-View Rendering',
+    render_sequential:    'Sequential-View Rendering',
+    render_ai_reproj:     'AI Reprojection',
+};
+
+// Maps mod-filter IDs to the underlying fix.type strings stored in each
+// game's sidebar projection. A filter chip matches a game iff the chip's
+// type is present in `game.fix_types`. wiz3D variants (HD3D / Quad-Buffer /
+// 3DV-DM) share the wiz3D family but map to distinct fix types — listed
+// separately so users can drill in.
+const MOD_FILTER_TO_TYPE = {
+    mod_uevr:          'uevr',
+    mod_geo11:         'geo11',
+    mod_3dmigoto:      '3dmigoto',
+    mod_wiz3d:         'wiz3d_wrapper',
+    mod_hd3d:          'wiz3d_hd3d',
+    mod_ogl_qbs:       'wiz3d_opengl',
+    mod_3dv_dm:        'wiz3d_3dvision_dm',
+    mod_3d_vision:     '3d-vision',
+    mod_helixmod:      'helixmod',
+    mod_helixvision:   'helixvision',
+    mod_vorpx:         'vorpx',
+    mod_tridef:        'tridef',
+    mod_superdepth3d:  'superdepth3d',
+    mod_3dgame_bridge: '3dgamebridge',
+    mod_vireio:        'vireio',
+};
+
+// Excluded-filters persistence. The "−" button on each filter chip is a
+// TOGGLE: pressing it once flips the filter into "exclude mode" — games
+// matching that filter are hidden from the library. Press it again to
+// turn exclusion off. The chip itself stays visible regardless. Excluded
+// filters compose with OR (a game is hidden if it matches ANY excluded
+// filter), and they're mutually exclusive with the chip's positive-filter
+// state (clicking the chip body always sets the active filter and clears
+// any exclusion of that same chip).
+const EXCLUDED_FILTERS_KEY  = 'stereopticon.excludedFilters';
+const ALWAYS_VISIBLE_FILTERS = new Set(['all']);
+
+function loadExcludedFilters() {
+    try { return new Set(JSON.parse(localStorage.getItem(EXCLUDED_FILTERS_KEY) || '[]')); }
+    catch { return new Set(); }
+}
+function saveExcludedFilters(set) {
+    try { localStorage.setItem(EXCLUDED_FILTERS_KEY, JSON.stringify([...set])); } catch {}
+}
+window.toggleFilterExclude = function(id) {
+    if (!id || ALWAYS_VISIBLE_FILTERS.has(id)) return;
+    const ex = loadExcludedFilters();
+    if (ex.has(id)) ex.delete(id);
+    else            ex.add(id);
+    saveExcludedFilters(ex);
+    // Can't be both active AND excluded; if you just excluded the active
+    // filter, fall back to 'all'.
+    if (ex.has(id) && filterMode === id) { filterMode = 'all'; }
+    renderFilterPane();
+    renderSidebar(gamesData);
+};
+
+// Collapsible filter groups — each group header is clickable; collapse
+// state persists per group title.
+const COLLAPSED_GROUPS_KEY = 'stereopticon.collapsedFilterGroups';
+function loadCollapsedGroups() {
+    try { return new Set(JSON.parse(localStorage.getItem(COLLAPSED_GROUPS_KEY) || '[]')); }
+    catch { return new Set(); }
+}
+function saveCollapsedGroups(set) {
+    try { localStorage.setItem(COLLAPSED_GROUPS_KEY, JSON.stringify([...set])); } catch {}
+}
+window.toggleFilterGroup = function(title) {
+    if (!title) return;
+    const c = loadCollapsedGroups();
+    if (c.has(title)) c.delete(title);
+    else              c.add(title);
+    saveCollapsedGroups(c);
+    renderFilterPane();
+};
+
+// Build a predicate fn for a given filter ID. Returns null if the ID
+// doesn't correspond to a filter that excludes/includes by attribute
+// (e.g., 'all' or 'installed' which are handled inline).
+function buildFilterPredicate(id) {
+    if (id === 'headtracking')  return g => !!g.has_headtracking;
+    if (id === 'native_stereo') return g => !!g.has_native_stereo;
+    if (RENDER_FILTER_TO_METHOD[id]) {
+        const target = RENDER_FILTER_TO_METHOD[id];
+        return g => (g.rendering_methods || []).includes(target);
+    }
+    if (MOD_FILTER_TO_TYPE[id]) {
+        const target = MOD_FILTER_TO_TYPE[id];
+        return g => (g.fix_types || []).includes(target);
+    }
+    // Otherwise assume it's an output ID (sbs, tab, vr_native, etc.).
+    return g => (g.native_outputs || []).includes(id);
+}
 
 function renderFilterPane() {
     const root = document.getElementById('filterGroups');
     if (!root) return;
+    const excluded  = loadExcludedFilters();
+    const collapsed = loadCollapsedGroups();
     let html = '';
     for (const group of FILTER_GROUPS) {
-        html += `<div class="filter-group"><div class="filter-group-label">${group.title}</div>`;
-        for (const item of group.items) {
-            const isActive = item.sort
-                ? (sortMode === item.sort && filterMode === 'all')
-                : (filterMode === item.id);
-            html += `<button class="filter-row${isActive ? ' active' : ''}" data-filter="${item.id}" data-sort="${item.sort || ''}" onclick="setLibraryFilter('${item.id}','${item.sort || ''}')">
-                <span class="filter-row-icon">${item.icon}</span>
-                <span class="filter-row-label">${item.label}</span>
-            </button>`;
+        const isCollapsed = collapsed.has(group.title);
+        // Group header is a clickable row that toggles collapse state.
+        html += `<div class="filter-group"><div class="filter-group-label is-collapsible" data-group="${group.title}">
+            <span class="group-chevron">${isCollapsed ? '▸' : '▾'}</span>${group.title}
+        </div>`;
+        if (!isCollapsed) {
+            for (const item of group.items) {
+                const isActive    = item.sort
+                    ? (sortMode === item.sort && filterMode === 'all')
+                    : (filterMode === item.id);
+                const isExcluded  = excluded.has(item.id);
+                const hideBtn     = ALWAYS_VISIBLE_FILTERS.has(item.id)
+                    ? ''
+                    : `<button class="filter-hide-btn${isExcluded ? ' active' : ''}" data-hide-filter="${item.id}" title="${isExcluded ? 'Showing — click to hide games matching this' : 'Hide games matching this filter'}" aria-label="${isExcluded ? 'Un' : ''}Hide games matching ${item.label}">${isExcluded ? '✕' : '−'}</button>`;
+                html += `<button class="filter-row${isActive ? ' active' : ''}${isExcluded ? ' excluded' : ''}" data-filter="${item.id}" data-sort="${item.sort || ''}">
+                    <span class="filter-row-icon">${item.icon}</span>
+                    <span class="filter-row-label">${item.label}</span>
+                    ${hideBtn}
+                </button>`;
+            }
         }
         html += `</div>`;
     }
     root.innerHTML = html;
+    if (!root._wired) {
+        root._wired = true;
+        root.addEventListener('click', (e) => {
+            // Hide-button intercept first.
+            const hide = e.target.closest('.filter-hide-btn');
+            if (hide) {
+                e.stopPropagation();
+                e.preventDefault();
+                window.toggleFilterExclude(hide.dataset.hideFilter);
+                return;
+            }
+            // Group collapse intercept.
+            const groupHead = e.target.closest('.filter-group-label.is-collapsible');
+            if (groupHead) {
+                window.toggleFilterGroup(groupHead.dataset.group);
+                return;
+            }
+            // Filter chip activation.
+            const row = e.target.closest('.filter-row');
+            if (!row || !row.dataset.filter) return;
+            window.setLibraryFilter(row.dataset.filter, row.dataset.sort || '');
+        });
+    }
     const sub = document.getElementById('filterPaneSub');
     if (sub) {
         const count = (filterMode !== 'all' ? 1 : 0) + (sortMode !== 'alpha' ? 1 : 0);
@@ -2191,6 +2689,93 @@ async function autoScanGamePath(game) {
     } catch { /* scan failed silently */ }
 }
 
+// ── Hidden-games persistence ─────────────────────────────────
+// Each nav-item has a hover-only "−" button that lets the user dismiss
+// games they're not interested in. Hidden IDs persist in localStorage so
+// the list stays curated across launches. Unhide via Settings → "Show
+// hidden games" (TODO) or by clearing the storage key.
+const HIDDEN_GAMES_KEY = 'stereopticon.hiddenGames';
+function loadHiddenGames() {
+    try { return new Set(JSON.parse(localStorage.getItem(HIDDEN_GAMES_KEY) || '[]')); }
+    catch { return new Set(); }
+}
+function saveHiddenGames(set) {
+    try { localStorage.setItem(HIDDEN_GAMES_KEY, JSON.stringify([...set])); } catch {}
+}
+// Right-click context menu on a sidebar row. Currently exposes:
+//   * Hide from list
+//   * Browse local files (opens the game's install folder in Explorer)
+// Anchored at the click position; dismisses on next click or Escape.
+let _gameCtxMenuEl = null;
+function showGameContextMenu(x, y, game) {
+    // Tear down any prior menu.
+    if (_gameCtxMenuEl) { _gameCtxMenuEl.remove(); _gameCtxMenuEl = null; }
+
+    // Resolve a local install path if we have one — prefer scanned path,
+    // then any saved Stereopticon path, then the game's default_path.
+    const saved   = loadSavedGamePaths()[game.id];
+    const scanned = window._scannedPaths?.[game.id];
+    const localPath = saved || scanned || game.default_path || '';
+
+    const menu = document.createElement('div');
+    _gameCtxMenuEl = menu;
+    menu.className = 'game-ctx-menu';
+    menu.innerHTML = `
+        <button class="ctx-item" data-action="browse" ${localPath ? '' : 'disabled'}>
+            <span class="ctx-icon">📁</span>Browse local files
+            ${localPath ? '' : '<span class="ctx-hint">no path</span>'}
+        </button>
+        <div class="ctx-sep"></div>
+        <button class="ctx-item ctx-danger" data-action="hide">
+            <span class="ctx-icon">−</span>Hide from list
+        </button>`;
+    document.body.appendChild(menu);
+
+    // Position with viewport clamping so the menu doesn't spill off-screen.
+    const pad = 6;
+    const w = menu.offsetWidth || 200;
+    const h = menu.offsetHeight || 80;
+    menu.style.left = Math.min(x, window.innerWidth  - w - pad) + 'px';
+    menu.style.top  = Math.min(y, window.innerHeight - h - pad) + 'px';
+
+    menu.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.ctx-item');
+        if (!btn || btn.disabled) return;
+        const action = btn.dataset.action;
+        _gameCtxMenuEl?.remove();
+        _gameCtxMenuEl = null;
+        if (action === 'hide')   window.hideGame(game.id);
+        if (action === 'browse') {
+            try { await window.api.openLocalPath(localPath); }
+            catch (err) { console.error('[ctx] openLocalPath failed', err); }
+        }
+    });
+}
+// Dismiss on outside click / Escape.
+document.addEventListener('click', () => {
+    if (_gameCtxMenuEl) { _gameCtxMenuEl.remove(); _gameCtxMenuEl = null; }
+});
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && _gameCtxMenuEl) { _gameCtxMenuEl.remove(); _gameCtxMenuEl = null; }
+});
+
+window.hideGame = function(id) {
+    if (!id) return;
+    const h = loadHiddenGames();
+    h.add(id);
+    saveHiddenGames(h);
+    // If the hidden game is the currently selected one, clear the detail view.
+    if (selectedGame && selectedGame.id === id) {
+        selectedGame = null;
+        selectedProfile = null;
+        const el = document.getElementById('detail-content');
+        if (el) el.innerHTML = '';
+        const cb = document.getElementById('config-bar');
+        if (cb) cb.style.display = 'none';
+    }
+    renderSidebar(gamesData);
+};
+
 function selectGame(game) {
     // Save previous game's path before switching
     if (selectedGame && selectedGame.id !== game.id) {
@@ -2199,11 +2784,46 @@ function selectGame(game) {
             saveGamePathToStorage(selectedGame.id, prev);
         }
     }
+    // The sidebar passes a LIGHT projection; fetch the full game record
+    // (fixes / compat / paths / etc.) before rendering the detail view.
+    // Cache it on `game._full` so re-selecting doesn't re-hit IPC.
+    if (game && !game._full) {
+        window.api.loadGameOne(game.id).then(full => {
+            if (full) {
+                // Merge full data onto the light row in-place so any sidebar
+                // references keep working.
+                Object.assign(game, full);
+                game._full = true;
+                _continueSelectGame(game);
+            } else {
+                _continueSelectGame(game);
+            }
+        }).catch(() => _continueSelectGame(game));
+        return;
+    }
+    _continueSelectGame(game);
+}
+
+function _continueSelectGame(game) {
     selectedGame    = game;
-    selectedProfile = game.fixes.find(f => f.recommended) || game.fixes[0];
+    // Many of the imported compat-database entries (7,000+ stubs from the
+    // Airtable export) have no `fixes` yet — only community-rating data.
+    // Default `selectedProfile` to null in that case; renderDetailView()
+    // renders an empty-fix state below.
+    selectedProfile = Array.isArray(game.fixes) && game.fixes.length
+        ? (game.fixes.find(f => f.recommended) || game.fixes[0])
+        : null;
     configBar.style.display = 'block';
     hideTray(); resetTray();
     reshadeStatus = null;
+
+    // Hide per-game bars immediately so they don't briefly show the previous
+    // game's state while the new game's renderers run. Each renderer below
+    // re-shows its bar if appropriate for the new game.
+    ['htAxesBar', 'outputOverrideBar', 'tuningPanel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
 
     renderDetailView();   // builds the installPath input among other things
 
@@ -2217,6 +2837,25 @@ function selectGame(game) {
 
     updateBottomBar();
     loadReshadeStatus();
+    // Refresh the per-game override bar — must run after updateSubOptions has
+    // populated primaryOutput options so the override clone has options to mirror.
+    setTimeout(() => { try { window.renderOutputOverrideBar?.(); } catch {} }, 60);
+    // Load the inline tuning panel (Phase 2d) — only fires for Geo-11 fixes
+    // and a path. The panel hides itself for everything else.
+    setTimeout(() => { try { loadTuningPanel(); } catch (e) { console.error(e); } }, 120);
+    // Auto-populate the inline Mod Settings card (formerly the geoModal).
+    // Same data-load + render flow that the old "Mod Settings" button used
+    // to trigger — now happens automatically when a game is selected.
+    setTimeout(() => {
+        try {
+            if (selectedProfile && getInstallPath() && typeof openModSettings === 'function') {
+                openModSettings();
+            }
+        } catch (e) { console.error('[mod-settings inline]', e); }
+    }, 150);
+    // Render the per-game HT axes pill bar (Phase 2e). Hides itself when no
+    // HT method is active for this game.
+    setTimeout(() => { try { window.renderHtAxesPills?.(); } catch {} }, 130);
     // Auto-detect if no path saved or scanned yet
     if (!savedPath && !scannedPath) autoScanGamePath(game);
     // Show pending UEVR guide if this fix was just installed and hasn't launched yet
@@ -2309,6 +2948,20 @@ function buildDeprecatedWarning(p) {
 }
 
 function renderDetailView() {
+    // Defensive guard: any game that somehow ended up with zero fix profiles
+    // (shouldn't happen after the CSV importer maps softwares to fix types,
+    // but safe to handle). Show a compact message inside the normal layout
+    // rather than an entire custom hero.
+    if (!selectedProfile) {
+        detailArea.innerHTML = `
+            <div style="padding:48px 32px;text-align:center;color:var(--text-dim);font-size:13px;">
+                <div style="font-family:var(--font-display);font-size:14px;color:var(--text-secondary);margin-bottom:6px;">${selectedGame.title}</div>
+                No fix profiles wired up for this game yet. Either add one to <code>data/games/${selectedGame.id}.json</code>
+                or re-run <code>node scripts/import-compat-database.js</code> after updating the source CSV.
+            </div>`;
+        return;
+    }
+
     const fixOptions = selectedGame.fixes.map(fix => {
         const pl  = PIPELINES[fix.type];
         const ver = fix.geo11_version || fix.wiz3d_version || fix.ue3d_version
@@ -2641,6 +3294,9 @@ window.handleHeadtrackingChange = function() {
     if (openBtn) openBtn.style.display = isOT ? '' : 'none';
     // Refresh the pipeline chain so the headtracking step appears/disappears.
     try { updateSubOptions?.(); } catch {}
+    // Refresh the per-game HT axes pill bar (Phase 2e) — shows when HT is on,
+    // hides when off.
+    try { window.renderHtAxesPills?.(); } catch {}
 };
 
 window.getHeadtrackingState = function() {
@@ -2932,8 +3588,12 @@ function revertField(key) {
     updateGeoRowState(key);
 }
 async function openGeoModal(opts = {}) {
+    // The Mod Settings "modal" content was relocated inline onto the game
+    // page in the 2026-05-17 refit — see #modSettingsInline in index.html.
+    // This function still does its setup (state load, tab + button toggling,
+    // build HTML) but no longer toggles a modal overlay. Called automatically
+    // when the user selects a game.
     const { defaultTab = 'geo', hideGeoTab = false } = opts;
-    // Show/hide the UEVR/VRto3D/wiz3D tab buttons based on fix type
     const type = selectedProfile?.type || '';
     const isUEVR = ['uevr','ue3d'].includes(type);
     const isWiz3D = type.startsWith('wiz3d');
@@ -2944,7 +3604,6 @@ async function openGeoModal(opts = {}) {
     if (tabUEVR) tabUEVR.style.display = isUEVR ? '' : 'none';
     if (tabVRto3D) tabVRto3D.style.display = isUEVR ? '' : 'none';
     if (tabWiz3D) tabWiz3D.style.display = isWiz3D ? '' : 'none';
-    // For wiz3D fixes there is no Geo-11 ini — hide the geo tab automatically
     const hideGeo = hideGeoTab || isWiz3D;
     if (tabGeo)  tabGeo.style.display  = hideGeo ? 'none' : '';
 
@@ -2970,11 +3629,13 @@ async function openGeoModal(opts = {}) {
         lockBtn.style.color = 'var(--text-dim)';
     }
 
-    const modal=document.getElementById('geoModal'),body=document.getElementById('geoModalBody'),statusEl=document.getElementById('geoModalStatus');
+    const body=document.getElementById('geoModalBody'),statusEl=document.getElementById('geoModalStatus');
     document.getElementById('geoModalTitle').textContent=`${selectedProfile.name}`;
     document.getElementById('geoModalSubtitle').textContent='Mod Settings';
     body.innerHTML='<div style="color:var(--text-dim);font-size:12px;padding:20px 0;">Loading ini…</div>';
-    statusEl.textContent=''; modal.style.display='flex';
+    statusEl.textContent='';
+    // Modal show removed — content lives inline at #modSettingsInline since
+    // the 2026-05-17 refit. Just populate the in-place elements.
     // For UEVR/UE3D fixes, start on UEVR tab; for wiz3D start on wiz3D tab
     if (isWiz3D) {
         window.switchModTab('wiz3d');
@@ -3050,7 +3711,15 @@ window.setHuntingMode = function(val) {
     if (geoState.effective) geoState.effective.hunting = newVal;
     document.getElementById('geoModalBody').innerHTML = buildGeoModalHTML();
 };
-window.closeGeoModal = function(){document.getElementById('geoModal').style.display='none';geoState=null;geoPending={};};
+// closeGeoModal kept as a compatibility no-op — the modal is gone, but
+// some legacy callsites still invoke it (e.g., post-save success path).
+// Just clears the in-memory state so the next game switch reloads cleanly.
+window.closeGeoModal = function(){
+    const m = document.getElementById('geoModal');
+    if (m) m.style.display = 'none';   // no-op: hollow stub element is already display:none
+    geoState=null;
+    geoPending={};
+};
 window.saveGeoModal = async function(){
     const type = selectedProfile?.type || '';
     const isUEVR  = ['uevr','ue3d'].includes(type);
@@ -3200,21 +3869,571 @@ window.openSettingsModal = async function() {
         const el = document.getElementById('settingsVersion');
         if (el && info?.version) el.textContent = `v${info.version} (continuation of Vireio Perception)`;
     } catch {}
-    switchSettingsTab('monitors');
+    switchSettingsTab('display');
 };
- 
+
 window.closeSettingsModal = function() {
     document.getElementById('settingsModal').style.display = 'none';
 };
- 
+
 window.switchSettingsTab = async function(tab) {
     // Tab button state
     document.querySelectorAll('[id^="settingsTab-"]').forEach(b => b.classList.remove('active'));
     const activeBtn = document.getElementById(`settingsTab-${tab}`);
     if (activeBtn) activeBtn.classList.add('active');
- 
+
+    // Show/hide persistent tab content sections (NOT innerHTML-replace —
+    // the display tab contains live controls with wired event listeners).
+    document.querySelectorAll('[id^="settingsTabContent-"]').forEach(el => {
+        el.style.display = (el.id === `settingsTabContent-${tab}`) ? 'block' : 'none';
+    });
+
     if (tab === 'monitors') await renderMonitorsTab();
 };
+
+// ── HT axes per-game + experimental roll (Phase 2e) ──────────
+// Surfaces a simple pill picker on the game page when an HT method is
+// active. Persists per-game in localStorage. The legacy #opentrackAxes
+// select is kept in sync so downstream getHeadtrackingState() still works.
+const HT_AXES_KEY            = 'stereopticon.htAxes';
+const EXPERIMENTAL_ROLL_KEY  = 'stereopticon.experimentalRoll';
+
+function isExperimentalRollOn() {
+    try { return localStorage.getItem(EXPERIMENTAL_ROLL_KEY) === 'true'; }
+    catch { return false; }
+}
+window.toggleExperimentalRoll = function(on) {
+    try { localStorage.setItem(EXPERIMENTAL_ROLL_KEY, on ? 'true' : 'false'); } catch {}
+    // Re-render the pill bar so the roll-included option appears/disappears.
+    try { renderHtAxesPills(); } catch {}
+};
+
+// Show-VR-only-games toggle. Off by default — most users have flat-stereo
+// displays and don't want UEVR-only titles cluttering their library.
+const SHOW_VR_ONLY_KEY = 'stereopticon.showVrOnly';
+function isShowVrOnly() {
+    try { return localStorage.getItem(SHOW_VR_ONLY_KEY) === 'true'; }
+    catch { return false; }
+}
+window.toggleShowVrOnly = function(on) {
+    try { localStorage.setItem(SHOW_VR_ONLY_KEY, on ? 'true' : 'false'); } catch {}
+    renderSidebar(gamesData);
+};
+
+// Show-deprecated-stereo3D-tech toggle. OFF by default — games whose
+// only stereo path is Native-3D-Vision-driver / TriDef / HelixVision
+// can't actually be played in 3D on modern systems without wiz3D help
+// (which they don't have a profile for). The toggle reveals them anyway
+// for users who want to see the full catalogue.
+const SHOW_DEPRECATED_KEY = 'stereopticon.showDeprecated';
+function isShowDeprecated() {
+    try { return localStorage.getItem(SHOW_DEPRECATED_KEY) === 'true'; }
+    catch { return false; }
+}
+window.toggleShowDeprecated = function(on) {
+    try { localStorage.setItem(SHOW_DEPRECATED_KEY, on ? 'true' : 'false'); } catch {}
+    renderSidebar(gamesData);
+};
+
+// Per-game axes are stored as a flat object of booleans:
+//   { x, y, z, pitch, yaw, roll }
+// X / Y / Z are positional, Pitch / Yaw are head rotation. Roll is off by
+// default and only shown in the UI when the experimental flag is on.
+const HT_AXES_DEFAULT = { x: true, y: true, z: true, pitch: true, yaw: true, roll: false };
+const HT_AXES_ORDER   = [
+    { key: 'x',     label: 'X',     tip: 'Lean left / right (head sway).' },
+    { key: 'y',     label: 'Y',     tip: 'Lean up / down (head rise).' },
+    { key: 'z',     label: 'Z',     tip: 'Lean forward / back (head depth).' },
+    { key: 'pitch', label: 'Pitch', tip: 'Look up / down.' },
+    { key: 'yaw',   label: 'Yaw',   tip: 'Turn left / right.' },
+    { key: 'roll',  label: 'Roll',  tip: 'Tilt head side to side. Experimental — most stereo mods do not compose roll cleanly.' },
+];
+
+function loadAllHtAxes() {
+    try { return JSON.parse(localStorage.getItem(HT_AXES_KEY) || '{}'); }
+    catch { return {}; }
+}
+function saveAllHtAxes(map) {
+    try { localStorage.setItem(HT_AXES_KEY, JSON.stringify(map)); } catch {}
+}
+function getHtAxesForGame(gameId) {
+    if (!gameId) return { ...HT_AXES_DEFAULT };
+    const stored = loadAllHtAxes()[gameId];
+    if (!stored || typeof stored !== 'object') return { ...HT_AXES_DEFAULT };
+    return { ...HT_AXES_DEFAULT, ...stored };
+}
+function setHtAxesForGame(gameId, axes) {
+    if (!gameId) return;
+    const m = loadAllHtAxes();
+    m[gameId] = axes;
+    saveAllHtAxes(m);
+}
+
+// Map the per-axis booleans to the closest legacy opentrackAxes value so
+// existing launch-time consumers keep working until they're refactored to
+// read the full axis bitmap.
+function axesToLegacyValue(a) {
+    const trans = a.x || a.y || a.z;
+    const rot   = a.pitch || a.yaw || a.roll;
+    if (trans && rot) {
+        if (a.roll) return '6dof';            // includes roll → full rotation
+        if (a.x && a.y && a.z) return '6dof'; // 5DOF closest legacy
+        if (a.x && a.y && !a.z) return 'xy_yawpitch';
+        return 'yaw_pitch';
+    }
+    if (rot && !trans) {
+        if (a.yaw && !a.pitch && !a.roll) return 'yaw_only';
+        if (a.roll) return 'rotation';
+        return 'yaw_pitch';
+    }
+    if (trans && !rot) return 'translation';
+    return 'yaw_pitch';
+}
+
+window.renderHtAxesPills = function() {
+    const bar    = document.getElementById('htAxesBar');
+    const pills  = document.getElementById('htAxesPills');
+    const note   = document.getElementById('htAxesExperimentalNote');
+    if (!bar || !pills) return;
+
+    // Show only when an HT method is active for this game.
+    const ht = window.getHeadtrackingState?.();
+    const htOn = !!(ht?.enabled && ht.method && ht.method !== 'none');
+    if (!htOn || !selectedGame) { bar.style.display = 'none'; return; }
+    bar.style.display = 'flex';
+
+    const game    = selectedGame;
+    const axes    = getHtAxesForGame(game.id);
+    const rollOn  = isExperimentalRollOn();
+    const visible = HT_AXES_ORDER.filter(o => o.key !== 'roll' || rollOn);
+
+    pills.innerHTML = visible.map(o => {
+        const isOn = !!axes[o.key];
+        return `<button class="ht-axes-pill" data-axis="${o.key}" title="${o.tip}"
+            style="padding:5px 12px;background:${isOn ? 'rgba(201,138,75,0.12)' : 'transparent'};border:1px solid ${isOn ? 'var(--teal-border)' : 'var(--glass-border)'};color:${isOn ? 'var(--teal)' : 'var(--text-dim)'};border-radius:12px;font-size:11px;font-family:var(--font-display);font-weight:600;letter-spacing:0.6px;cursor:pointer;transition:all 0.15s;min-width:42px;">
+            ${o.label}
+        </button>`;
+    }).join('');
+
+    pills.querySelectorAll('.ht-axes-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const key = btn.dataset.axis;
+            const next = { ...axes, [key]: !axes[key] };
+            setHtAxesForGame(game.id, next);
+            // Mirror to legacy select so launch-time still gets a value.
+            const legacy = axesToLegacyValue(next);
+            const sel = document.getElementById('opentrackAxes');
+            if (sel) {
+                if (![...sel.options].some(o => o.value === legacy)) {
+                    const optEl = document.createElement('option');
+                    optEl.value = legacy; optEl.textContent = legacy;
+                    sel.appendChild(optEl);
+                }
+                sel.value = legacy;
+                sel.dispatchEvent(new Event('change'));
+            }
+            renderHtAxesPills();
+        });
+    });
+
+    if (note) note.style.display = rollOn ? 'inline' : 'none';
+};
+
+// Restore the Settings toggles to their persisted state on load.
+document.addEventListener('DOMContentLoaded', () => {
+    const cb = document.getElementById('experimentalRollToggle');
+    if (cb) cb.checked = isExperimentalRollOn();
+    const vr = document.getElementById('showVrOnlyToggle');
+    if (vr) vr.checked = isShowVrOnly();
+    const dp = document.getElementById('showDeprecatedToggle');
+    if (dp) dp.checked = isShowDeprecated();
+});
+
+// ── Inline tuning sliders (Phase 2d, Geo-11 first) ───────────
+// On game-page load we read the active mod's ini and surface the most-
+// tweaked values as inline sliders. Locked by default — user must press
+// 🔒 to unlock before edits land in the ini.
+//
+// Only Geo-11 is wired here. Vireio v5 / wiz3D / VRto3D get their own
+// readers once this pattern is proven.
+let tuningState = null;     // { fixId, iniPath, defaults, effective, mod }
+let tuningLocked = true;
+
+// Which mod-side ini keys to surface, with slider config. We try both
+// modern (dm_*) and legacy (Constants.x1 etc) naming variants — Geo-11
+// fixes are a mix and the iniApply accepts the flat key as-is.
+const TUNING_KNOBS_GEO11 = [
+    { key: 'dm_separation',      label: 'Separation',    tip: 'Eye-to-eye distance. Higher = stronger 3D pop, more strain.',   min: 0,  max: 2,    step: 0.01, fallbacks: ['x1', 'separation'] },
+    { key: 'dm_convergence',     label: 'Convergence',   tip: 'Distance to the zero-parallax plane. Tune so the in-game cursor lands at screen depth.', min: 0,  max: 5,    step: 0.01, fallbacks: ['x2', 'convergence'] },
+    { key: 'dm_auto_convergence',label: 'Auto-converge', tip: 'Let Geo-11 pick the convergence per-frame based on what the player is looking at.', type: 'toggle', fallbacks: [] },
+];
+
+function resolveIniPathForProfile(profile, gamePath) {
+    if (!profile || !gamePath) return null;
+    const iniFile = profile.ini_file || 'd3dxdm.ini';
+    return gamePath.replace(/[\/\\]$/, '') + '\\' + iniFile;
+}
+
+async function loadTuningPanel() {
+    const panel = document.getElementById('tuningPanel');
+    if (!panel) return;
+    panel.style.display = 'none';
+    tuningState = null;
+    tuningLocked = true;
+
+    const profile = selectedProfile;
+    const gamePath = typeof getInstallPath === 'function' ? getInstallPath() : null;
+    if (!profile || !gamePath) return;
+    if (profile.type !== 'geo11') return;  // Phase 2d: Geo-11 only for now.
+
+    const iniPath = resolveIniPathForProfile(profile, gamePath);
+    if (!iniPath) return;
+
+    let result;
+    try { result = await window.api.iniGetState?.(profile.id, iniPath); }
+    catch { return; }
+    if (!result?.success) return;
+
+    tuningState = {
+        fixId:    profile.id,
+        iniPath,
+        defaults: result.defaults  || {},
+        effective:result.effective || {},
+        overrides:result.overrides || {},
+        mod:      'geo11',
+    };
+    // Show panel + render sliders.
+    document.getElementById('tuningModName').textContent = '· ' + (profile.name || 'Geo-11');
+    panel.style.display = 'block';
+    renderTuningSliders();
+    updateTuningLockUI();
+    updateTuningRestoreVisibility();
+}
+
+function tuningValueFor(knob) {
+    if (!tuningState) return null;
+    const eff = tuningState.effective;
+    if (eff[knob.key] !== undefined) return eff[knob.key];
+    for (const f of (knob.fallbacks || [])) {
+        if (eff[f] !== undefined) return eff[f];
+    }
+    return null;
+}
+
+function renderTuningSliders() {
+    const root = document.getElementById('tuningSliders');
+    if (!root || !tuningState) return;
+    const locked = tuningLocked;
+    let html = '';
+    for (const knob of TUNING_KNOBS_GEO11) {
+        const raw = tuningValueFor(knob);
+        const present = raw !== null && raw !== undefined;
+        const dimStyle = locked ? 'opacity:0.55;pointer-events:none;' : '';
+        if (knob.type === 'toggle') {
+            const checked = String(raw) === '1' || raw === true;
+            html += `
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 0;border-top:1px solid var(--glass-border);">
+                <div style="flex:1;">
+                    <div style="font-size:12px;color:var(--text-primary);">${knob.label}${!present ? ' <span style="font-size:9px;color:var(--text-faint);letter-spacing:0.5px;">NOT IN INI</span>' : ''}</div>
+                    <div style="font-size:10.5px;color:var(--text-dim);">${knob.tip}</div>
+                </div>
+                <label class="geo-toggle" style="${dimStyle}">
+                    <input type="checkbox" data-tuning-key="${knob.key}" ${checked ? 'checked' : ''} ${locked ? 'disabled' : ''}
+                        onchange="onTuningChange('${knob.key}', this.checked ? '1' : '0')">
+                    <span class="geo-toggle-track"></span>
+                </label>
+            </div>`;
+            continue;
+        }
+        const num = present ? parseFloat(raw) : (knob.min + (knob.max - knob.min) / 2);
+        const numStr = isFinite(num) ? num.toFixed(2) : '—';
+        html += `
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 0;border-top:1px solid var(--glass-border);">
+            <div style="flex:1;min-width:0;">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+                    <span style="font-size:12px;color:var(--text-primary);">${knob.label}${!present ? ' <span style="font-size:9px;color:var(--text-faint);letter-spacing:0.5px;">NOT IN INI</span>' : ''}</span>
+                    <span style="font-size:10px;color:var(--text-dim);font-family:monospace;">${numStr}</span>
+                </div>
+                <div style="font-size:10.5px;color:var(--text-dim);margin-top:1px;">${knob.tip}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;width:200px;${dimStyle}">
+                <input type="range" data-tuning-key="${knob.key}" min="${knob.min}" max="${knob.max}" step="${knob.step}" value="${num}"
+                    ${locked ? 'disabled' : ''}
+                    oninput="onTuningSliderInput('${knob.key}', this.value)" onchange="onTuningChange('${knob.key}', this.value)"
+                    style="flex:1;">
+            </div>
+        </div>`;
+    }
+    root.innerHTML = html;
+}
+
+window.onTuningSliderInput = function(key, value) {
+    // Mirror the value into the row's number label (so users see the value
+    // update live while dragging). Actual write happens on `change`.
+    const rows = document.querySelectorAll(`#tuningSliders [data-tuning-key="${key}"]`);
+    rows.forEach(r => {
+        const monospaceLabel = r.closest('div')?.previousElementSibling?.querySelector('span[style*="monospace"]');
+        if (monospaceLabel) monospaceLabel.textContent = parseFloat(value).toFixed(2);
+        // The numeric badge above the slider lives one level up — find by structure.
+        const wrap = r.closest('div[style*="display:flex;align-items:center;justify-content:space-between"]');
+        if (wrap) {
+            const badge = wrap.querySelector('span[style*="monospace"]');
+            if (badge) badge.textContent = parseFloat(value).toFixed(2);
+        }
+    });
+};
+
+window.onTuningChange = async function(key, value) {
+    if (!tuningState || tuningLocked) return;
+    const patch = { [key]: String(value) };
+    try {
+        const r = await window.api.iniApply(tuningState.fixId, tuningState.iniPath, patch);
+        if (r?.success) {
+            tuningState.effective[key] = value;
+            tuningState.overrides[key] = value;
+            updateTuningRestoreVisibility();
+        }
+    } catch (e) {
+        console.error('[tuning] iniApply failed', e);
+    }
+};
+
+window.toggleTuningLock = function() {
+    tuningLocked = !tuningLocked;
+    renderTuningSliders();
+    updateTuningLockUI();
+};
+
+function updateTuningLockUI() {
+    const icon  = document.getElementById('tuningLockIcon');
+    const label = document.getElementById('tuningLockLabel');
+    const btn   = document.getElementById('tuningLockBtn');
+    if (!btn) return;
+    if (tuningLocked) {
+        if (icon)  icon.textContent  = '🔒';
+        if (label) label.textContent = 'Locked';
+        btn.style.borderColor = 'var(--glass-border)';
+        btn.style.color       = 'var(--text-dim)';
+    } else {
+        if (icon)  icon.textContent  = '🔓';
+        if (label) label.textContent = 'Unlocked';
+        btn.style.borderColor = 'var(--teal-border)';
+        btn.style.color       = 'var(--teal)';
+    }
+}
+
+function updateTuningRestoreVisibility() {
+    const btn = document.getElementById('tuningRestoreBtn');
+    if (!btn) return;
+    const hasOverrides = tuningState && Object.keys(tuningState.overrides || {}).length > 0;
+    btn.style.display = hasOverrides ? 'inline-flex' : 'none';
+}
+
+window.restoreTuningOriginals = async function() {
+    if (!tuningState) return;
+    try {
+        const r = await window.api.iniReset?.(tuningState.fixId, tuningState.iniPath);
+        if (r?.success) {
+            // Re-load to pick up the post-reset state.
+            await loadTuningPanel();
+        }
+    } catch (e) {
+        console.error('[tuning] iniReset failed', e);
+    }
+};
+
+// ── First-run output picker (Phase 2c) ───────────────────────
+// On first launch we probe for a stereo display. If we can confidently pick
+// one (exactly one detected profile, not the "default") we set it silently.
+// Otherwise we show a modal asking the user.
+const FIRST_RUN_KEY = 'stereopticon.firstRunComplete';
+
+function isFirstRunDone() {
+    try { return localStorage.getItem(FIRST_RUN_KEY) === 'true'; }
+    catch { return false; }
+}
+function markFirstRunDone() {
+    try { localStorage.setItem(FIRST_RUN_KEY, 'true'); } catch {}
+}
+
+// Apply a DISPLAY_TO_OUTPUT mapping to the global selects. Same wiring the
+// display chip uses — change events propagate to updateSubOptions etc.
+function applyDisplayMappingToGlobalSelects(profileId) {
+    const mapping = DISPLAY_TO_OUTPUT[profileId];
+    const primary = document.getElementById('primaryOutput');
+    if (!mapping || !primary) return false;
+    const opts = Array.from(primary.options);
+    const match = opts.find(o => o.value === mapping.output && !o.disabled);
+    if (!match) return false;
+    primary.value = mapping.output;
+    primary.dispatchEvent(new Event('change'));
+    if (mapping.sub) {
+        setTimeout(() => {
+            const sub = document.getElementById('subOutput');
+            if (!sub) return;
+            const subMatch = Array.from(sub.options).find(o => o.value === mapping.sub || o.text === mapping.sub);
+            if (subMatch) { sub.value = subMatch.value; sub.dispatchEvent(new Event('change')); }
+        }, 0);
+    }
+    return true;
+}
+
+async function runFirstRunCheck() {
+    if (isFirstRunDone()) return;
+    let detected = [];
+    let detectedHardwareLabel = '';   // E.g. "Acer SpatialLabs View 27" — surfaced at the top of the picker.
+    try {
+        const result = await window.api.displayGetSettings?.();
+        if (result?.success && Array.isArray(result.profiles)) {
+            detected = result.profiles.filter(p => p.detected && p.id !== 'default' && DISPLAY_TO_OUTPUT[p.id]);
+            // Pull the manufacturer/model string if the backend supplied one.
+            // displayGetSettings can include `hardware_label` / `model` /
+            // `detected_label` per profile — surface whichever exists.
+            for (const p of detected) {
+                const hw = p.hardware_label || p.detected_label || p.model || p.display_name;
+                if (hw) { detectedHardwareLabel = hw; break; }
+            }
+        }
+    } catch {}
+
+    // High-confidence single match → set silently.
+    if (detected.length === 1) {
+        if (applyDisplayMappingToGlobalSelects(detected[0].id)) {
+            markFirstRunDone();
+            return;
+        }
+    }
+
+    const detectedIds = new Set(detected.map(p => p.id));
+    showFirstRunPicker(detectedIds, detectedHardwareLabel, detected.length > 1
+        ? "Stereopticon found a few possible stereo displays. Pick the one you're using:"
+        : "Stereopticon couldn't auto-detect a stereo display. Pick what you have:");
+}
+
+function showFirstRunPicker(detectedIds, detectedHardwareLabel, message) {
+    const modal = document.getElementById('firstRunOutputModal');
+    const msg   = document.getElementById('firstRunMessage');
+    const opts  = document.getElementById('firstRunOptions');
+    if (!modal || !opts) return;
+    // Surface the actual detected hardware (if any) above the message so the
+    // user knows what we saw before they make their pick.
+    const hardwareBanner = detectedHardwareLabel
+        ? `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(201,138,75,0.08);border:1px solid var(--teal-border);border-radius:8px;margin-bottom:10px;">
+              <span style="font-size:14px;">🔍</span>
+              <span style="flex:1;font-size:11.5px;line-height:1.45;">
+                <span style="color:var(--text-dim);font-family:var(--font-display);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;">Detected hardware</span><br>
+                <span style="color:var(--teal);font-weight:500;">${detectedHardwareLabel}</span>
+              </span>
+           </div>`
+        : '';
+    msg.innerHTML = hardwareBanner + `<div>${message}</div>`;
+    const presets = [
+        { id: 'sbs',              icon: '▥', title: 'Side-by-side',           sub: 'Any monitor, via a passive 3D viewer or HMD passthrough' },
+        { id: 'anaglyph',         icon: '◍', title: 'Anaglyph (red/cyan)',    sub: 'Any monitor + red/cyan glasses' },
+        { id: 'vr_native',        icon: '⊡', title: 'VR headset',             sub: 'OpenVR / OpenXR HMD via SteamVR' },
+        { id: 'sr_weave',         icon: '◈', title: 'Simulated Reality display', sub: 'Acer SpatialLabs / Sony Spatial Reality / other glasses-free SR panel (4-way weave)' },
+        { id: 'frame_sequential', icon: '▣', title: 'Active shutter 3D',      sub: 'Nvidia 3D Vision / 120 Hz shutter glasses' },
+        { id: 'tab',              icon: '▤', title: 'Top-and-bottom',         sub: 'Frame-packed 3D over HDMI 1.4' },
+    ];
+    opts.innerHTML = presets.map(p => `
+        <button class="first-run-option" data-id="${p.id}"
+            style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(237,230,218,0.02);border:1px solid ${detectedIds.has(p.id) ? 'var(--teal-border)' : 'var(--glass-border)'};border-radius:10px;color:inherit;cursor:pointer;text-align:left;transition:all 0.15s;">
+            <span style="font-size:16px;line-height:1;margin-top:1px;">${p.icon}</span>
+            <span style="flex:1;">
+                <span style="display:block;font-family:var(--font-display);font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px;">${p.title}${detectedIds.has(p.id) ? ' <span style=\"font-size:9px;color:var(--teal);letter-spacing:1px;\">DETECTED</span>' : ''}</span>
+                <span style="display:block;font-size:11px;color:var(--text-dim);">${p.sub}</span>
+            </span>
+        </button>`).join('');
+    opts.querySelectorAll('.first-run-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            applyDisplayMappingToGlobalSelects(id);
+            markFirstRunDone();
+            modal.style.display = 'none';
+        });
+        btn.addEventListener('mouseenter', () => { btn.style.background = 'rgba(237,230,218,0.06)'; });
+        btn.addEventListener('mouseleave', () => { btn.style.background = 'rgba(237,230,218,0.02)'; });
+    });
+    modal.style.display = 'flex';
+}
+
+window.firstRunDismiss = function(markDone) {
+    if (markDone) markFirstRunDone();
+    document.getElementById('firstRunOutputModal').style.display = 'none';
+};
+
+// Manually re-trigger the first-run picker from Settings — clears the
+// "done" flag so the probe re-runs, then closes Settings and shows the
+// picker (or silently auto-applies if there's a single confident match).
+window.redoFirstRunPicker = function() {
+    try { localStorage.removeItem(FIRST_RUN_KEY); } catch {}
+    try { closeSettingsModal?.(); } catch {}
+    setTimeout(() => { try { runFirstRunCheck(); } catch {} }, 100);
+};
+
+// Kick off the first-run check shortly after page load — wait long enough
+// for the output dropdowns to have populated their options (otherwise
+// applyDisplayMappingToGlobalSelects has nothing to match against).
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => { try { runFirstRunCheck(); } catch {} }, 400);
+});
+
+// ── Global output settings persistence (Phase 2a) ─────────────
+// primaryOutput + subOutput values live in localStorage as a global app
+// setting. Restored on app load; written on every change.
+const SETTINGS_OUTPUT_KEY = 'stereopticon.output';
+function loadGlobalOutputSettings() {
+    try {
+        const raw = localStorage.getItem(SETTINGS_OUTPUT_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+    } catch { return null; }
+}
+function saveGlobalOutputSettings() {
+    const primary = document.getElementById('primaryOutput');
+    const sub     = document.getElementById('subOutput');
+    if (!primary) return;
+    try {
+        localStorage.setItem(SETTINGS_OUTPUT_KEY, JSON.stringify({
+            primary: primary.value || '',
+            sub:     sub?.value     || '',
+        }));
+    } catch {}
+}
+function applyStoredGlobalOutputSettings() {
+    const stored = loadGlobalOutputSettings();
+    if (!stored) return;
+    const primary = document.getElementById('primaryOutput');
+    const sub     = document.getElementById('subOutput');
+    if (primary && stored.primary) {
+        // Wait for primary dropdown to be populated before restoring.
+        const restore = () => {
+            if (![...primary.options].some(o => o.value === stored.primary)) {
+                setTimeout(restore, 80);
+                return;
+            }
+            primary.value = stored.primary;
+            primary.dispatchEvent(new Event('change'));
+            if (sub && stored.sub) {
+                setTimeout(() => {
+                    if ([...sub.options].some(o => o.value === stored.sub)) {
+                        sub.value = stored.sub;
+                        sub.dispatchEvent(new Event('change'));
+                    }
+                }, 60);
+            }
+        };
+        restore();
+    }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const primary = document.getElementById('primaryOutput');
+    const sub     = document.getElementById('subOutput');
+    primary?.addEventListener('change', saveGlobalOutputSettings);
+    sub    ?.addEventListener('change', saveGlobalOutputSettings);
+    // Restore after the page initial render has populated the dropdown opts.
+    setTimeout(applyStoredGlobalOutputSettings, 200);
+});
  
 async function renderMonitorsTab() {
     const body = document.getElementById('settingsBody');

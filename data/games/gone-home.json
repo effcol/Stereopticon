@@ -31,6 +31,37 @@
       "pros": "Decoupled look and aim — head tracking moves the camera, mouse still controls aim. Built-in smoothing for network jitter.",
       "cons": "Headtracking only — does not produce 3D output on its own.",
       "notes": "Reads OpenTrack-protocol UDP head pose on port 4242. Stereopticon's OpenTrack hub adapter handles emission. Pair with any Stereopticon stereo fix for the 3D side."
+    },
+    {
+      "id": "gone_home_vorpx",
+      "name": "vorpX",
+      "type": "vorpx",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Output: OpenVR + OpenXR. Community rating: 3/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 3,
+      "compat_mode": "VR"
+    },
+    {
+      "id": "gone_home_tridef",
+      "name": "TriDef 3D Ignition",
+      "type": "tridef",
+      "cost": "paid",
+      "recommended": false,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D",
+      "deprecated": true
     }
   ]
 }

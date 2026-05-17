@@ -1,0 +1,26 @@
+{
+  "id": "thelordoftheringswarinthenorth",
+  "title": "The Lord of the Rings: War in the North",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "the_lord_of_the_rings_war_in_the_north_helixmod",
+      "name": "HelixMod",
+      "type": "helixmod",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D 9. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "3D"
+    }
+  ],
+  "steam_app_id": ""
+}

@@ -1,0 +1,26 @@
+{
+  "id": "oceanhorn2knightsofthelostrealm",
+  "title": "Oceanhorn 2: Knights of the Lost Realm",
+  "developer": "Unknown",
+  "graphics_api": "",
+  "default_path": "",
+  "exe_name": "",
+  "fixes": [
+    {
+      "id": "oceanhorn_2_knights_of_the_lost_realm_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Output: OpenVR + OpenXR. Community rating: 4/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 4,
+      "compat_mode": "VR"
+    }
+  ],
+  "steam_app_id": ""
+}

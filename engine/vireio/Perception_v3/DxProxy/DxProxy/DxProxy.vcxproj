@@ -13,6 +13,10 @@
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-Bridge|Win32">
+      <Configuration>Release-Bridge</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
@@ -22,33 +26,47 @@
     <ProjectGuid>{16A8AA38-36D3-437F-922A-B808F654AAAA}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>DxProxy</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <!-- v4's engine/vireio/ has a vcpkg manifest that auto-injects a newer
+         jsoncpp into the include path of any child project. v3 ships its
+         own bundled jsoncpp in Shared/json/ with the older API, so we must
+         keep vcpkg out of v3 builds. -->
+    <VcpkgEnabled>false</VcpkgEnabled>
+    <VcpkgEnableManifest>false</VcpkgEnableManifest>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Bridge|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -62,6 +80,9 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release-Bridge|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -70,27 +91,26 @@
     <LinkIncremental>true</LinkIncremental>
     <TargetName>d3d9</TargetName>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
-    <IncludePath>$(WIN_DDK_DIR)inc\atl71;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(WIN_DDK_DIR)\lib\ATL\i386;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>d3d9</TargetName>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
-    <IncludePath>$(WIN_DDK_DIR)inc\atl71;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(WIN_DDK_DIR)\lib\ATL\i386;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>d3d9</TargetName>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
     <OutDir>$(IntDir)</OutDir>
-    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Bridge|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>d3d9</TargetName>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <OutDir>$(SolutionDir)Release-Bridge\</OutDir>
+    <IntDir>$(SolutionDir)Release-Bridge\obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSDK_LibraryPath_x64);</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>d3d9_64</TargetName>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
@@ -102,26 +122,21 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DXPROXY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(DX)\Include;$(FREESPACE)\include;$(SolutionDir)\VRBoostReferee;$(SolutionDir)\Shared;$(SolutionDir)\LibOVR\Include;$(SolutionDir)\LibOVRKernel\Src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DXPROXY_EXPORTS;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\VRBoostReferee;$(SolutionDir)\Shared;$(SolutionDir)..\PluginSection\Include;$(SolutionDir)..\vcpkg_installed\x86-windows\x86-windows\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;$(DX)\Lib\x86;$(FREESPACE)\lib;..\..\LibOVR\Lib\Windows\Win32\Release\VS2012</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Shlwapi.lib;ws2_32.lib;dxerr.lib;dxguid.lib;dinput8.lib;xinput.lib;libfreespace.lib;LibOVR.lib;Winmm.lib;DxErr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg_installed\x86-windows\x86-windows\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openxr_loader.lib;Shlwapi.lib;ws2_32.lib;dxguid.lib;dinput8.lib;xinput.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)$(Configuration)\Perception\bin\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(OutDir)$(TargetName)$(TargetExt)" "C:\Program Files (x86)\Vireio\Perception\bin\$(TargetName)$(TargetExt)"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>xcopy "$(FREESPACE)\lib\*.dll" "$(SolutionDir)$(Configuration)\Perception\bin\" /Y</Command>
-    </PreBuildEvent>
-    <PreBuildEvent>
-      <Message>Copy libfreespace.dll from the libfreespace SDK</Message>
-    </PreBuildEvent>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(IntDir)</AdditionalIncludeDirectories>
     </ResourceCompile>
@@ -132,26 +147,21 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DXPROXY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(DX)\Include;$(FREESPACE)\include;$(SolutionDir)\VRBoostReferee;$(SolutionDir)\Shared</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DXPROXY_EXPORTS;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\VRBoostReferee;$(SolutionDir)\Shared;$(SolutionDir)..\PluginSection\Include;$(SolutionDir)..\vcpkg_installed\x64-windows\x64-windows\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;$(DX)\Lib\x86;$(FREESPACE)\lib;..\..\LibOVR\Lib\Win32\VS2012</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ws2_32.lib;dxerr.lib;dxguid.lib;dinput8.lib;xinput.lib;libfreespace.lib;libovr.lib;Winmm.lib;DxErr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg_installed\x64-windows\x64-windows\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openxr_loader.lib;ws2_32.lib;dxguid.lib;dinput8.lib;xinput.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)$(Configuration)\Perception\bin\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(OutDir)$(TargetName)$(TargetExt)" "C:\Program Files (x86)\Vireio\Perception\bin\$(TargetName)$(TargetExt)"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>xcopy "$(FREESPACE)\lib\*.dll" "$(SolutionDir)$(Configuration)\Perception\bin\" /Y</Command>
-    </PreBuildEvent>
-    <PreBuildEvent>
-      <Message>Copy libfreespace.dll from the libfreespace SDK</Message>
-    </PreBuildEvent>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(IntDir)</AdditionalIncludeDirectories>
     </ResourceCompile>
@@ -164,8 +174,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DXPROXY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(DX)\Include;$(FREESPACE)\include;$(SolutionDir)\VRboostReferee;$(SolutionDir)\Shared;$(SolutionDir)\LibOVR\Include;$(SolutionDir)\LibOVRKernel\Src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DXPROXY_EXPORTS;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\VRboostReferee;$(SolutionDir)\Shared;$(SolutionDir)..\PluginSection\Include;$(SolutionDir)..\vcpkg_installed\x86-windows\x86-windows\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -173,17 +184,42 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;$(DX)\Lib\x86;$(FREESPACE)\lib;..\..\LibOVR\Lib\Windows\Win32\Release\VS2012</AdditionalLibraryDirectories>
-      <AdditionalDependencies>shlwapi.lib;ws2_32.lib;dxerr.lib;dxguid.lib;dinput8.lib;xinput.lib;libfreespace.lib;libovr.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg_installed\x86-windows\x86-windows\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openxr_loader.lib;shlwapi.lib;ws2_32.lib;dxguid.lib;dinput8.lib;xinput.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)$(Configuration)\Perception\bin\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(OutDir)$(TargetName)$(TargetExt)" "C:\Program Files (x86)\Vireio\Perception\bin\$(TargetName)$(TargetExt)"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>xcopy "$(FREESPACE)\lib\*.dll" "$(SolutionDir)$(Configuration)\Perception\bin\" /Y</Command>
-      <Message>Copy libfreespace.dll from the libfreespace SDK</Message>
-    </PreBuildEvent>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(IntDir)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-Bridge|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DXPROXY_EXPORTS;VIREIO_HT_ONLY;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\VRboostReferee;$(SolutionDir)\Shared;$(SolutionDir)..\PluginSection\Include;$(SolutionDir)..\vcpkg_installed\x86-windows\x86-windows\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg_installed\x86-windows\x86-windows\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openxr_loader.lib;shlwapi.lib;ws2_32.lib;dxguid.lib;dinput8.lib;xinput.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)$(Configuration)\Perception\bin\$(TargetName)$(TargetExt)</OutputFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(OutDir)$(TargetName)$(TargetExt)" "C:\Program Files (x86)\Vireio\Perception\bin\$(TargetName)$(TargetExt)"</Command>
+    </PostBuildEvent>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(IntDir)</AdditionalIncludeDirectories>
     </ResourceCompile>
@@ -196,8 +232,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>x64;WIN32;NDEBUG;_WINDOWS;_USRDLL;DXPROXY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(DX)\Include;$(FREESPACE)\include;$(SolutionDir)\VRboostReferee;$(SolutionDir)\Shared;$(SolutionDir)\LibOVR\Include;$(SolutionDir)\LibOVRKernel\Src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>x64;WIN32;NDEBUG;_WINDOWS;_USRDLL;DXPROXY_EXPORTS;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\VRboostReferee;$(SolutionDir)\Shared;$(SolutionDir)..\PluginSection\Include;$(SolutionDir)..\vcpkg_installed\x64-windows\x64-windows\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -205,8 +242,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x64;$(DX)\Lib\x64;..\..\LibOVR\Lib\Windows\x64\Release\VS2012</AdditionalLibraryDirectories>
-      <AdditionalDependencies>shlwapi.lib;ws2_32.lib;dxerr.lib;dxguid.lib;dinput8.lib;xinput.lib;libovr.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\vcpkg_installed\x64-windows\x64-windows\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openxr_loader.lib;shlwapi.lib;ws2_32.lib;dxguid.lib;dinput8.lib;xinput.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)$(Configuration)\Perception\bin\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
@@ -256,7 +293,6 @@
     <ClCompile Include="Direct3DVolumeTexture9.cpp" />
     <ClCompile Include="DirectInput.cpp" />
     <ClCompile Include="DirectXInputControls.cpp" />
-    <ClCompile Include="FreeSpaceTracker.cpp" />
     <ClCompile Include="FreeTrackTracker.cpp" />
     <ClCompile Include="GameHandler.cpp" />
     <ClCompile Include="HMDisplayInfoFactory.cpp" />
@@ -264,10 +300,11 @@
     <ClCompile Include="InGameMenus.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MotionTracker.cpp" />
+    <ClCompile Include="OpenXRTracker.cpp" />
+    <ClCompile Include="OpenTrackUDPTracker.cpp" />
+    <ClCompile Include="OpenXRDirectMode.cpp" />
     <ClCompile Include="MotionTrackerFactory.cpp" />
     <ClCompile Include="MurmurHash3.cpp" />
-    <ClCompile Include="OculusDirectToRiftView.cpp" />
-    <ClCompile Include="OculusTracker.cpp" />
     <ClCompile Include="Popup.cpp" />
     <ClCompile Include="DataGatherer.cpp" />
     <ClCompile Include="ShaderModificationRepository.cpp" />
@@ -307,7 +344,6 @@
     <ClInclude Include="HMDisplayInfo.h" />
     <ClInclude Include="HMDisplayInfoFactory.h" />
     <ClInclude Include="HMDisplayInfo_Default.h" />
-    <ClInclude Include="HMDisplayInfo_OculusRift.h" />
     <ClInclude Include="MatrixDoNothing.h" />
     <ClInclude Include="MatrixGatheredOrhoSquash.h" />
     <ClInclude Include="MatrixGuiSquash.h" />
@@ -323,7 +359,6 @@
     <ClInclude Include="MatrixRollOnlyHalf.h" />
     <ClInclude Include="MatrixRollOnlyNegative.h" />
     <ClInclude Include="MatrixSurfaceRefractionTransform.h" />
-    <ClInclude Include="OculusDirectToRiftView.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShaderMatrixModification.h" />
     <ClInclude Include="MatrixIgnoreOrtho.h" />
@@ -358,11 +393,9 @@
     <ClInclude Include="Direct3DVertexShader9.h" />
     <ClInclude Include="Direct3DVolume9.h" />
     <ClInclude Include="Direct3DVolumeTexture9.h" />
-    <ClInclude Include="FreeSpaceTracker.h" />
     <ClInclude Include="FreeTrackTracker.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="MotionTrackerFactory.h" />
-    <ClInclude Include="OculusTracker.h" />
     <ClInclude Include="SharedMemoryTracker.h" />
     <ClInclude Include="IStereoCapableWrapper.h" />
     <ClInclude Include="StereoShaderConstant.h" />
@@ -370,6 +403,10 @@
     <ClInclude Include="StereoViewFactory.h" />
     <ClInclude Include="StereoViewInterleave.h" />
     <ClInclude Include="MotionTracker.h" />
+    <ClInclude Include="OpenXRTracker.h" />
+    <ClInclude Include="OpenTrackUDPTracker.h" />
+    <ClInclude Include="OpenXRDirectMode.h" />
+    <ClInclude Include="HMDisplayInfo_OpenXR.h" />
     <ClInclude Include="Vector4SimpleTranslate.h" />
     <ClInclude Include="..\..\Shared\pugixml.hpp" />
     <ClInclude Include="..\..\Shared\pugiconfig.hpp" />
@@ -515,13 +552,6 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">copying pixel shader from Release to $(Configuration)</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\Perception\fx\%(filename).fx</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Configuration)\Perception\fx\%(filename).fx</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\OculusRift.fx">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy "%(fullpath)" "$(SolutionDir)$(Configuration)\Perception\fx\" /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xcopy "%(fullpath)" "$(SolutionDir)$(Configuration)\Perception\fx\" /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\Perception\fx\%(filename).fx;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Configuration)\Perception\fx\%(filename).fx;%(Outputs)</Outputs>
-      <FileType>Document</FileType>
     </CustomBuild>
     <CustomBuild Include="..\..\Release\Perception\cfg\users.xml">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy "%(fullpath)" "$(SolutionDir)$(Configuration)\Perception\cfg\" /Y</Command>
