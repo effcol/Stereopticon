@@ -1,5 +1,8 @@
 # Stereopticon
 
+<img width="1973" height="1200" alt="Screenshot 2026-05-16 175749" src="https://github.com/user-attachments/assets/2dd2bc5f-2178-4a7a-9251-bb3ca19685f8" />
+
+
 **A one-stop launcher for stereo 3D and headtracking on PC games.**
 
 Stereopticon orchestrates the major open-source stereo-3D injection tools (Geo-11, wiz3D, UEVR, VRto3D, ReShade-based shaders) plus the bundled Vireio Perception engine, and pairs them with headtracking from OpenTrack-protocol sources — letting you play stereoscopic 3D games with optional head-look on standard monitors, SR displays (Acer SpatialLabs, Samsung Odyssey 3D, Asus Spatial Vision, Dimenco), anaglyph glasses, VR headsets via OpenXR, and other 3D-capable hardware.
