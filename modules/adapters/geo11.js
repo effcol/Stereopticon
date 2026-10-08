@@ -25,6 +25,7 @@ const DIRECT_MODE_MAP = {
     'interleaved':             'interlaced',
     'interleaved_row':         'interlaced',
     'interleaved_col':         'interlaced',
+    'interleaved_column':      'interlaced',
     'interleaved_checkerboard': 'checkerboard',
     'katanga_vr':              'katanga_vr',  // direct VR output to HelixVision
 };

@@ -153,7 +153,9 @@ async function installLoopMod(fix, gamePath, onProgress = () => {}) {
     onProgress(80, `Running ${slug} install.cmd…`);
     try {
         // Loop's CLI contract: install.cmd <GAME_PATH> /y → exit 0 on success.
-        execFileSync(installCmd, [gamePath, '/y'], {
+        // A .cmd file cannot be spawned directly on current Node; run it through cmd.exe.
+        execFileSync('cmd.exe', ['/d', '/s', '/c', `""${installCmd}" "${gamePath}" /y"`], {
+            windowsVerbatimArguments: true,
             cwd:         extractDir,
             stdio:       'pipe',
             windowsHide: true,

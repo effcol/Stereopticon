@@ -411,8 +411,8 @@ ipcMain.handle('reshade:ensureVRServer', async () => {
         const steamVRPath = findSteamVRDriversDir();
         if (!steamVRPath) return { success: false, message: 'SteamVR not found' };
         
-        // VRServer is typically at: Steam\steamapps\common\SteamVR\tools\bin\win64\vrserver.exe
-        const vrServerDir = path.join(path.dirname(steamVRPath), '..', 'tools', 'bin', 'win64');
+        // VRServer is at: Steam\steamapps\common\SteamVR\bin\win64\vrserver.exe
+        const vrServerDir = path.join(path.dirname(steamVRPath), 'bin', 'win64');
         const vrServerExe = path.join(vrServerDir, 'vrserver.exe');
         
         if (!fs.existsSync(vrServerExe)) {

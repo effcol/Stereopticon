@@ -92,26 +92,42 @@ document.addEventListener('click', e => {
 });
 const btnDisplay = safeGetEl('btnDisplay');
 if (btnDisplay) btnDisplay.addEventListener('click', function(e) { e.stopPropagation(); toggleDropdown('displayDropdown', this); });
+// Record which display card is selected and reflect it in the UI. Does not
+// touch the output selects; the click handler does that separately.
+const SELECTED_DISPLAY_KEY = 'stereopticon.selectedDisplay';
+function setSelectedDisplay(opt) {
+    selectedDisplay = opt.dataset.value;
+    window._selectedDisplayType   = opt.dataset.value;
+    window._selectedDisplayOutput = opt.dataset.output || null;
+    window._selectedDisplayNote   = opt.dataset.note   || null;
+    const txt = opt.dataset.value === 'none' ? 'None Selected' : opt.dataset.label.replace(/^Display:\s*/i, '');
+    const displayLabel = safeGetEl('displayLabel');
+    if (displayLabel) displayLabel.textContent = txt;
+    const inlineLabel = safeGetEl('displayLabelInline');
+    if (inlineLabel) inlineLabel.textContent = txt;
+    document.querySelectorAll('#displayDropdown .dd-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+}
 document.querySelectorAll('#displayDropdown .dd-option').forEach(opt => {
     opt.addEventListener('click', function(e) {
         e.stopPropagation();
-        selectedDisplay = this.dataset.value;
-        window._selectedDisplayType  = this.dataset.value;
-        window._selectedDisplayOutput = this.dataset.output || null;
-        window._selectedDisplayNote   = this.dataset.note   || null;
-        const txt = this.dataset.value === 'none' ? 'None Selected' : this.dataset.label.replace(/^Display:\s*/i, '');
-        const displayLabel = safeGetEl('displayLabel');
-        if (displayLabel) displayLabel.textContent = txt;
-        const inlineLabel = safeGetEl('displayLabelInline');
-        if (inlineLabel) inlineLabel.textContent = txt;
-        document.querySelectorAll('#displayDropdown .dd-option').forEach(o => o.classList.remove('selected'));
-        this.classList.add('selected');
+        setSelectedDisplay(this);
+        try { localStorage.setItem(SELECTED_DISPLAY_KEY, this.dataset.value); } catch { /* storage unavailable */ }
         closeAllDropdowns();
         // Auto-select the correct output mode using data-output if present, else fall back to value
         const outputKey = this.dataset.output || this.dataset.value;
         applyDisplayToOutput(outputKey);
     });
 });
+
+// Restore the display chosen in a previous session, so launches after a
+// restart still know which display they are targeting.
+try {
+    const saved = localStorage.getItem(SELECTED_DISPLAY_KEY);
+    const opt = saved && Array.from(document.querySelectorAll('#displayDropdown .dd-option'))
+        .find(o => o.dataset.value === saved);
+    if (opt) setSelectedDisplay(opt);
+} catch { /* storage unavailable */ }
 
 function applyDisplayToOutput(displayValue) {
     if (!displayValue || displayValue === 'none') {
@@ -548,7 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function getPipelineSteps(fixType, outputId) {
     const po = selectedProfile.pipeline_overrides;
     // Exact match first; fall back to base ID (e.g. 'anaglyph' if 'anaglyph_red_cyan' not set)
-    const baseId = outputId.includes('_') ? outputId.replace(/_[^_]+$/, '') : null;
+    const baseId = Object.keys(OUTPUT_DEFINITIONS).find(k => outputId.startsWith(k + '_')) || null;
     if (po) {
         if (po[outputId] !== undefined) return po[outputId];
         if (baseId && po[baseId] !== undefined) return po[baseId];
@@ -601,7 +617,10 @@ const DISPLAY_TO_OUTPUT = {
     'tab':             { output: 'tab',              sub: null },
     'interleaved':     { output: 'interleaved',      sub: null },
     'frame_sequential':{ output: 'frame_sequential', sub: null },
-    'lkg_quilt':       { output: 'lkg_quilt',        sub: null },
+    'lkg_quilt':       { output: 'quilt',            sub: null },
+    'quilt':           { output: 'quilt',            sub: null },
+    'sbs_half':        { output: 'sbs',              sub: 'Half SBS' },
+    'tab_half':        { output: 'tab',              sub: 'Half TAB' },
     'sr_weave':        { output: 'sr_weave',         sub: null },
     'anaglyph':        { output: 'anaglyph',         sub: 'Red/Cyan' },
     'vr_native':       { output: 'vr_native',        sub: null },
@@ -1409,11 +1428,11 @@ async function handleLaunchClick() {
     try {
         const outputId = getEffectiveOutputIdFromSelects();
         const htState  = window.getHeadtrackingState?.() || { enabled: false, method: null };
-        const displayId = window._selectedDisplayOutput
-                         || (window._selectedDisplayDevice?.familyId)
-                         || null;
+        // The display card's id (e.g. 'sr_display'); null when none is selected.
+        // The pipeline runs either way: it is resolved from the fix and the output.
+        const displayId = (selectedDisplay && selectedDisplay !== 'none') ? selectedDisplay : null;
 
-        if (displayId && selectedProfile) {
+        if (selectedProfile) {
             setProgress(90, 'Applying pipeline configuration…', null);
             const pipelineResult = await window.api.executePipeline({
                 fix:         selectedProfile,

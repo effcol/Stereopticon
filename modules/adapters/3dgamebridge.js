@@ -67,7 +67,7 @@ function setAddonState(iniPath, enabled) {
     return { success: true, action: enabled ? 'enabled' : 'disabled' };
 }
 
-// Best-effort: copy ReShade64.dll → SteamVR/tools/bin/win64/dxgi.dll so
+// Best-effort: copy ReShade64.dll → SteamVR/bin/win64/dxgi.dll so
 // 3DGameBridge sees vrserver's output. Only invoked when 3DGameBridge is
 // being enabled and SteamVR is on disk.
 function ensureReShadeOnVRServer() {
@@ -76,7 +76,10 @@ function ensureReShadeOnVRServer() {
         const driversDir = findSteamVRDriversDir();
         if (!driversDir) return { success: false, reason: 'SteamVR not found' };
 
-        const vrServerDir = path.join(path.dirname(driversDir), '..', 'tools', 'bin', 'win64');
+        const vrServerDir = path.join(path.dirname(driversDir), 'bin', 'win64');
+        if (!fs.existsSync(path.join(vrServerDir, 'vrserver.exe'))) {
+            return { success: false, reason: 'vrserver.exe not found' };
+        }
         const target     = path.join(vrServerDir, 'dxgi.dll');
         if (fs.existsSync(target))    return { success: true, action: 'already-present' };
 
@@ -84,7 +87,6 @@ function ensureReShadeOnVRServer() {
         const source     = path.join(bundleRoot, 'ReShade64.dll');
         if (!fs.existsSync(source))   return { success: false, reason: 'bundled ReShade64.dll not found' };
 
-        fs.mkdirSync(vrServerDir, { recursive: true });
         fs.copyFileSync(source, target);
         return { success: true, action: 'installed' };
     } catch (e) {

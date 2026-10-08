@@ -26,11 +26,117 @@ const PIPELINES_DIR = path.join(DATA_ROOT, 'pipelines');
 
 // ── Loaders ───────────────────────────────────────────────────
 
+// The display picker in the UI uses its own card ids; these are the ones that
+// correspond to a display profile under data/displays/ with a different id.
+const DISPLAY_ALIASES = {
+    polarized:   'interlaced_display',
+    shutter:     'active_3dtv',
+    hdmi_3d:     'active_3dtv',
+    sbs_generic: 'passive_3dtv',
+    tab_generic: 'passive_3dtv',
+};
+
+// Display files are named after the hardware family, not the id, so look the
+// profile up by its `id` / `family_id` field. Returns null when the selected
+// display has no profile (anaglyph glasses, VR headset, Looking Glass, none).
 function loadDisplay(displayId) {
-    const p = path.join(DISPLAYS_DIR, `${displayId}.json`);
-    if (!fs.existsSync(p)) throw new Error(`Display profile not found: ${displayId}`);
-    return JSON.parse(fs.readFileSync(p, 'utf8'));
+    if (!displayId) return null;
+    const wanted = DISPLAY_ALIASES[displayId] || displayId;
+    return loadAllDisplays().find(d => d.id === wanted || d.family_id === wanted) || null;
 }
+
+// ── Output ids ────────────────────────────────────────────────
+// data/outputs/*.json is the reference vocabulary. Older data and code use
+// other spellings for the same outputs; map them onto the reference ids.
+const OUTPUT_ALIASES = {
+    interlaced:              'interleaved',
+    interlaced_row:          'interleaved_row',
+    interlaced_col:          'interleaved_column',
+    interleaved_col:         'interleaved_column',
+    interlaced_checkerboard: 'interleaved_checkerboard',
+    lkg_quilt:               'quilt',
+    vr:                      'vr_native',
+    simulated_reality:       'sr_weave',
+};
+const OUTPUT_FAMILIES = ['frame_sequential', 'frame_packing', 'interleaved', 'anaglyph',
+                         'sr_weave', 'vr_native', 'quilt', 'sbs', 'tab'];
+const VARIANT_FAMILIES = { frame_seq: 'frame_sequential', leia_weave: 'sr_weave', vr: 'vr_native' };
+
+function canonicalOutput(id) {
+    if (!id) return id;
+    const lower = String(id).toLowerCase();
+    return OUTPUT_ALIASES[lower] || lower;
+}
+
+// 'anaglyph_red_cyan' → 'anaglyph', 'sbs_half' → 'sbs', 'frame_seq_120hz' → 'frame_sequential'
+function outputFamily(id) {
+    const c = canonicalOutput(id);
+    if (!c) return c;
+    const family = OUTPUT_FAMILIES.find(f => c === f || c.startsWith(f + '_'));
+    if (family) return family;
+    const variant = Object.keys(VARIANT_FAMILIES).find(v => c.startsWith(v + '_'));
+    return variant ? VARIANT_FAMILIES[variant] : c;
+}
+
+// Tool definitions (data/pipelines/*.json), indexed by their `id` field.
+let _toolPipelines = null;
+function loadToolPipeline(toolId) {
+    if (!_toolPipelines) {
+        _toolPipelines = {};
+        if (fs.existsSync(PIPELINES_DIR)) {
+            for (const f of fs.readdirSync(PIPELINES_DIR)) {
+                if (!f.endsWith('.json')) continue;
+                try {
+                    const p = JSON.parse(fs.readFileSync(path.join(PIPELINES_DIR, f), 'utf8'));
+                    if (p.id) _toolPipelines[p.id] = p;
+                } catch { /* skip unreadable definition */ }
+            }
+        }
+    }
+    return _toolPipelines[toolId] || null;
+}
+
+/**
+ * The conversion steps needed for a fix to produce the given output:
+ *   []      the fix produces it directly
+ *   [...]   tools to chain after the fix
+ *   null    no known route
+ * Order of authority: the fix's own pipeline_overrides, then its
+ * native_outputs, then the tool definition for its type.
+ */
+function stepsForOutput(fix, outputId) {
+    const id     = canonicalOutput(outputId);
+    const family = outputFamily(id);
+    const lookup = map => {
+        if (!map) return undefined;
+        const byCanonical = {};
+        for (const [k, v] of Object.entries(map)) byCanonical[canonicalOutput(k)] = v;
+        if (byCanonical[id] !== undefined) return byCanonical[id];
+        return byCanonical[family];
+    };
+
+    // Entries are normally a list of step names. Some carry only notes
+    // (an object) or a single step (a string); null marks "not supported".
+    const asSteps = v => {
+        if (Array.isArray(v))      return v;
+        if (v === null)            return null;
+        if (typeof v === 'string') return [v];
+        if (typeof v === 'object') return Array.isArray(v.steps) ? v.steps : [];
+        return null;
+    };
+
+    const override = lookup(fix.pipeline_overrides);
+    if (override !== undefined) return asSteps(override);
+
+    const native = (fix.native_outputs || []).map(canonicalOutput);
+    if (native.includes(id) || native.includes(family)) return [];
+
+    const fromTool = lookup(loadToolPipeline(fix.type)?.supported_outputs);
+    return fromTool === undefined ? null : asSteps(fromTool);
+}
+
+// Fix types that only add headtracking: they have no stereo output of their own.
+const HEADTRACK_ONLY_TYPES = ['loop_headtrack'];
 
 function loadOutput(outputId) {
     const p = path.join(OUTPUTS_DIR, `${outputId}.json`);
@@ -60,74 +166,73 @@ function loadAllDisplays() {
 function resolvePipeline(fix, display, options = {}) {
     const { graphicsApi = null, preferVrDriver = null } = options;
     const warnings = [];
+    const accepted = display?.accepted_fix_outputs || {};
 
-    // 1. Determine which output the fix produces for this display.
-    //    Prefer the first native_output that the display accepts.
-    //    Fall back to any native_output that has a conversion path.
-    const accepted = display.accepted_fix_outputs || {};
-    let fixOutput  = null;
-    let outputPath = null;
-
-    // Direct match first
-    for (const out of (fix.native_outputs || [])) {
-        if (accepted[out]) { fixOutput = out; outputPath = accepted[out]; break; }
+    // 1. Which output are we producing? The output the user selected wins. With
+    //    none given, fall back to the first native output the display accepts.
+    let fixOutput = canonicalOutput(options.outputId) || null;
+    if (!fixOutput) {
+        fixOutput = (fix.native_outputs || []).map(canonicalOutput).find(o => accepted[o]) || null;
     }
-
-    // Vulkan special-case: if graphicsApi is vulkan and display has a _vulkan variant
-    if (graphicsApi === 'vulkan' && fixOutput && accepted[`${fixOutput}_vulkan`]) {
-        fixOutput  = `${fixOutput}_vulkan`;
-        outputPath = accepted[fixOutput];
-    }
-
     if (!fixOutput) {
         return {
-            fixOutput:     null,
-            steps:         [],
-            vrDriver:      null,
+            fixOutput:      null,
+            steps:          [],
+            vrDriver:       null,
             vrDriverConfig: {},
-            warnings:      [`No compatible output path from fix "${fix.id}" to display "${display.id}".`],
-            incompatible:  true,
+            warnings:       [`No output selected for fix "${fix.id}" and none can be inferred` +
+                             (display ? ` for display "${display.id || display.family_id}".` : '.')],
+            incompatible:   true,
         };
     }
 
-    // 2. Check API constraints on this output path
-    if (outputPath.constraints?.graphics_api && graphicsApi) {
-        if (!outputPath.constraints.graphics_api.includes(graphicsApi)) {
-            warnings.push(`${display.name}: ${graphicsApi} is not supported via the ${fixOutput} path. ${outputPath.constraints.notes || ''}`);
-        }
+    // 2. Conversion steps for that output. An unknown route is reported but does
+    //    not stop the launch: the fix's own adapter and headtracking still run.
+    let steps = HEADTRACK_ONLY_TYPES.includes(fix.type) ? [] : stepsForOutput(fix, fixOutput);
+    if (steps === null) {
+        warnings.push(`"${fixOutput}" is not listed as a supported output for fix type "${fix.type}"; no conversion steps applied.`);
+        steps = [];
     }
 
-    // 3. Determine VR driver (only relevant for UEVR / VR mod fix types)
+    // 3. Display-level constraints and notes for this output, when known.
+    const outputPath = accepted[fixOutput] || accepted[outputFamily(fixOutput)] || null;
+    if (outputPath?.constraints?.graphics_api && graphicsApi &&
+        !outputPath.constraints.graphics_api.includes(graphicsApi)) {
+        warnings.push(`${display.name || display.family_name}: ${graphicsApi} is not supported via the ${fixOutput} path. ${outputPath.constraints.notes || ''}`);
+    }
+
+    // 4. VR driver. The steps for the chosen output decide which drivers are in
+    //    play; the display profile supplies their config. Fixes whose steps name
+    //    no driver fall back to what the display supports (VR mod fix types only).
     let vrDriver       = null;
     let vrDriverConfig = {};
-    const isVrFix      = ['uevr', 'reframework', 'realvr', 'noflat'].includes(fix.type);
+    const drivers      = display?.vr_drivers || {};
+    const KNOWN_DRIVERS = ['vrto3d', 'xrgamebridge'];
+    const candidates   = steps.map(s => String(s).toLowerCase()).filter(s => KNOWN_DRIVERS.includes(s));
+    const isVrFix      = ['uevr', 'ue3d', 'reframework', 'realvr', 'noflat'].includes(fix.type);
 
-    if (isVrFix && display.vr_drivers) {
-        const drivers = display.vr_drivers;
-
-        // Pick preferred driver if specified and supported
-        if (preferVrDriver && drivers[preferVrDriver]?.supported) {
-            vrDriver = preferVrDriver;
-        } else if (drivers.xrgamebridge?.supported && fix.type === 'uevr') {
-            // XRGameBridge preferred for UEVR on SR displays (lower latency, OpenXR native)
-            vrDriver = 'xrgamebridge';
-        } else if (drivers.vrto3d?.supported) {
-            vrDriver = 'vrto3d';
-        }
-
-        if (vrDriver) {
-            vrDriverConfig = { ...(drivers[vrDriver].config || {}) };
-        }
+    if (candidates.length) {
+        // Drop drivers the display rules out; otherwise the first one listed wins,
+        // except that XRGameBridge is preferred for UEVR where the display supports it.
+        const usable = candidates.filter(d => drivers[d]?.supported !== false);
+        if (preferVrDriver && usable.includes(preferVrDriver)) vrDriver = preferVrDriver;
+        else if (fix.type === 'uevr' && usable.includes('xrgamebridge') && drivers.xrgamebridge?.supported) vrDriver = 'xrgamebridge';
+        else vrDriver = usable[0] || null;
+    } else if (isVrFix && display) {
+        if (preferVrDriver && drivers[preferVrDriver]?.supported) vrDriver = preferVrDriver;
+        else if (drivers.xrgamebridge?.supported && fix.type === 'uevr' && fixOutput === 'sr_weave') vrDriver = 'xrgamebridge';
+        else if (drivers.vrto3d?.supported && fixOutput !== 'vr_native') vrDriver = 'vrto3d';
     }
+    if (vrDriver) vrDriverConfig = { ...(drivers[vrDriver]?.config || drivers[vrDriver]?.config_base || {}) };
 
     return {
         fixOutput,
-        steps:         outputPath.steps || [],
+        steps,
         vrDriver,
         vrDriverConfig,
         warnings,
         incompatible:  false,
-        displayNotes:  outputPath.notes || null,
+        displayNotes:  outputPath?.notes || null,
     };
 }
 
@@ -289,13 +394,11 @@ function applyProfile(fix, displayId, options = {}) {
     const { gameOverrides = {} } = options;
     const results = { success: true, pipeline: null, applied: [], warnings: [], errors: [] };
 
-    // Load display profile
-    let display;
-    try { display = loadDisplay(displayId); }
-    catch (e) { return { ...results, success: false, errors: [e.message] }; }
+    const display = loadDisplay(displayId);
 
     // Resolve pipeline
     const pipeline = resolvePipeline(fix, display, {
+        outputId:       options.outputId || null,
         graphicsApi:    options.graphicsApi || fix.graphics_api || null,
         preferVrDriver: options.preferVrDriver || null,
     });
@@ -323,7 +426,7 @@ function applyProfile(fix, displayId, options = {}) {
         }
 
         // Configure OpenTrack if display headtracking needs it
-        if (display.headtracking?.methods?.includes('opentrack') && options.enableHeadtracking) {
+        if (display?.headtracking?.methods?.includes('opentrack') && options.enableHeadtracking) {
             const ht = enableVRto3DOpenTrack(display.headtracking.open_track_port || 4242);
             if (ht.success) results.applied.push('OpenTrack enabled in VRto3D config');
         }
@@ -350,11 +453,8 @@ function applyProfile(fix, displayId, options = {}) {
  * Used by the UI to show what will happen before the user confirms.
  */
 function previewPipeline(fix, displayId, options = {}) {
-    let display;
-    try { display = loadDisplay(displayId); }
-    catch (e) { return { incompatible: true, error: e.message }; }
-
-    return resolvePipeline(fix, display, {
+    return resolvePipeline(fix, loadDisplay(displayId), {
+        outputId:       options.outputId || null,
         graphicsApi:    options.graphicsApi || fix.graphics_api || null,
         preferVrDriver: options.preferVrDriver || null,
     });
@@ -387,15 +487,14 @@ async function executePipeline(input) {
         headtracking = {}, userOverrides = {}, options = {},
     } = input || {};
 
-    if (!fix)       return { success: false, errors: ['executePipeline: no fix'], applied: [], warnings: [] };
-    if (!displayId) return { success: false, errors: ['executePipeline: no displayId'], applied: [], warnings: [] };
+    if (!fix) return { success: false, errors: ['executePipeline: no fix'], applied: [], warnings: [] };
 
-    // Resolve the pipeline from the registry
-    let display;
-    try { display = loadDisplay(displayId); }
-    catch (e) { return { success: false, errors: [e.message], applied: [], warnings: [] }; }
+    // The display is optional: with none selected, or one that has no profile,
+    // the pipeline is resolved from the fix and the chosen output alone.
+    const display = loadDisplay(displayId);
 
     const pipeline = resolvePipeline(fix, display, {
+        outputId,
         graphicsApi:    options.graphicsApi || fix.graphics_api || null,
         preferVrDriver: options.preferVrDriver || null,
     });

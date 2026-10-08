@@ -51,11 +51,23 @@ function findProxyBinary(projectRoot, slot) {
 // Decide which proxy slot is free in the game folder. d3d9 is preferred; we
 // fall back to dinput8 when another stereo mod (wiz3D / Geo-11 / ReShade)
 // has already claimed d3d9.dll. Returns { slot, collision: bool }.
-function pickProxySlot(gamePath) {
-    const d3d9Exists    = fs.existsSync(path.join(gamePath, 'd3d9.dll'));
-    const dinput8Exists = fs.existsSync(path.join(gamePath, 'dinput8.dll'));
-    if (!d3d9Exists)    return { slot: 'd3d9',    collision: false };
-    if (!dinput8Exists) return { slot: 'dinput8', collision: true  };
+function sameFile(a, b) {
+    try {
+        if (fs.statSync(a).size !== fs.statSync(b).size) return false;
+        return fs.readFileSync(a).equals(fs.readFileSync(b));
+    } catch { return false; }
+}
+
+function pickProxySlot(gamePath, projectRoot) {
+    // A slot holding our own DLL from an earlier launch is ours to reuse.
+    const free = slot => {
+        const existing = path.join(gamePath, `${slot}.dll`);
+        if (!fs.existsSync(existing)) return true;
+        const ours = findProxyBinary(projectRoot, slot);
+        return !!ours && sameFile(ours, existing);
+    };
+    if (free('d3d9'))    return { slot: 'd3d9',    collision: false };
+    if (free('dinput8')) return { slot: 'dinput8', collision: true  };
     // Both slots occupied — caller must surface a warning.
     return { slot: null, collision: true };
 }
@@ -72,7 +84,7 @@ async function installVireioOpenTrackBridge(gameContext) {
         return r;
     }
     const projectRoot = path.join(__dirname, '..', '..');
-    const { slot, collision } = pickProxySlot(gameContext.gamePath);
+    const { slot, collision } = pickProxySlot(gameContext.gamePath, projectRoot);
     if (!slot) {
         r.success = false;
         r.errors.push(
