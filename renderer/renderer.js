@@ -7,20 +7,31 @@ function safeGetEl(id) {
     return el;
 }
 
+// Report an unexpected error without disturbing the page: a dismissible banner
+// in the corner. The game page and its controls stay as they were.
+function showUiError(text) {
+    let banner = document.getElementById('uiErrorBanner');
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'uiErrorBanner';
+        banner.title = 'Click to dismiss';
+        banner.style.cssText = 'position:fixed;right:12px;bottom:12px;max-width:420px;z-index:99999;' +
+            'padding:10px 12px;border-left:3px solid var(--danger);background:rgba(30,20,20,0.96);' +
+            'color:var(--danger);font-size:11px;line-height:1.4;cursor:pointer;white-space:pre-wrap;word-break:break-word;';
+        banner.addEventListener('click', () => banner.remove());
+        document.body.appendChild(banner);
+    }
+    banner.textContent = text;
+}
+
 window.addEventListener('error', ev => {
     console.error('Uncaught error caught in UI:', ev.error || ev.message, ev);
-    const detailAreaEl = safeGetEl('detail-area');
-    if (detailAreaEl) {
-        detailAreaEl.innerHTML = `<div style="padding:20px;color:var(--danger);">UI error: ${String(ev.error || ev.message)}</div>`;
-    }
+    showUiError(`UI error: ${String(ev.error || ev.message)}`);
 });
 
 window.addEventListener('unhandledrejection', ev => {
     console.error('Unhandled promise rejection:', ev.reason);
-    const detailAreaEl = safeGetEl('detail-area');
-    if (detailAreaEl) {
-        detailAreaEl.innerHTML = `<div style="padding:20px;color:var(--danger);">Promise rejection: ${String(ev.reason)}</div>`;
-    }
+    showUiError(`Unexpected error: ${String(ev.reason)}`);
 });
 
 // installPath listener is added via delegation later — installPath now lives
@@ -2324,7 +2335,10 @@ function renderSidebar(games) {
     }
 
     spacer.style.height = (filtered.length * SIDEBAR_ITEM_HEIGHT) + 'px';
-    list.scrollTop = 0;             // reset to top on every filter/sort change
+    // Back to the top when the list itself changes (search, filter). A re-render
+    // of the same list, or one game hidden from it, keeps the scroll position.
+    if (list._lastCount === undefined || Math.abs(filtered.length - list._lastCount) > 1) list.scrollTop = 0;
+    list._lastCount = filtered.length;
     _renderSidebarWindow();
     _renderAzStrip(filtered);
 
@@ -3703,6 +3717,9 @@ async function openGeoModal(opts = {}) {
         statusEl.innerHTML=result.defaults?`<span style="color:var(--text-dim);">● Fix defaults loaded · overrides shown in teal</span>`:`<span style="color:var(--warn);">⚠ No defaults snapshot yet.</span>`;
     }
 }
+
+// The "unlock" link on locked Geo-11 sections calls this name.
+window.toggleGeoLock = () => window.toggleAllLocks();
 
 window.toggleAllLocks = function() {
     // Toggle all locks at once: geo settings, depth, and mod settings
