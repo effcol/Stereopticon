@@ -5,9 +5,8 @@ This file acknowledges the third-party components distributed with or fetched by
 
 ## Distribution model
 
-Stereopticon ships only its own source + the bundled Vireio engine (LGPL-v3, compatible with GPL-v3
-under the FSF's LGPL→GPL upgrade clause). All other tools — wiz3D, Geo-11, UEVR, ReShade, VRto3D,
-dgVoodoo2, 3DGameBridge, etc. — are **fetched at setup time from their upstream GitHub releases**
+Stereopticon ships only its own source. The tools it drives — wiz3D, Geo-11, UEVR, ReShade,
+VRto3D, dgVoodoo2, 3DGameBridge, etc. — are **fetched at setup time from their upstream GitHub releases**
 via `scripts/download-tools.js` and never redistributed in source form. The `lib/` folder in the
 source repository is **for development reference only** (so contributors can see the formats and
 behaviours we adapt to) and is **not part of any redistributed Stereopticon binary**.
@@ -18,13 +17,14 @@ SuperDepth3D directly.
 
 ---
 
-## Vireio Perception (bundled stereo3D engine — `engine/vireio/`)
+## Vireio Perception
 **Original authors:** Andres Hernandez (2012), John Hicks, Neil Schneider, Chris Drain, Phil Larkson, Denis Reischl, Joshua Brown, Grant Bagwell, Simon Brown (2013–2015)
-**Upstream:** https://github.com/cybereality/Perception
-**Upstream license:** GNU Lesser General Public License v3.0 (LGPL v3, see `engine/vireio/COPYING.LESSER`)
-**Stereopticon redistribution:** under GPL v3 per the LGPL-v3 → GPL-v3 compatibility clause. The original LGPL-v3 copyright headers in every Vireio source file are preserved and redistribution under either GPL v3 or LGPL v3 of those files individually remains permitted by their original LGPL terms.
+**License:** GNU Lesser General Public License v3.0 (LGPL v3)
+**Source:** https://github.com/cybereality/Perception (modernization fork: https://github.com/effcol/Vireio-Perception)
 
-Vireio Perception is bundled as one of several stereo-3D engines Stereopticon can route games through. The v4.1 modernization (VS 2026 / C++20 retargeting, June-2010 DirectX SDK removal, FreeTrack tracker plugin, OpenXR Direct-Mode renderer plugin skeleton, D3D9 CTAB-section bytecode parser) is itself LGPL v3 work by `effcol` (2026), redistributed here under GPL v3 as part of Stereopticon.
+Stereopticon does **not** bundle Vireio Perception. Its source was carried in this repository up to
+v0.0.1 and has since been moved out; Stereopticon only launches it as a separate program. The game
+profile entries under `data/games/` were generated from Vireio's `profiles.xml`.
 
 ---
 

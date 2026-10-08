@@ -51,17 +51,10 @@ data/_sidebar.json
 *.suo
 *.user
 
-# Engine — keep source, ignore built binaries + intermediate files
-engine/vireio/**/Release/
-engine/vireio/**/Debug/
-engine/vireio/**/x64/
-engine/vireio/**/x86/
-engine/vireio/**/Bin/
-engine/vireio/**/.vs/
-engine/vireio/**/*.tlog
-engine/vireio/**/*.idb
-engine/vireio/**/CMakeFiles/
-engine/vireio/**/CMakeCache.txt
+# Vireio Perception and the OpenTrack bridge moved to their own repos.
+# Ignore any local leftovers (build outputs) from before the split.
+engine/vireio/
+engine/Vireio-Perception-OpenTrack-Bridge/
 
 engine/sr-opentrack-bridge/build/
 engine/sr-opentrack-bridge/**/CMakeFiles/

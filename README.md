@@ -5,9 +5,9 @@
 
 **A one-stop launcher for stereo 3D and headtracking on PC games.**
 
-Stereopticon orchestrates the major open-source stereo-3D injection tools (Geo-11, wiz3D, UEVR, VRto3D, ReShade-based shaders) plus the bundled Vireio Perception engine, and pairs them with headtracking from OpenTrack-protocol sources — letting you play stereoscopic 3D games with optional head-look on standard monitors, SR displays (Acer SpatialLabs, Samsung Odyssey 3D, Asus Spatial Vision, Dimenco), anaglyph glasses, VR headsets via OpenXR, and other 3D-capable hardware.
+Stereopticon orchestrates the major open-source stereo-3D injection tools (Geo-11, wiz3D, UEVR, VRto3D, ReShade-based shaders, Vireio Perception), and pairs them with headtracking from OpenTrack-protocol sources — letting you play stereoscopic 3D games with optional head-look on standard monitors, SR displays (Acer SpatialLabs, Samsung Odyssey 3D, Asus Spatial Vision, Dimenco), anaglyph glasses, VR headsets via OpenXR, and other 3D-capable hardware.
 
-Stereopticon is **GPL-3.0-only** and continues the v1–v4 lineage of [Vireio Perception](https://github.com/cybereality/Perception) (Andres Hernandez et al., 2012–2015). The Vireio engine itself remains [LGPL-v3](engine/vireio/COPYING.LESSER) at the source-file level; it is redistributed here as part of a GPL-v3 work under the FSF's LGPL→GPL compatibility clause.
+Stereopticon is **GPL-3.0-only**. [Vireio Perception](https://github.com/effcol/Vireio-Perception) (LGPL v3, a fork of [cybereality/Perception](https://github.com/cybereality/Perception)) and [Vireio OpenTracking](https://github.com/effcol/Vireio-OpenTracking) (GPL v3) used to live in this repository; they are now separate projects that Stereopticon launches like any other tool.
 
 ## What's in the repository
 
@@ -22,7 +22,6 @@ Stereopticon is **GPL-3.0-only** and continues the v1–v4 lineage of [Vireio Pe
 ├── assets/              icons / branding
 │
 ├── engine/              ← our own buildable engines
-│   ├── vireio/          Vireio Perception v4.1 (LGPL v3 — see engine/vireio/COPYING.LESSER)
 │   └── sr-opentrack-bridge/   LeiaSR → OpenTrack head-pose bridge (GPL v3)
 │
 ├── lib/                 ← third-party SDKs and reference sources
@@ -49,7 +48,7 @@ Tools run in their own processes with their own licenses. Stereopticon never lin
 
 | Tool | Role | License |
 |---|---|---|
-| **Vireio Perception** (bundled) | D3D9/D3D11 stereo + headtracking via direct vtable injection. Best for games with hand-authored shader profiles. | LGPL v3 |
+| **Vireio Perception** | D3D9/D3D11 stereo + headtracking via direct vtable injection. Best for games with hand-authored shader profiles. | LGPL v3 |
 | **Geo-11 / Geo-12** | Modern 3DMigoto-based stereo injector. Primary target for most contemporary fixes. | GPL v3 |
 | **wiz3D** | Lightweight stereo injector. | LGPL v2 |
 | **UEVR** | praydog's universal Unreal Engine VR injector. | Pending (binaries fetched from official releases) |
@@ -66,7 +65,7 @@ See `Notice.md` for full attribution.
 
 ## Status — v5.0.0-alpha.1
 
-Active development. The Electron launcher and Vireio engine modernization are complete and buildable; profile library expansion, polished first-run wizard, and full OpenXR Direct-Mode frame-submission are in progress.
+Active development. The Electron launcher is buildable; profile library expansion, polished first-run wizard, and full OpenXR Direct-Mode frame-submission are in progress.
 
 ## Building
 
@@ -77,8 +76,8 @@ npm run setup       # downloads ReShade, UEVR, dgVoodoo2, VRto3D, etc.
 npm start
 ```
 
-**Vireio engine (C++):**
-See `engine/vireio/README.md`. Requires Visual Studio 2026 with the v145 toolset.
+**Vireio Perception (C++):**
+Built from its own repository; see https://github.com/effcol/Vireio-Perception.
 
 ## License
 
