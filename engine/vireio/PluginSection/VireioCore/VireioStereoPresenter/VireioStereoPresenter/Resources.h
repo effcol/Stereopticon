@@ -1,3 +1,0 @@
-
-#define IMG_LOGO01 100
-#define IMG_TILES01 200
