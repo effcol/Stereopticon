@@ -66,7 +66,8 @@ function loadAllPipelines() { return _readBundle().pipelines || []; }
 function loadAllOutputs()   { return _readBundle().outputs   || []; }
 function loadSidebar()      { return _readSidebar(); }
 function loadOneGame(id)    { _readBundle(); return _gameById?.get(id) || null; }
-const { installFix, installUEVRProfile, installUE3D, readUEVRConfig, writeUEVRConfig, readVRto3DConfig, writeVRto3DConfig, installVRto3D, isVRto3DInstalled, getVRto3DConfigDir, writeVRto3DGameProfile } = require('../modules/installer');
+const { installFix, installUEVRProfile, installUE3D, readUEVRConfig, writeUEVRConfig, readVRto3DConfig, writeVRto3DConfig, installVRto3D, isVRto3DInstalled, getVRto3DConfigDir, writeVRto3DGameProfile, getCacheInfo, clearCache } = require('../modules/installer');
+const installManifest = require('../modules/installManifest');
 const { getFullState, applyAndSave, resetToDefaults, snapshotDefaults } = require('../modules/iniEditor');
 const { markInstalled, markUninstalled, isInstalled, getInstallRecord,
         getInstalledGameIds, getAllInstalled, setInstallExtra } = require('../modules/installState');
@@ -139,10 +140,14 @@ ipcMain.handle('displays:loadOne', (_, { displayId }) => {
 
 // ── Install fix ───────────────────────────────────────────────
 ipcMain.handle('install:fix', async (event, { profile, gameId, gamePath, exeName }) => {
+    // Record what the install changes in the game folder so uninstall can undo
+    // exactly that. A failed install is rolled back.
+    const session = (gamePath && fs.existsSync(gamePath)) ? installManifest.begin(profile.id, gamePath) : null;
     try {
         const result = await installFix(profile, gamePath, (progress) => {
             event.sender.send('install:progress', progress);
-        }, exeName || null);
+        }, exeName || null, { beforeWrite: session?.beforeWrite });
+        if (session) installManifest.finish(session, { rollback: !result.success });
         if (result.success) {
             const isPending = ['uevr','ue3d'].includes(profile.type);
             markInstalled(profile.id, gameId, gamePath, profile.download_url,
@@ -150,96 +155,88 @@ ipcMain.handle('install:fix', async (event, { profile, gameId, gamePath, exeName
         }
         return { success: true, ...result };
     } catch (e) {
+        if (session) installManifest.finish(session, { rollback: true });
         return { success: false, message: e.message };
     }
 });
 
 // ── Uninstall fix ─────────────────────────────────────────────
-ipcMain.handle('install:uninstall', async (event, { profile, gamePath }) => {
+ipcMain.handle('install:uninstall', async (event, { profile, gamePath, options = {} }) => {
+    // Normal path: undo exactly what the install recorded.
+    const undone = installManifest.uninstall(profile.id, profile.type);
+
+    // UEVR / UE3D normally put nothing in the game folder, so with nothing
+    // recorded only the install record goes.
+    if (['uevr', 'ue3d'].includes(profile.type) && !undone?.locked?.length) {
+        markUninstalled(profile.id);
+        return { success: true, message: `${profile.name} removed from Stereopticon.` };
+    }
+
+    if (undone) {
+        if (!undone.success) {
+            return {
+                success: false,
+                message: undone.message ||
+                    `Some files are in use (close the game first):\n${undone.locked.join('\n')}`,
+            };
+        }
+        markUninstalled(profile.id);
+        const lines = [];
+        if (undone.removed.length)  lines.push(`Removed ${undone.removed.length} item(s).`);
+        if (undone.restored.length) lines.push(`Restored ${undone.restored.length} original file(s): ${undone.restored.join(', ')}`);
+        if (undone.unrecoverable?.length) {
+            lines.push(`Left in place because no original copy was kept: ${undone.unrecoverable.join(', ')}. ` +
+                       `Verify the game files in your store client if the game misbehaves.`);
+        }
+        return { success: true, message: lines.join('\n') || 'Nothing left to remove. Install record cleared.' };
+    }
+
+    // Fix installed before manifests existed: there is no record of what it
+    // wrote. For Geo-11 style fixes, offer the files that look like theirs and
+    // delete only once the user has seen the list. For anything else, delete nothing.
     if (!gamePath || !fs.existsSync(gamePath)) {
         return { success: false, message: `Game folder not found:\n${gamePath}\n\nCheck the Game Folder path.` };
     }
+    if (!installManifest.GEO11_TYPES.includes(profile.type)) {
+        markUninstalled(profile.id);
+        return {
+            success: true,
+            message: `Install record cleared. This fix was installed before Stereopticon tracked ` +
+                     `installed files, so nothing was deleted from:\n${gamePath}`,
+        };
+    }
 
-    // Files installed by Geo-11 / 3DMigoto / HelixMod
-    const GEO11_FILES = [...new Set([
-        // Hook DLLs (any of these may be the ReShade or Geo-11 hook)
-        'd3d11.dll', 'dxgi.dll', 'd3d9.dll', 'd3d12.dll', 'opengl32.dll',
-        // Geo-11 / 3DMigoto core
-        'd3dxdm.ini', profile.ini_file || 'd3dxdm.ini',
+    const LEGACY_GEO11 = [...new Set([
+        'd3d11.dll', 'dxgi.dll', 'd3d9.dll', 'd3d12.dll',
+        'd3dxdm.ini', profile.ini_file || 'd3dxdm.ini', 'd3dx.ini',
         'd3dcompiler_46.dll', 'd3dcompiler_47.dll', 'd3dcompiler_43.dll',
         'nvapi64.dll', 'nvapi32.dll',
-        // Geo-11 generated files
-        'd3d11_log.txt', 'nvapi_log.txt', 'd3dx.ini',
-        // ReShade files
-        'ReShade.ini', 'ReShade.log',
-        // Misc fix artefacts
-        'Uninstall.bat',
-        // 3DGameBridge addon files (match by extension below, but common names)
-        'srReshade_v2.1.0.addon64', 'srReshade_v2.1.0.addon32',
+        'd3d11_log.txt', 'nvapi_log.txt', 'Uninstall.bat',
+        'ShaderFixes', 'ShaderFixesDM', 'ShaderCache', 'ShaderCacheDM',
+        'DMAutoPatchCache', 'DMAutoPatchFailures',
     ])];
+    const candidates = LEGACY_GEO11.filter(f => fs.existsSync(path.join(gamePath, f)));
 
-    // Directories installed by fix tools
-    const UNINSTALL_DIRS = [
-        'ShaderFixes',     // standard 3DMigoto shader fix folder
-        'ShaderFixesDM',   // Geo-11 variant
-        'ShaderCache',     // Geo-11 shader cache
-        'ShaderCacheDM',   // Geo-11 DM shader cache
-        'DMAutoPatchCache',
-        'DMAutoPatchFailures',
-        'reshade-shaders', // ReShade shader install folder
-    ];
+    if (candidates.length && !options.legacyConfirmed) {
+        return { success: false, needsConfirm: true, files: candidates };
+    }
 
-    const removed  = [];
-    const locked   = [];
-    const skipped  = [];
-
-    // Remove known files
-    GEO11_FILES.forEach(f => {
-        const p = path.join(gamePath, f);
-        if (!fs.existsSync(p)) return;
-        try { fs.unlinkSync(p); removed.push(f); }
+    const locked = [];
+    candidates.forEach(f => {
+        try { fs.rmSync(path.join(gamePath, f), { recursive: true, force: true }); }
         catch (e) { locked.push(`${f} (${e.code})`); }
     });
-
-    // Remove any .addon64 / .addon32 files (3DGameBridge addons — version-named)
-    try {
-        fs.readdirSync(gamePath)
-            .filter(f => f.endsWith('.addon64') || f.endsWith('.addon32'))
-            .forEach(f => {
-                try { fs.unlinkSync(path.join(gamePath, f)); removed.push(f); }
-                catch (e) { locked.push(`${f} (${e.code})`); }
-            });
-    } catch { /* ignore */ }
-
-    // Remove screenshots / jpg artefacts that match game-specific names
-    // (e.g. FalloutShelter003_085.jpg written by Geo-11 on startup)
-    try {
-        fs.readdirSync(gamePath)
-            .filter(f => /^[A-Za-z0-9_]+\d{3}_\d{3}\.jpg$/.test(f))
-            .forEach(f => {
-                try { fs.unlinkSync(path.join(gamePath, f)); removed.push(f); }
-                catch (e) { skipped.push(f); }
-            });
-    } catch { /* ignore */ }
-
-    // Remove directories
-    UNINSTALL_DIRS.forEach(d => {
-        const p = path.join(gamePath, d);
-        if (!fs.existsSync(p)) return;
-        try { fs.rmSync(p, { recursive: true, force: true }); removed.push(d + '/'); }
-        catch (e) { locked.push(`${d}/ (${e.code})`); }
-    });
-
     if (locked.length > 0) {
         return { success: false, message: `Some files are in use (close the game first):\n${locked.join('\n')}` };
     }
 
     markUninstalled(profile.id);
-
-    if (removed.length === 0) {
-        return { success: true, message: 'No fix files found — may have been removed manually. Install record cleared.' };
-    }
-    return { success: true, message: `Removed ${removed.length} item(s):\n${removed.join(', ')}` };
+    return {
+        success: true,
+        message: candidates.length
+            ? `Removed ${candidates.length} item(s):\n${candidates.join(', ')}`
+            : 'No fix files found. Install record cleared.',
+    };
 });
 
 // ── installState extra fields ─────────────────────────────────
@@ -667,6 +664,9 @@ ipcMain.handle('reshade:updatePreset', (_, { gamePath, shaders })    => {
 });
 ipcMain.handle('reshade:detectApi',    (_, { gamePath, exePath, profile }) => detectGraphicsApi(gamePath, exePath, profile));
 ipcMain.handle('reshade:install', async (event, { gamePath, exePath, profile, requiredShaders, geo11Installed }) => {
+    // ReShade is installed on behalf of a fix, so its files join that fix's manifest.
+    const session = (profile?.id && gamePath && fs.existsSync(gamePath))
+        ? installManifest.begin(profile.id, gamePath) : null;
     try {
         const result = await installReshade({
             gamePath, exePath, profile,
@@ -674,8 +674,10 @@ ipcMain.handle('reshade:install', async (event, { gamePath, exePath, profile, re
             geo11Installed:  geo11Installed  || false,
             onProgress: data => event.sender.send('reshade:progress', data),
         });
+        if (session) installManifest.finish(session, { rollback: !result.success });
         return result;
     } catch (e) {
+        if (session) installManifest.finish(session, { rollback: true });
         return { success: false, message: e.message };
     }
 });

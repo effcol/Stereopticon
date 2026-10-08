@@ -1556,20 +1556,29 @@ async function handleUninstallClick() {
         if (!confirm(`Uninstall ${selectedProfile.name}?\n\nThis removes the entry from Stereopticon. UEVR itself and the game profile in %AppData%\\UnrealVRMod are kept — remove those manually if needed.`)) return;
         installedFixIds.delete(selectedProfile.id);
         installedGameIds.delete(selectedGame.id);
-        window.api.setInstallExtra?.(selectedProfile.id, { pendingGuide: false });
-        // TODO: call uninstallFix for marking only — no file deletion needed
+        await window.api.uninstallFix(selectedProfile, gamePath);
         updateBottomBar();
         renderSidebar(gamesData);
         showResult(true, `${selectedProfile.name} removed from Stereopticon.\n\nTo fully uninstall UEVR, delete:\n• resources/uevr/\n• %AppData%\\UnrealVRMod\\${selectedGame.exe_name?.replace(/\.exe$/i,'') || selectedGame.id}`);
         return;
     }
 
-    if (!confirm(`Uninstall ${selectedProfile.name} from:\n${gamePath}\n\nThis will remove fix DLLs, ini, and ShaderFixes folder.`)) return;
+    if (!confirm(`Uninstall ${selectedProfile.name} from:\n${gamePath}\n\nThis removes the files Stereopticon installed for this fix and restores any files it replaced.`)) return;
     const btn = document.getElementById('btnUninstallMain');
     btn.disabled = true;
     resetTray();
     setProgress(10, 'Removing fix files…', null);
-    const result = await window.api.uninstallFix(selectedProfile, gamePath);
+    let result = await window.api.uninstallFix(selectedProfile, gamePath);
+    // Installed before Stereopticon tracked files: nothing is deleted until the user has seen the list.
+    if (result.needsConfirm) {
+        const ok = confirm(`This fix was installed before Stereopticon recorded which files it added, so it cannot tell them apart from other mods' files.\n\nThese look like they belong to it:\n\n${result.files.join('\n')}\n\nDelete them? Choose Cancel to leave the game folder untouched.`);
+        if (!ok) {
+            setProgress(0, 'Uninstall cancelled', null);
+            btn.disabled = false;
+            return;
+        }
+        result = await window.api.uninstallFix(selectedProfile, gamePath, { legacyConfirmed: true });
+    }
     if (result.success) {
         setProgress(100, 'Uninstall complete', null);
         showResult(true, result.message);

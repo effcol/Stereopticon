@@ -96,7 +96,7 @@ function downloadFile(url, destPath, onProgress) {
 
 // ─── Extraction ───────────────────────────────────────────────
 
-function extractZip(zipPath, destDir, installFiles) {
+function extractZip(zipPath, destDir, installFiles, beforeWrite) {
     if (!AdmZip) throw new Error('adm-zip not installed. Run: npm install adm-zip');
     const zip = new AdmZip(zipPath);
     ensureDir(destDir);
@@ -111,7 +111,11 @@ function extractZip(zipPath, destDir, installFiles) {
             if (!match) return;
         }
         const outPath = path.join(destDir, entry.entryName);
+        // Never write outside the destination, whatever the archive says.
+        const rel = path.relative(destDir, outPath);
+        if (rel.startsWith('..') || path.isAbsolute(rel)) return;
         ensureDir(path.dirname(outPath));
+        beforeWrite?.(outPath);
         fs.writeFileSync(outPath, entry.getData());
         count++;
     });
@@ -144,7 +148,7 @@ function extract7z(archivePath, destDir, onProgress) {
     });
 }
 
-async function extractArchive(archivePath, destDir, installFiles, onProgress) {
+async function extractArchive(archivePath, destDir, installFiles, onProgress, beforeWrite) {
     if (isSevenZip(archivePath)) {
         // node-7z extracts everything; post-filter if install_files specified
         const count = await extract7z(archivePath, destDir, onProgress);
@@ -156,7 +160,7 @@ async function extractArchive(archivePath, destDir, installFiles, onProgress) {
         }
         return count;
     } else {
-        return extractZip(archivePath, destDir, installFiles);
+        return extractZip(archivePath, destDir, installFiles, beforeWrite);
     }
 }
 
@@ -221,7 +225,9 @@ async function downloadStockGeo11(onProgress) {
 
 // ─── Main install ─────────────────────────────────────────────
 
-async function installFix(profile, gamePath, onProgress = () => {}, exeName = null) {
+// hooks.beforeWrite(absPath) is called before a file in the game folder is
+// written, so the caller can keep a copy of whatever was there.
+async function installFix(profile, gamePath, onProgress = () => {}, exeName = null, hooks = {}) {
     if (!gamePath) throw new Error('No game path provided');
     if (!fs.existsSync(gamePath)) {
         throw new Error(`Game directory not found:\n${gamePath}\n\nBrowse to the folder containing the game executable.`);
@@ -243,6 +249,7 @@ async function installFix(profile, gamePath, onProgress = () => {}, exeName = nu
 
         onProgress({ stage: 'extract', status: 'extracting', percent: 85, message: 'Installing shader…' });
         ensureDir(shaderDir);
+        hooks.beforeWrite?.(path.join(shaderDir, shaderName));
         fs.copyFileSync(cachePath, path.join(shaderDir, shaderName));
 
         onProgress({ stage: 'done', status: 'done', percent: 100, message: `${shaderName} installed` });
@@ -261,7 +268,7 @@ async function installFix(profile, gamePath, onProgress = () => {}, exeName = nu
 
         onProgress({ stage: 'extract', status: 'extracting', percent: 85, message: 'Extracting to game folder…' });
         const count = await extractArchive(cachePath, gamePath, profile.install_files || null,
-            p => onProgress({ stage: 'extract', ...p })
+            p => onProgress({ stage: 'extract', ...p }), hooks.beforeWrite
         );
 
         onProgress({ stage: 'done', status: 'done', percent: 100, message: `${count} files installed` });
@@ -272,7 +279,7 @@ async function installFix(profile, gamePath, onProgress = () => {}, exeName = nu
     if (isGeo11Type) {
         const zipPath = await downloadStockGeo11(p => onProgress(p));
         onProgress({ stage: 'extract', status: 'extracting', percent: 85, message: 'Extracting stock Geo-11…' });
-        const count = await extractArchive(zipPath, gamePath, null, p => onProgress({ stage: 'extract', ...p }));
+        const count = await extractArchive(zipPath, gamePath, null, p => onProgress({ stage: 'extract', ...p }), hooks.beforeWrite);
         onProgress({ stage: 'done', status: 'done', percent: 100, message: `Stock Geo-11 installed (${count} files)` });
         return {
             success: true,
@@ -288,7 +295,7 @@ async function installFix(profile, gamePath, onProgress = () => {}, exeName = nu
 
     // ── Case E: wiz3D variants — copy staged wiz3D files into game folder ─
     if (typeof profile.type === 'string' && profile.type.startsWith('wiz3d')) {
-        return await installWiz3D(profile, gamePath, exeName || '', onProgress);
+        return await installWiz3D(profile, gamePath, exeName || '', onProgress, hooks.beforeWrite);
     }
 
     // ── Case F: no download ───────────────────────────────────
@@ -319,7 +326,7 @@ async function installFix(profile, gamePath, onProgress = () => {}, exeName = nu
 //   wiz3d_3dvision_dm   → dx9 (only)
 //   wiz3d_hd3d          → none yet (planned dx11)
 //   wiz3d_opengl        → opengl-quad-buffer-stereo
-async function installWiz3D(profile, gamePath, exeName, onProgress) {
+async function installWiz3D(profile, gamePath, exeName, onProgress, beforeWrite) {
     onProgress({ stage: 'preflight', status: 'start', percent: 5, message: 'Locating wiz3D staging…' });
 
     if (!fs.existsSync(WIZ3D_STAGE_DIR)) {
@@ -376,6 +383,7 @@ async function installWiz3D(profile, gamePath, exeName, onProgress) {
             if (entry.isDirectory()) {
                 copyAll(s, d);
             } else {
+                beforeWrite?.(d);
                 fs.copyFileSync(s, d);
                 installed.push(path.relative(gamePath, d));
             }

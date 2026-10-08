@@ -63,8 +63,8 @@ getDisplaySoftwareStatus:  (familyId, deviceId)        =>
     },
 
     // Uninstall
-    uninstallFix: (profile, gamePath) =>
-        ipcRenderer.invoke('install:uninstall', { profile, gamePath }),
+    uninstallFix: (profile, gamePath, options) =>
+        ipcRenderer.invoke('install:uninstall', { profile, gamePath, options }),
 
     // Install state
     isInstalled:         (fixId) => ipcRenderer.invoke('install:isInstalled',    { fixId }),
