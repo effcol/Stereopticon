@@ -56,8 +56,7 @@ data/_sidebar.json
 engine/vireio/
 engine/Vireio-Perception-OpenTrack-Bridge/
 
-engine/sr-opentrack-bridge/build/
-engine/sr-opentrack-bridge/**/CMakeFiles/
+engine/sr-opentrack-bridge/
 
 # CMake-generated
 CMakeFiles/

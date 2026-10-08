@@ -28,12 +28,12 @@ profile entries under `data/games/` were generated from Vireio's `profiles.xml`.
 
 ---
 
-## Simulated Reality OpenTrack Bridge (bundled head-pose bridge — `engine/sr-opentrack-bridge/`)
+## Simulated Reality OpenTrack Bridge
 **Authors:** evilkermitreturns & effcol (2026)
-**License:** GNU General Public License v3.0 (same as parent project)
-**Source:** Stereopticon project, `engine/sr-opentrack-bridge/`
+**License:** GNU General Public License v3.0
+**Source:** https://github.com/effcol/Simulated-Reality-OpenTrack-Bridge
 
-C++ application that reads head pose from the LeiaSR Runtime (`SR::HeadPoseTracker`) and forwards 6-DOF data to OpenTrack via UDP on port 4242. Used automatically when a user selects an SR display + OpenTrack-based headtracking. Depends on LeiaSR Platform being installed on the user's machine (Stereopticon does not redistribute the LeiaSR SDK or Platform — those are vendor software the user installs separately).
+C++ application that reads head pose from the LeiaSR Runtime (`SR::HeadPoseTracker`) and forwards 6-DOF data to OpenTrack via UDP on port 4242. Used automatically when a user selects an SR display + OpenTrack-based headtracking. Depends on LeiaSR Platform being installed on the user's machine (Stereopticon does not bundle the bridge, the LeiaSR SDK or the Platform; the last two are vendor software the user installs separately).
 
 ---
 
