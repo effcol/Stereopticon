@@ -1,6 +1,6 @@
 # Stereopticon — Third-Party Software Notices
 
-Stereopticon is free software licensed under the GNU General Public License v3.0 (see `COPYING`).
+Stereopticon is free software licensed under the GNU Lesser General Public License v2.1 or later (see `LICENSE`).
 This file acknowledges the third-party components distributed with or fetched by this software.
 
 ## Distribution model
@@ -112,7 +112,7 @@ They are not modified.
 **Source:** https://github.com/simonfs/ShaderGlass  
 
 Stereopticon does not bundle ShaderGlass. It links users to the ShaderGlass GitHub
-releases page for download. ShaderGlass is GPL v3, the same license as Stereopticon.
+releases page for download.
 
 ---
 

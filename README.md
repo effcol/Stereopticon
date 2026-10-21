@@ -7,12 +7,12 @@
 
 Stereopticon orchestrates the major open-source stereo-3D injection tools (Geo-11, wiz3D, UEVR, VRto3D, ReShade-based shaders), and pairs them with headtracking from OpenTrack-protocol sources, letting you play stereoscopic 3D games with optional head-look on standard monitors, SR displays (Acer SpatialLabs, Samsung Odyssey 3D, Asus Spatial Vision, Dimenco), anaglyph glasses, VR headsets via OpenXR, and other 3D-capable hardware.
 
-Stereopticon is **GPL-3.0-only**.
+Stereopticon is licensed under the **GNU LGPL v2.1 or later**, the same licence as [wiz3D](https://github.com/effcol/wiz3D).
 
 ## What's in the repository
 
 ```
-.                        ← Stereopticon Electron app (GPL v3)
+.                        ← Stereopticon Electron app (LGPL v2.1 or later)
 ├── src/                 main process (Node)
 ├── renderer/            UI (HTML/CSS/JS)
 ├── modules/             per-tool adapters (reshade, uevr, vrto3d, installer, ...)
@@ -26,7 +26,7 @@ Stereopticon is **GPL-3.0-only**.
 │   ├── OpenXR-SDK/           Khronos OpenXR reference (Apache 2.0)
 │   └── opentrack/            OpenTrack source (ISC) for reference
 │
-├── COPYING / LICENSE    GPL v3 (the licence of the combined work)
+├── LICENSE            LGPL v2.1 (Stereopticon's licence)
 └── Notice.md            third-party attribution for all bundled / fetched components
 ```
 
@@ -39,14 +39,14 @@ Stereopticon does not inject anything itself. It is an Electron app that:
 3. **Spawns the selected tool as a child process** with the right config for the chosen output format and display.
 4. **Manages headtracking** by spawning OpenTrack and any required bridge (e.g. the LeiaSR head-pose bridge for SR displays) so games receive head-pose data over UDP, even if they don't natively support TrackIR/OpenTrack.
 
-Tools run in their own processes with their own licenses. Stereopticon never links to their code.
+Tools run in their own processes with their own licences. Stereopticon never links to their code.
 
 ## Currently supported tools
 
-| Tool | Role | License |
+| Tool | Role | Licence |
 |---|---|---|
 | **Geo-11 / Geo-12** | Modern 3DMigoto-based stereo injector. Primary target for most contemporary fixes. | GPL v3 |
-| **wiz3D** | Lightweight stereo injector. | LGPL v2 |
+| **wiz3D** | Lightweight stereo injector. | LGPL v2.1 |
 | **UEVR** | praydog's universal Unreal Engine VR injector. | Pending (binaries fetched from official releases) |
 | **VRto3D** | SteamVR driver that converts VR output to SBS/TAB for flat 3D displays. | MIT |
 | **ReShade + 3DGameBridge / XRGameBridge / 3DtoElse / SuperDepth3D / anaglyph-to-sbs shaders** | Shader-based stereo conversion and SR-weave generation. | BSD / MIT / CC BY 3.0 / GPL v3 |
@@ -72,6 +72,10 @@ npm run setup       # downloads ReShade, UEVR, dgVoodoo2, VRto3D, etc.
 npm start
 ```
 
-## License
+## Licence
 
-Stereopticon as a whole is licensed under **GNU GPL v3.0-only**. See `COPYING` (or `LICENSE`) for the full text and `Notice.md` for third-party attribution.
+Stereopticon is licensed under the **GNU Lesser General Public License v2.1 or later** (`LGPL-2.1-or-later`). See `LICENSE` for the full text and `Notice.md` for third-party attribution.
+
+Versions published before 22 October 2026 were released under GPL v3 and remain available under that licence.
+
+The ReShade shaders in `resources/shaders-src/` keep their own licences, stated at the top of each file: `Anaglyph_to_SBS_or_TAB.fx` and `Pulfrich_to_SBS_or_TAB.fx` are GPL-3.0-or-later, and `3DtoElse.fx` is CC BY 3.0.
