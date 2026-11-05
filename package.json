@@ -1,23 +1,82 @@
 {
   "name": "stereopticon",
   "productName": "Stereopticon",
-  "description": "Open-source stereo 3D + headtracking launcher. A one-stop hub for Geo-11, Wiz3D, UEVR, VRto3D, ReShade, OpenTrack and SR-display tooling.",
-  "version": "0.0.1",
+  "description": "Open-source launcher for stereo 3D and head tracking in PC games. First release: a front end for wiz3D.",
+  "version": "0.1.0",
   "author": "effcol",
-  "main": "src/main.js",
-  "scripts": {
-    "start":       "electron .",
-    "test":        "node --test test/",
-    "setup":       "node scripts/download-tools.js",
-    "setup:force": "node scripts/download-tools.js --force"
-  },
-  "devDependencies": {
-    "electron": "^40.1.0"
+  "homepage": "https://github.com/effcol/Stereopticon",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/effcol/Stereopticon.git"
   },
   "license": "LGPL-2.1-or-later",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/",
+    "bundle": "node scripts/build-data-bundle.js",
+    "dist": "node scripts/build-data-bundle.js && electron-builder --win",
+    "setup": "node scripts/download-tools.js",
+    "setup:force": "node scripts/download-tools.js --force"
+  },
+  "build": {
+    "appId": "io.github.effcol.stereopticon",
+    "productName": "Stereopticon",
+    "copyright": "Copyright © 2026 effcol",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "package.json",
+      "LICENSE",
+      "Notice.md",
+      "src/**/*",
+      "renderer/**/*",
+      "modules/**/*",
+      "assets/**/*",
+      "data/**/*",
+      "!data/games/**",
+      "!data/vireio/**"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png",
+      "artifactName": "${productName}-${version}-portable.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "effcol",
+        "repo": "Stereopticon",
+        "releaseType": "draft"
+      }
+    ]
+  },
   "dependencies": {
     "7zip-bin": "^5.2.0",
     "adm-zip": "^0.5.16",
     "node-7z": "^3.0.0"
+  },
+  "devDependencies": {
+    "electron": "^40.1.0",
+    "electron-builder": "^26.18.0"
   }
 }
