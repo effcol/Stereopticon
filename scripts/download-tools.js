@@ -40,7 +40,6 @@ const VERSION_FILE    = path.join(RESHADE_DIR,  'VERSION');
 const UEVR_DIR        = path.join(PROJECT_ROOT, 'resources', 'uevr');
 const DGVOODOO_DIR    = path.join(PROJECT_ROOT, 'resources', 'dgvoodoo2');
 const XRGB_DIR        = path.join(PROJECT_ROOT, 'resources', 'xrgamebridge');
-const WIZ3D_DIR       = path.join(PROJECT_ROOT, 'resources', 'wiz3d');
 const OPENTRACK_DIR   = path.join(PROJECT_ROOT, 'resources', 'opentrack');
 
 const FORCE = process.argv.includes('--force');
@@ -493,88 +492,18 @@ async function downloadDgVoodoo2() {
 
 // ── Direct addon download ─────────────────────────────────────
 // ── wiz3D ─────────────────────────────────────────────────────
-// Per-API stereo-3D injection wrappers (effcol). Five wrapper variants
-// (dx7, dx8, dx9, dx10-11, dx12, vulkan), plus three capture-and-reroute
-// variants (3d-vision-direct, hd3d, opengl-quad-buffer-stereo). Each variant
-// has its own per-arch (x86/x64) DLL set. Staging:
-//
-//     resources/wiz3d/
-//       dx9/{x86,x64}/{d3d9.dll, S3DWrapperD3D9.dll, wiz3D_Config.xml, ...}
-//       dx10-11/{x86,x64}/...
-//       opengl-quad-buffer-stereo/{x86,x64}/...
-//       3d-vision-direct/{dx9,dx10,dx11}/{x86,x64}/...
-//       hd3d/{x86,x64}/...
-//       ...
-//
-// At fix-install time, modules/installer.js picks the right variant + arch
-// folder and copies its contents into the game folder next to the .exe.
-//
-// Dev convenience: if lib/wiz3D build/wiz3D/ exists (developer reference,
-// gitignored), copy from there instead of fetching from GitHub. Pass
-// --no-lib to force the GitHub-release path even when lib/ is present.
-async function downloadWiz3D(sevenZip) {
+// The app downloads and updates wiz3D itself (modules/wiz3dManager.js), so
+// this only pre-fetches the latest release for development use.
+async function downloadWiz3D() {
     step('Downloading wiz3D (effcol)…');
-    ensureDir(WIZ3D_DIR);
-
-    const markerFile = path.join(WIZ3D_DIR, '.installed');
-    if (!FORCE && fs.existsSync(markerFile)) {
-        log('  wiz3D already present ✓');
-        return;
-    }
-
-    // Dev fallback: lib/wiz3D build/wiz3D/ (gitignored dev reference, not redistributed)
-    const libBuild = path.join(PROJECT_ROOT, 'lib', 'wiz3D build', 'wiz3D');
-    if (fs.existsSync(libBuild) && !process.argv.includes('--no-lib')) {
-        log('  Using lib/wiz3D build/ (dev fallback — bypassing GitHub fetch)');
-        copyDirRecursiveSync(libBuild, WIZ3D_DIR);
-        fs.writeFileSync(markerFile, `from lib/wiz3D build/ at ${new Date().toISOString()}\n`);
-        log('  wiz3D staged from dev reference ✓');
-        return;
-    }
-
-    // Production path: GitHub release
-    let zipUrl, tagName;
     try {
-        const release = await getLatestGithubRelease('effcol/wiz3D');
-        const asset = release.assets?.find(a => a.name.toLowerCase().endsWith('.zip'));
-        if (!asset) throw new Error('no .zip asset in latest wiz3D release');
-        zipUrl  = asset.browser_download_url;
-        tagName = release.tag_name;
-        log(`  Latest wiz3D: ${tagName}`);
+        const wiz = await require('../modules/wiz3dManager').ensureInstalled(p => {
+            if (p.stage !== 'download' || p.percent % 25 === 0) log(`  ${p.message}`);
+        });
+        log(`  wiz3D ${wiz.tag} ready ✓`);
     } catch (e) {
-        log(`  ⚠ Could not fetch wiz3D release (${e.message})`);
-        log('    wiz3D fixes will be unavailable. Re-run `npm run setup` when a release is published,');
-        log('    or drop a build at lib/wiz3D build/wiz3D/ for dev use.');
-        return;
+        log(`  ⚠ Could not fetch wiz3D (${e.message}); the app will try again when wiz3D is first needed.`);
     }
-
-    ensureDir(CACHE_DIR);
-    const cachePath = path.join(CACHE_DIR, `wiz3D-${tagName}.zip`);
-    if (FORCE || !fs.existsSync(cachePath)) {
-        log(`  Downloading wiz3D ${tagName}…`);
-        await downloadFile(zipUrl, cachePath);
-    } else {
-        log(`  Using cached wiz3D ${tagName}`);
-    }
-
-    // Extract with paths preserved (per-API/arch folder structure matters)
-    try {
-        execFileSync(sevenZip, ['x', cachePath, '-o' + WIZ3D_DIR, '-y'], { stdio: 'pipe' });
-    } catch (e) {
-        log(`  ⚠ 7-Zip extract warning: ${(e.stderr?.toString() || '').slice(0, 120)}`);
-    }
-
-    // Some releases nest contents under a top-level "wiz3D/" folder — flatten if so
-    const innerWiz = path.join(WIZ3D_DIR, 'wiz3D');
-    if (fs.existsSync(innerWiz)) {
-        for (const entry of fs.readdirSync(innerWiz, { withFileTypes: true })) {
-            fs.renameSync(path.join(innerWiz, entry.name), path.join(WIZ3D_DIR, entry.name));
-        }
-        try { fs.rmdirSync(innerWiz); } catch {}
-    }
-
-    fs.writeFileSync(markerFile, `${tagName} at ${new Date().toISOString()}\n`);
-    log(`  wiz3D ${tagName} installed ✓`);
 }
 
 async function downloadOpenTrack(sevenZip) {
@@ -752,7 +681,7 @@ async function main() {
     await downloadVRto3D();
     await downloadXRGameBridge();
     await downloadDgVoodoo2();
-    await downloadWiz3D(sevenZip);
+    await downloadWiz3D();
     await downloadOpenTrack(sevenZip);
 
     for (const [name, source] of Object.entries(DIRECT_ADDON_SOURCES)) {

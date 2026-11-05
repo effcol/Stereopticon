@@ -144,14 +144,20 @@ ipcMain.handle('install:fix', async (event, { profile, gameId, gamePath, exeName
     // exactly that. A failed install is rolled back.
     const session = (gamePath && fs.existsSync(gamePath)) ? installManifest.begin(profile.id, gamePath) : null;
     try {
+        const game = gameId ? loadOneGame(gameId) : null;
         const result = await installFix(profile, gamePath, (progress) => {
             event.sender.send('install:progress', progress);
-        }, exeName || null, { beforeWrite: session?.beforeWrite });
+        }, exeName || null, { beforeWrite: session?.beforeWrite, game });
         if (session) installManifest.finish(session, { rollback: !result.success });
         if (result.success) {
             const isPending = ['uevr','ue3d'].includes(profile.type);
-            markInstalled(profile.id, gameId, gamePath, profile.download_url,
-                isPending ? { pendingGuide: true } : {});
+            markInstalled(profile.id, gameId, gamePath, profile.download_url, {
+                ...(isPending ? { pendingGuide: true } : {}),
+                // Where the files went (next to the exe) and what was installed,
+                // so launch-time config edits find the right folder.
+                ...(result.installDir   ? { installDir:   result.installDir }   : {}),
+                ...(result.wiz3dVersion ? { wiz3dVersion: result.wiz3dVersion, wiz3dVariant: result.variant } : {}),
+            });
         }
         return { success: true, ...result };
     } catch (e) {

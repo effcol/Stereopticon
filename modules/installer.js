@@ -16,6 +16,8 @@ const path  = require('path');
 const https = require('https');
 const http  = require('http');
 const os    = require('os');
+const peInfo       = require('./peInfo');
+const wiz3dManager = require('./wiz3dManager');
 
 // ZIP support
 let AdmZip;
@@ -32,10 +34,6 @@ const CACHE_DIR = path.join(os.homedir(), '.stereopticon', 'cache');
 const GEO11_RELEASE_API  = 'https://api.github.com/repos/bo3b/3Dmigoto/releases/latest';
 const GEO11_FALLBACK_URL = 'https://github.com/bo3b/3Dmigoto/releases/latest/download/3Dmigoto.zip';
 
-// wiz3D is staged at setup time by scripts/download-tools.js into resources/wiz3d/.
-// At fix-install time we pick the right per-variant/per-arch subfolder and copy it
-// into the game folder.
-const WIZ3D_STAGE_DIR = path.join(__dirname, '..', 'resources', 'wiz3d');
 
 // ─── Utilities ────────────────────────────────────────────────
 
@@ -295,7 +293,7 @@ async function installFix(profile, gamePath, onProgress = () => {}, exeName = nu
 
     // ── Case E: wiz3D variants — copy staged wiz3D files into game folder ─
     if (typeof profile.type === 'string' && profile.type.startsWith('wiz3d')) {
-        return await installWiz3D(profile, gamePath, exeName || '', onProgress, hooks.beforeWrite);
+        return await installWiz3D(profile, gamePath, exeName || '', onProgress, hooks.beforeWrite, hooks.game || null);
     }
 
     // ── Case F: no download ───────────────────────────────────
@@ -307,82 +305,136 @@ async function installFix(profile, gamePath, onProgress = () => {}, exeName = nu
 }
 
 // ─── wiz3D install ───────────────────────────────────────────────
-// Copies the right per-variant + per-arch subfolder from resources/wiz3d/
-// into the game folder. The folder layout (per `lib/wiz3D build/wiz3D/`):
+// wiz3D comes from its GitHub releases (modules/wiz3dManager.js), downloaded on
+// first use. A release is laid out by render path, API and architecture:
 //
-//   resources/wiz3d/
-//     dx7/                              ← no arch split for legacy APIs
-//     dx8/                              ← no arch split
-//     dx9/{x86,x64}/                    ← wrapper variants need arch
-//     dx10-11/{x86,x64}/
-//     dx12/{x86,x64}/                   ← planned (not working yet)
-//     vulkan/{x86,x64}/                 ← planned
-//     3d-vision-direct/{dx9,dx10,dx11}/{x86,x64}/
-//     hd3d/{x86,x64}/                   ← planned
-//     opengl-quad-buffer-stereo/{x86,x64}/
+//   Stereo-Injector/DX7/                 32-bit only, no arch folder
+//   Stereo-Injector/DX8/                 32-bit only, no arch folder
+//   Stereo-Injector/DX9/<32-bit|64-bit>/
+//   Stereo-Injector/DX10-11/<32-bit|64-bit>/
+//   HD3D/<32-bit|64-bit>/
+//   3D-Vision-Direct/<DX9|DX10|DX11>/<32-bit|64-bit>/
+//   OpenGL-Quad-Buffer-Stereo/<32-bit|64-bit>/
 //
-// Working APIs (per data/tools/wiz3d-*.json graphics_api_status.working):
-//   wiz3d_wrapper       → dx8, dx9
-//   wiz3d_3dvision_dm   → dx9 (only)
-//   wiz3d_hd3d          → none yet (planned dx11)
-//   wiz3d_opengl        → opengl-quad-buffer-stereo
-async function installWiz3D(profile, gamePath, exeName, onProgress, beforeWrite) {
-    onProgress({ stage: 'preflight', status: 'start', percent: 5, message: 'Locating wiz3D staging…' });
+// The files go next to the game's .exe, which is not always the game folder
+// itself (Unreal games keep it in Binaries\Win64, for example).
 
-    if (!fs.existsSync(WIZ3D_STAGE_DIR)) {
-        return {
-            success: false,
-            message: `wiz3D is not staged on this machine.\n\n` +
-                     `Run \`npm run setup\` to fetch it from the upstream release, ` +
-                     `or place a build at lib/wiz3D build/wiz3D/ for development use.`
-        };
-    }
+const EXE_SEARCH_DEPTH = 4;
 
-    // Resolve which variant subfolder this fix maps to.
-    const variantDir = resolveWiz3DVariantDir(profile);
-    if (!variantDir) {
-        return {
-            success: false,
-            message: `Unknown wiz3D variant or unsupported graphics API for fix "${profile.id}" ` +
-                     `(type: ${profile.type}, graphics_api: ${profile.graphics_api || 'unspecified'}).`
-        };
-    }
-
-    // Pick architecture (default x64). Some fixes declare cpu_architecture: "32bit"/"x86".
-    const arch = pickWiz3DArch(profile);
-
-    // Resolve the absolute source directory we'll copy from. Some variants have an
-    // arch split (x86/x64) and some don't (dx7, dx8).
-    let srcDir = path.join(WIZ3D_STAGE_DIR, variantDir, arch);
-    if (!fs.existsSync(srcDir)) {
-        // No arch split — fall back to the variantDir itself
-        const noArch = path.join(WIZ3D_STAGE_DIR, variantDir);
-        if (fs.existsSync(noArch) && fs.statSync(noArch).isDirectory() &&
-            !fs.existsSync(path.join(noArch, 'x86')) && !fs.existsSync(path.join(noArch, 'x64'))) {
-            srcDir = noArch;
-        } else {
-            return {
-                success: false,
-                message: `wiz3D ${variantDir}/${arch}/ is not present in resources/wiz3d/.\n\n` +
-                         `This API/arch combination may not be implemented yet ` +
-                         `(see data/tools/${profile.type.replace(/_/g, '-')}.json graphics_api_status). ` +
-                         `Re-run \`npm run setup\` after a new wiz3D release if you expect this to work.`
-            };
+/** Absolute path of the game's executable under gamePath, or null. */
+function findGameExe(gamePath, exeName) {
+    if (!gamePath || !exeName) return null;
+    const wanted = path.basename(exeName).toLowerCase();
+    const direct = path.join(gamePath, path.basename(exeName));
+    if (fs.existsSync(direct)) return direct;
+    let level = [gamePath];
+    for (let depth = 0; depth < EXE_SEARCH_DEPTH && level.length; depth++) {
+        const next = [];
+        for (const dir of level) {
+            let entries;
+            try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { continue; }
+            for (const e of entries) {
+                if (e.isFile() && e.name.toLowerCase() === wanted) return path.join(dir, e.name);
+                if (e.isDirectory()) next.push(path.join(dir, e.name));
+            }
         }
+        level = next;
+    }
+    return null;
+}
+
+// Catalogue spellings ("DX9", "dx10", "DX10/11", "Direct3D 11", "OpenGL") → wiz3D terms.
+function normaliseWiz3DApi(value) {
+    const v = String(Array.isArray(value) ? value[0] : value || '').toLowerCase().replace(/\s+/g, '');
+    if (!v) return null;
+    if (/opengl|ogl/.test(v))           return 'opengl';
+    if (/12/.test(v))                   return 'dx12';
+    if (/1[01]/.test(v))                return 'dx10-11';
+    if (/(^|[^0-9])9/.test(v))          return 'dx9';
+    if (/(^|[^0-9])8/.test(v))          return 'dx8';
+    if (/(^|[^0-9])7|ddraw/.test(v))    return 'dx7';
+    return null;
+}
+
+/**
+ * Work out which part of the wiz3D release a fix needs.
+ * Returns { rel: [path segments], api, arch, sources } or { error }.
+ */
+function resolveWiz3DTarget(profile, game, pe) {
+    const peApi  = pe ? peInfo.graphicsApiFromImports(pe.imports) : null;
+    const catApi = normaliseWiz3DApi(profile.wiz3d_api_raw) || normaliseWiz3DApi(profile.graphics_api) ||
+                   normaliseWiz3DApi(game?.graphics_api);
+    // The catalogue entry names the renderer wiz3D was tested with, so it wins
+    // over the import table, which cannot see DLLs loaded at runtime.
+    const api = catApi || peApi;
+
+    const bitsField = String(profile.wiz3d_bits || profile.cpu_architecture || '');
+    const peArch  = pe && (pe.arch === 'x86' || pe.arch === 'x64') ? pe.arch : null;
+    const catArch = /32|x86/i.test(bitsField) ? 'x86' : /64/i.test(bitsField) ? 'x64' : null;
+    const arch = peArch || catArch || 'x64';
+    const bits = arch === 'x86' ? '32-bit' : '64-bit';
+    const sources = { api: catApi ? 'catalogue' : peApi ? 'executable' : 'unknown',
+                      arch: peArch ? 'executable' : catArch ? 'catalogue' : 'default' };
+
+    switch (profile.type) {
+        case 'wiz3d_wrapper':
+            if (api === 'dx7' || api === 'dx8') {
+                if (arch === 'x64') return { error: `wiz3D's ${api.toUpperCase()} injector is 32-bit only, but this game is 64-bit.` };
+                return { rel: ['Stereo-Injector', api.toUpperCase()], api, arch, sources };
+            }
+            if (api === 'dx9')     return { rel: ['Stereo-Injector', 'DX9', bits], api, arch, sources };
+            if (api === 'dx10-11') return { rel: ['Stereo-Injector', 'DX10-11', bits], api, arch, sources };
+            return { error: api
+                ? `wiz3D's stereo injector does not support ${api.toUpperCase()} games yet.`
+                : `Could not tell which graphics API this game uses, so wiz3D cannot pick its files.` };
+        case 'wiz3d_hd3d':
+            return { rel: ['HD3D', bits], api, arch, sources };
+        case 'wiz3d_opengl':
+            return { rel: ['OpenGL-Quad-Buffer-Stereo', bits], api: 'opengl', arch, sources };
+        case 'wiz3d_3dvision_dm': {
+            const raw = String(profile.wiz3d_api_raw || game?.graphics_api || '');
+            const dm = api === 'dx9' ? 'DX9'
+                     : api === 'dx10-11' ? (/10/.test(raw) && !/11/.test(raw) ? 'DX10' : 'DX11')
+                     : null;
+            if (!dm) return { error: `wiz3D's 3D Vision Direct Mode path supports DX9, DX10 and DX11 games only.` };
+            return { rel: ['3D-Vision-Direct', dm, bits], api, arch, sources };
+        }
+        default:
+            return { error: `Unknown wiz3D fix type "${profile.type}".` };
+    }
+}
+
+async function installWiz3D(profile, gamePath, exeName, onProgress, beforeWrite, game = null) {
+    onProgress({ stage: 'preflight', status: 'start', percent: 5, message: 'Getting wiz3D…' });
+
+    let wiz;
+    try {
+        wiz = await wiz3dManager.ensureInstalled(p =>
+            onProgress({ stage: 'download', status: p.stage, percent: Math.round(5 + (p.percent || 0) * 0.6), message: p.message }));
+    } catch (e) {
+        return { success: false, message: `Could not download wiz3D:\n${e.message}` };
     }
 
-    onProgress({ stage: 'install', status: 'copying', percent: 30, message: `Installing wiz3D ${variantDir}…` });
+    const exePath = findGameExe(gamePath, exeName || game?.exe_name);
+    const pe = exePath ? peInfo.readPe(exePath) : null;
+    const target = resolveWiz3DTarget(profile, game, pe);
+    if (target.error) return { success: false, message: target.error };
 
-    // Track installed files for later uninstall
+    const srcDir = path.join(wiz.dir, ...target.rel);
+    if (!fs.existsSync(srcDir)) {
+        return { success: false, message: `wiz3D ${wiz.tag} has no ${target.rel.join('\\')} folder.` };
+    }
+    const destDir = exePath ? path.dirname(exePath) : gamePath;
+
+    onProgress({ stage: 'install', status: 'copying', percent: 70, message: `Installing wiz3D ${wiz.tag} (${target.rel.join(' / ')})…` });
     const installed = [];
-    const copyAll = (from, intoSubdir) => {
-        ensureDir(intoSubdir);
+    const copyAll = (from, into) => {
+        ensureDir(into);
         for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
             const s = path.join(from, entry.name);
-            const d = path.join(intoSubdir, entry.name);
-            if (entry.isDirectory()) {
-                copyAll(s, d);
-            } else {
+            const d = path.join(into, entry.name);
+            if (entry.isDirectory()) copyAll(s, d);
+            else {
                 beforeWrite?.(d);
                 fs.copyFileSync(s, d);
                 installed.push(path.relative(gamePath, d));
@@ -390,66 +442,26 @@ async function installWiz3D(profile, gamePath, exeName, onProgress, beforeWrite)
         }
     };
     try {
-        copyAll(srcDir, gamePath);
+        copyAll(srcDir, destDir);
     } catch (e) {
-        return {
-            success: false,
-            message: `wiz3D install failed while copying ${srcDir} → ${gamePath}: ${e.message}`
-        };
+        return { success: false, message: `wiz3D install failed while copying to ${destDir}:\n${e.message}` };
     }
 
     onProgress({ stage: 'done', status: 'done', percent: 100, message: `wiz3D installed (${installed.length} files)` });
-
+    const notes = [];
+    if (!exePath) notes.push(`${exeName || 'The game .exe'} was not found under the game folder, so wiz3D was copied to the folder itself.`);
+    if (target.sources.arch !== 'executable') notes.push(`Assumed a ${target.arch === 'x86' ? '32' : '64'}-bit game (${target.sources.arch}).`);
     return {
         success: true,
         installedFiles: installed,
-        variant: variantDir,
-        arch:    arch,
-        message: `wiz3D ${variantDir} (${arch}) installed to:\n${gamePath}\n\n` +
-                 `${installed.length} file${installed.length === 1 ? '' : 's'} copied. ` +
-                 `Edit wiz3D_Config.xml in the game folder (or use the per-tool settings in ` +
-                 `Stereopticon's UI once the config adapter ships in S3.2) to tune output mode.`
+        installDir: destDir,
+        wiz3dVersion: wiz.tag,
+        variant: target.rel.join('/'),
+        arch: target.arch,
+        api: target.api,
+        message: `wiz3D ${wiz.tag} (${target.rel.join(' / ')}) installed to:\n${destDir}` +
+                 (notes.length ? `\n\n${notes.join('\n')}` : ''),
     };
-}
-
-// Map a fix profile (type + graphics_api) to a subfolder name inside resources/wiz3d/.
-function resolveWiz3DVariantDir(profile) {
-    const type = profile.type;
-    const api  = (Array.isArray(profile.graphics_api) ? profile.graphics_api[0] : profile.graphics_api) || '';
-
-    if (type === 'wiz3d_wrapper') {
-        // Map graphics_api → wrapper subdir name. wiz3D bundles dx10 and dx11
-        // together as "dx10-11".
-        switch (api.toLowerCase()) {
-            case 'dx7':           return 'dx7';
-            case 'dx8':           return 'dx8';
-            case 'dx9':           return 'dx9';
-            case 'dx10':
-            case 'dx11':          return 'dx10-11';
-            case 'dx12':          return 'dx12';
-            case 'vulkan':        return 'vulkan';
-            default:              return null;
-        }
-    }
-    if (type === 'wiz3d_3dvision_dm') {
-        // 3D Vision Direct Mode has its own dx9/dx10/dx11 split under one tree
-        switch (api.toLowerCase()) {
-            case 'dx9':           return path.join('3d-vision-direct', 'dx9');
-            case 'dx10':          return path.join('3d-vision-direct', 'dx10');
-            case 'dx11':          return path.join('3d-vision-direct', 'dx11');
-            default:              return null;
-        }
-    }
-    if (type === 'wiz3d_hd3d')   return 'hd3d';
-    if (type === 'wiz3d_opengl') return 'opengl-quad-buffer-stereo';
-    return null;
-}
-
-// Determine x64 vs x86. Some game profiles declare cpu_architecture; otherwise default x64.
-function pickWiz3DArch(profile) {
-    const arch = String(profile.cpu_architecture || profile.arch || '').toLowerCase();
-    if (arch === '32bit' || arch === 'x86' || arch === 'win32') return 'x86';
-    return 'x64';
 }
 
 // ─── UEVR profile install ─────────────────────────────────────
@@ -943,4 +955,4 @@ function writeVRto3DGameProfile(exeName, settings = {}) {
     return profilePath;
 }
 
-module.exports = { installFix, installUEVRProfile, installUE3D, readUEVRConfig, writeUEVRConfig, readVRto3DConfig, writeVRto3DConfig, findSteamVRDriversDir, installVRto3D, isVRto3DInstalled, getVRto3DConfigDir, writeVRto3DGameProfile, getCacheInfo, clearCache };
+module.exports = { installFix, findGameExe, resolveWiz3DTarget, installUEVRProfile, installUE3D, readUEVRConfig, writeUEVRConfig, readVRto3DConfig, writeVRto3DConfig, findSteamVRDriversDir, installVRto3D, isVRto3DInstalled, getVRto3DConfigDir, writeVRto3DGameProfile, getCacheInfo, clearCache };
