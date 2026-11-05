@@ -103,24 +103,35 @@ function findBySteamAppId(commonPaths, appId) {
 }
 
 /**
- * Fuzzy folder-name search across all Steam common paths.
+ * Could this folder be the game? With an exe name, a loose name match is
+ * enough because the caller then checks the exe is there. Without one the
+ * folder name must match the title exactly (ignoring case and punctuation):
+ * a loose match picked the wrong game, and install / uninstall act on
+ * whatever folder this returns.
+ */
+const slugOf = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+function folderMatches(title, folderName, hasExe) {
+    const titleSlug  = slugOf(title);
+    const folderSlug = slugOf(folderName);
+    if (!titleSlug || !folderSlug) return false;
+    if (folderSlug === titleSlug) return true;
+    if (!hasExe) return false;
+    const titleWords = String(title).toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 2);
+    return folderSlug.includes(titleSlug.slice(0, 8)) || titleSlug.includes(folderSlug.slice(0, 8)) ||
+           titleWords.some(w => folderSlug.includes(w));
+}
+
+/**
+ * Folder-name search across all Steam common paths.
  */
 function findByTitle(commonPaths, title, exeName) {
-    const titleSlug  = title.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const titleWords = title.toLowerCase()
-        .replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 2);
-
     for (const commonPath of commonPaths) {
         let entries;
         try { entries = fs.readdirSync(commonPath); } catch { continue; }
 
         for (const entry of entries) {
-            const entrySlug  = entry.toLowerCase().replace(/[^a-z0-9]/g, '');
-            const shortTitle = titleSlug.slice(0, 8);
-            const shortEntry = entrySlug.slice(0, 8);
-            const overlap    = entrySlug.includes(shortTitle) || titleSlug.includes(shortEntry);
-            const wordMatch  = titleWords.some(w => entrySlug.includes(w));
-            if (!overlap && !wordMatch) continue;
+            if (!folderMatches(title, entry, !!exeName)) continue;
 
             const fullPath = path.join(commonPath, entry);
             if (exeName) {
@@ -200,19 +211,9 @@ function getEpicInstalls() {
 }
 
 function findEpicGame(title, exeName) {
-    const titleSlug = title.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const titleWords = title.toLowerCase()
-        .replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 2);
-    
     for (const entry of getEpicInstalls()) {
-        const slug    = (entry.AppName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-        const dirSlug = (entry.InstallLocation || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-        
-        // Improved matching: check app name or directory
-        const hasMatch = slug.includes(titleSlug.slice(0, 5)) || 
-                        dirSlug.includes(titleSlug.slice(0, 5)) ||
-                        titleWords.some(w => slug.includes(w) || dirSlug.includes(w));
-        
+        const hasMatch = folderMatches(title, entry.DisplayName || '', !!exeName) ||
+                         folderMatches(title, path.basename(entry.InstallLocation || ''), !!exeName);
         if (!hasMatch) continue;
         
         const dir = entry.InstallLocation;
@@ -289,16 +290,9 @@ async function scanAllGames(targets) {
     console.log(`[GameRegistry] Built index with ${slugIndex.size} directories`);
 
     for (const t of remaining) {
-        const titleSlug  = t.title.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const titleWords = t.title.toLowerCase()
-            .replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 2);
-
         let found = null;
-        for (const [slug, fullPath] of slugIndex) {
-            const shortTitle = titleSlug.slice(0, 8);
-            const shortSlug  = slug.slice(0, 8);
-            if (!slug.includes(shortTitle) && !titleSlug.includes(shortSlug) &&
-                !titleWords.some(w => slug.includes(w))) continue;
+        for (const fullPath of slugIndex.values()) {
+            if (!folderMatches(t.title, path.basename(fullPath), !!t.exeName)) continue;
 
             if (t.exeName) {
                 if (fs.existsSync(path.join(fullPath, t.exeName))) { 
@@ -345,4 +339,4 @@ async function scanAllGames(targets) {
     return results;
 }
 
-module.exports = { scanGame, scanAllGames };
+module.exports = { scanGame, scanAllGames, folderMatches };

@@ -70,3 +70,13 @@ test('install copies the release next to the game exe, found in a subfolder', as
     assert.strictEqual(fs.readFileSync(path.join(r.installDir, 'marker.txt'), 'utf8'), 'Stereo-Injector/DX9/32-bit');
     assert.strictEqual(written.length, 2, 'beforeWrite is called for every file');
 });
+
+test('folder matching needs an exact name when there is no exe to confirm it', () => {
+    const { folderMatches } = require('../modules/gameRegistry');
+    assert.strictEqual(folderMatches('Alan Wake', 'Alan Wake', false), true);
+    assert.strictEqual(folderMatches("Mirror's Edge", 'mirrors edge', false), true);
+    assert.strictEqual(folderMatches('The Witcher', 'The Witcher 3', false), false);
+    assert.strictEqual(folderMatches('Far Cry 2', 'Far Cry 3', false), false);
+    assert.strictEqual(folderMatches('Batman: Arkham City', 'Batman Arkham City GOTY', true), true,
+                       'a loose match is fine when the exe is checked afterwards');
+});
