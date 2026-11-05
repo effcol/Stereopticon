@@ -55,6 +55,22 @@
       "source": "3D/VR Compatibility Database (Airtable)",
       "compat_rating": 5,
       "compat_mode": "3D"
+    },
+    {
+      "id": "tom_clancy_s_hawx_2_tridef",
+      "name": "TriDef 3D Ignition",
+      "type": "tridef",
+      "cost": "paid",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "None",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). API: Direct3D. Untested by maintainers.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": null,
+      "compat_mode": "3D",
+      "deprecated": true
     }
   ],
   "steam_app_id": null

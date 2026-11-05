@@ -131,4 +131,13 @@ getDisplaySoftwareStatus:  (familyId, deviceId)        =>
     closeWindow:    () => ipcRenderer.send('window:close'),
     openOpenTrackHub: () => ipcRenderer.invoke('opentrack:open'),
     getAppVersion:    () => ipcRenderer.invoke('app:version'),
+
+    // wiz3D release management
+    wiz3dStatus:      (opts) => ipcRenderer.invoke('wiz3d:status', opts || {}),
+    wiz3dUpdate:      ()     => ipcRenderer.invoke('wiz3d:update'),
+    onWiz3dProgress:  (callback) => {
+        const handler = (_event, data) => callback(data);
+        ipcRenderer.on('wiz3d:progress', handler);
+        return () => ipcRenderer.removeListener('wiz3d:progress', handler);
+    },
 });

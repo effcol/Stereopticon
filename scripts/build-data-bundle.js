@@ -71,6 +71,16 @@ function _buildPipelineOutputLookup(pipelines) {
 // Light projection for the sidebar — just enough to drive filtering and
 // to paint the nav-item row. Full game data is fetched lazily via IPC
 // when the user clicks a row.
+// Best wiz3D status across a game's wiz3D fixes, for the wiz3D status filter.
+// Fixes imported from the compatibility database carry no status: 'unknown'.
+const WIZ3D_STATUS_RANK = ['working', 'partial', 'untested', 'unknown', 'broken'];
+function bestWiz3DStatus(fixes) {
+    const statuses = fixes.filter(f => String(f.type).startsWith('wiz3d'))
+        .map(f => WIZ3D_STATUS_RANK.includes(f.wiz3d_status) ? f.wiz3d_status : 'unknown');
+    if (!statuses.length) return null;
+    return statuses.sort((a, b) => WIZ3D_STATUS_RANK.indexOf(a) - WIZ3D_STATUS_RANK.indexOf(b))[0];
+}
+
 function sidebarProjection(g) {
     const fixes = Array.isArray(g.fixes) ? g.fixes : [];
     const outputs   = new Set();
@@ -109,6 +119,7 @@ function sidebarProjection(g) {
         fix_count:           fixes.length,
         is_vr_only:          isVrOnly,
         is_deprecated_only:  isDeprecatedOnly,
+        wiz3d_status:        bestWiz3DStatus(fixes),
     };
 }
 

@@ -20,8 +20,10 @@ const { applyAndSave } = require('../iniEditor');
 const DIRECT_MODE_MAP = {
     'sbs':                     'sbs',
     'sbs_half':                'sbs',         // Geo-11 doesn't distinguish full vs half here
+    'sbs_full':                'sbs',
     'tab':                     'tab',
     'tab_half':                'tab',
+    'tab_full':                'tab',
     'interleaved':             'interlaced',
     'interleaved_row':         'interlaced',
     'interleaved_col':         'interlaced',

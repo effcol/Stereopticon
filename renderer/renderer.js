@@ -414,6 +414,12 @@ async function applyGeo11SettingsBeforeLaunch() {
 // Falls back to primary value for types where sub is purely cosmetic.
 function getEffectiveOutputId(primary, sub) {
     if (!primary) return primary;
+    // Full vs half resolution matters to wiz3D (OutputMode 1-4).
+    if ((primary === 'sbs' || primary === 'tab') && sub) {
+        if (/full/i.test(sub)) return `${primary}_full`;
+        if (/half/i.test(sub)) return `${primary}_half`;
+        return primary;
+    }
     if (primary === 'anaglyph' && sub) {
         const map = {
             'Red/Cyan':        'anaglyph_red_cyan',
@@ -885,12 +891,13 @@ function updateBottomBar() {
     const btnUninst  = document.getElementById('btnUninstallMain');
     const modBtn     = document.getElementById('btnModSettings');
 
+    const isWiz = isWiz3DType(selectedProfile.type);
     if (installed) {
-        btnInstall.textContent = '✓ Fix Installed';
+        btnInstall.textContent = isWiz ? '✓ wiz3D Installed' : '✓ Fix Installed';
         btnInstall.className   = 'hero-btn hero-btn-installed';
         btnInstall.disabled    = true;
     } else {
-        btnInstall.textContent = '⇩ Install Fix';
+        btnInstall.textContent = isWiz ? '⇩ Install wiz3D' : '⇩ Install Fix';
         btnInstall.className   = 'hero-btn hero-btn-secondary';
         btnInstall.disabled    = false;
     }
@@ -910,8 +917,40 @@ function updateBottomBar() {
         btnLaunch.style.display = '';
     }
     if (modBtn) modBtn.style.display = (hasModSettings && installed) ? 'flex' : 'none';
+    if (installed && isWiz3DType(selectedProfile.type)) offerWiz3DUpdateHere(selectedProfile.id);
     updateHeadtrackingUI();
     updateReshadeButton();
+}
+
+// A game set up with an older wiz3D keeps those files. When a newer wiz3D
+// has been downloaded, turn the Install button into "Update wiz3D here".
+async function offerWiz3DUpdateHere(fixId) {
+    try {
+        const [record, st] = await Promise.all([
+            window.api.getInstallRecord(fixId),
+            window.api.wiz3dStatus({ checkOnline: false }),
+        ]);
+        const current = st?.installed?.tag;
+        const btn = document.getElementById('btnInstallFix');
+        if (!btn || selectedProfile?.id !== fixId || !current || !record?.wiz3dVersion) return;
+        if (record.wiz3dVersion === current) return;
+        btn.textContent = `⇧ Update wiz3D here (${record.wiz3dVersion} → ${current})`;
+        btn.className   = 'hero-btn hero-btn-secondary';
+        btn.disabled    = false;
+        btn.onclick     = reinstallWiz3DHere;
+    } catch { /* leave the button as it is */ }
+}
+
+async function reinstallWiz3DHere() {
+    const gamePath = getInstallPath();
+    if (!gamePath) { showResult(false, 'Set the Game Folder path first — click Browse…'); return; }
+    const btn = document.getElementById('btnInstallFix');
+    if (btn) { btn.disabled = true; btn.onclick = () => handleInstallClick(); }
+    // Remove the old files (restoring anything they replaced), then install afresh.
+    const removed = await window.api.uninstallFix(selectedProfile, gamePath);
+    if (!removed.success) { showResult(false, removed.message); if (btn) btn.disabled = false; return; }
+    installedFixIds.delete(selectedProfile.id);
+    await handleInstallClick();
 }
 
 
@@ -2055,9 +2094,13 @@ function filterAndSortGames(games) {
     // Predicate for the currently active (positive) filter, if any.
     const activePred = (filterMode === 'all') ? null : buildFilterPredicate(filterMode);
 
+    const showOtherTools  = isShowOtherTools();
+
     let filtered = src.filter(game => {
         if (!game || typeof game.title !== 'string') return false;
         if (hidden.has(game.id)) return false;
+        // wiz3D-only mode: just the games wiz3D has an entry for.
+        if (!showOtherTools && !(game.fix_types || []).some(isWiz3DType)) return false;
         if (!showVrOnly && game.is_vr_only) return false;
         if (!showDeprecated && game.is_deprecated_only) return false;
         if (!game.title.toLowerCase().includes(searchTerm.toLowerCase())) return false;
@@ -2446,11 +2489,18 @@ const FILTER_GROUPS = [
         { id: 'interlaced',       label: 'Interlaced',          icon: '☰' },
         { id: 'anaglyph',         label: 'Anaglyph',            icon: '◍' },
     ]},
-    { title: 'Features', items: [
+    { title: 'wiz3D status', items: [
+        { id: 'wiz3d_working',  label: 'Working',          icon: '●' },
+        { id: 'wiz3d_partial',  label: 'Partly working',   icon: '◐' },
+        { id: 'wiz3d_untested', label: 'Untested',         icon: '○' },
+        { id: 'wiz3d_unknown',  label: 'Not rated',        icon: '◌' },
+        { id: 'wiz3d_broken',   label: 'Not working yet',  icon: '✕' },
+    ]},
+    { title: 'Features', otherTools: true, items: [
         { id: 'native_stereo', label: 'Native stereo',     icon: '◆' },
         { id: 'headtracking',  label: 'Head tracking',     icon: '◐' },
     ]},
-    { title: 'Rendering', items: [
+    { title: 'Rendering', otherTools: true, items: [
         { id: 'render_dual_view',       label: 'Dual-View Rendering',      icon: '⊟' },
         { id: 'render_depth_reproj',    label: 'Depth Map Reprojection',   icon: '◭' },
         { id: 'render_multi_view',      label: 'Multi-View Rendering',     icon: '◫' },
@@ -2560,7 +2610,20 @@ window.toggleFilterGroup = function(title) {
 // Build a predicate fn for a given filter ID. Returns null if the ID
 // doesn't correspond to a filter that excludes/includes by attribute
 // (e.g., 'all' or 'installed' which are handled inline).
+// In wiz3D-only mode the filter pane drops the groups that only matter for
+// other tools, and the Mods group keeps just the wiz3D render paths.
+function visibleFilterItems(group) {
+    if (isShowOtherTools()) return group.items;
+    if (group.otherTools) return [];
+    if (group.title === 'Mods') return group.items.filter(i => isWiz3DType(MOD_FILTER_TO_TYPE[i.id]));
+    return group.items;
+}
+
 function buildFilterPredicate(id) {
+    if (id.startsWith('wiz3d_')) {
+        const status = id.slice('wiz3d_'.length);
+        return g => g.wiz3d_status === status;
+    }
     if (id === 'headtracking')  return g => !!g.has_headtracking;
     if (id === 'native_stereo') return g => !!g.has_native_stereo;
     if (RENDER_FILTER_TO_METHOD[id]) {
@@ -2582,13 +2645,15 @@ function renderFilterPane() {
     const collapsed = loadCollapsedGroups();
     let html = '';
     for (const group of FILTER_GROUPS) {
+        const items = visibleFilterItems(group);
+        if (!items.length) continue;
         const isCollapsed = collapsed.has(group.title);
         // Group header is a clickable row that toggles collapse state.
         html += `<div class="filter-group"><div class="filter-group-label is-collapsible" data-group="${group.title}">
             <span class="group-chevron">${isCollapsed ? '▸' : '▾'}</span>${group.title}
         </div>`;
         if (!isCollapsed) {
-            for (const item of group.items) {
+            for (const item of items) {
                 const isActive    = item.sort
                     ? (sortMode === item.sort && filterMode === 'all')
                     : (filterMode === item.id);
@@ -2852,9 +2917,8 @@ function _continueSelectGame(game) {
     // Airtable export) have no `fixes` yet — only community-rating data.
     // Default `selectedProfile` to null in that case; renderDetailView()
     // renders an empty-fix state below.
-    selectedProfile = Array.isArray(game.fixes) && game.fixes.length
-        ? (game.fixes.find(f => f.recommended) || game.fixes[0])
-        : null;
+    const fixes = visibleFixes(game);
+    selectedProfile = fixes.length ? (fixes.find(f => f.recommended) || fixes[0]) : null;
     configBar.style.display = 'block';
     hideTray(); resetTray();
     reshadeStatus = null;
@@ -2989,6 +3053,20 @@ function buildDeprecatedWarning(p) {
         <div><strong>Deprecated / Discontinued</strong><br>Documented for historical reference only.${extra}</div></div>`;
 }
 
+// How well wiz3D runs this game, from wiz3D's own compatibility list.
+const WIZ3D_STATUS_TEXT = {
+    working:  { label: 'Working',  colour: 'var(--teal)',   tip: 'Reported working with wiz3D.' },
+    partial:  { label: 'Partly working', colour: 'var(--warn)', tip: 'Works with known problems; see the notes.' },
+    untested: { label: 'Untested', colour: 'var(--text-dim)', tip: 'Listed by wiz3D but not yet tested.' },
+    broken:   { label: 'Not working yet', colour: 'var(--danger)', tip: 'Known not to work with the current wiz3D.' },
+};
+function wiz3dStatusHtml(fix) {
+    if (!fix || !isWiz3DType(fix.type)) return '';
+    const s = WIZ3D_STATUS_TEXT[fix.wiz3d_status] ||
+              { label: 'Unknown', colour: 'var(--text-dim)', tip: 'From the 3D compatibility database; wiz3D has not rated it.' };
+    return `<div class="detail-hero-credits" title="${s.tip}">wiz3D: <span style="color:${s.colour};font-weight:600;">${s.label}</span></div>`;
+}
+
 function renderDetailView() {
     // Defensive guard: any game that somehow ended up with zero fix profiles
     // (shouldn't happen after the CSV importer maps softwares to fix types,
@@ -2998,13 +3076,14 @@ function renderDetailView() {
         detailArea.innerHTML = `
             <div style="padding:48px 32px;text-align:center;color:var(--text-dim);font-size:13px;">
                 <div style="font-family:var(--font-display);font-size:14px;color:var(--text-secondary);margin-bottom:6px;">${selectedGame.title}</div>
-                No fix profiles wired up for this game yet. Either add one to <code>data/games/${selectedGame.id}.json</code>
-                or re-run <code>node scripts/import-compat-database.js</code> after updating the source CSV.
+                ${isShowOtherTools()
+                    ? 'No fix is available for this game yet.'
+                    : 'wiz3D has no entry for this game yet. Other tools can be shown in Settings → Show other tools.'}
             </div>`;
         return;
     }
 
-    const fixOptions = selectedGame.fixes.map(fix => {
+    const fixOptions = visibleFixes(selectedGame).map(fix => {
         const pl  = PIPELINES[fix.type];
         const ver = fix.geo11_version || fix.wiz3d_version || fix.ue3d_version
                  || fix.uevr_version  || fix.vireio_version || '';
@@ -3063,6 +3142,7 @@ function renderDetailView() {
                     <div class="detail-hero-title">${selectedGame.title}</div>
                     <div class="detail-hero-meta">${selectedGame.developer ? `Studio: <span class="hero-meta-value">${selectedGame.developer}</span>` : ''}</div>
                     <div class="detail-hero-credits">Fix Credits: ${authorsHtml}</div>
+                    ${wiz3dStatusHtml(selectedProfile)}
                 </div>
                 <div class="detail-hero-actions">
                     <button id="btnInstallFix" class="hero-btn hero-btn-secondary" onclick="handleInstallClick()">⇩ Install Fix</button>
@@ -3083,7 +3163,7 @@ function renderDetailView() {
                     <label>Stereo Fix</label>
                     <select class="csel-target" style="margin-top:0;width:100%;" onchange="switchProfile(this.value)">${fixOptions}</select>
                 </div>
-                <div>
+                <div class="ht-fix-col">
                     <label>Head Tracking Fix</label>
                     <select id="headtrackingMethod" class="csel-target" style="margin-top:0;width:100%;" onchange="handleHeadtrackingChange()"></select>
                 </div>
@@ -3129,7 +3209,7 @@ function renderDetailView() {
     customizeAllPendingSelects();   // hero & fix-profile select were just rebuilt
 }
 
-window.switchProfile = fixId => { selectedProfile = selectedGame.fixes.find(f=>f.id===fixId); renderDetailView(); updateBottomBar(); loadReshadeStatus(); updateHeadtrackingUI(); };
+window.switchProfile = fixId => { selectedProfile = visibleFixes(selectedGame).find(f=>f.id===fixId) || selectedProfile; renderDetailView(); updateBottomBar(); loadReshadeStatus(); updateHeadtrackingUI(); };
 window.openUrl = url => { if (url) window.api.openExternal(url); };
 
 // ═══ HEADTRACKING SYSTEM ═════════════════════════════════════════
@@ -3381,9 +3461,27 @@ function updateConfigBar() {
         if (def.status === 'deprecated' || def.status === 'defunct') opt.innerText += ' [Legacy]';
         primarySelect.appendChild(opt);
     });
-    const valid = Array.from(primarySelect.options).find(o => !o.disabled);
-    if (valid) { primarySelect.value = valid.value; primarySelect.dispatchEvent(new Event('change')); }
-    
+    // Keep the user's saved global output when this fix supports it. Otherwise
+    // show the first output the fix does support, without saving that over
+    // the user's choice.
+    const stored  = loadGlobalOutputSettings();
+    const options = Array.from(primarySelect.options);
+    const wanted  = options.find(o => !o.disabled && o.value === (stored?.primary || primarySelect.value));
+    const chosen  = wanted || options.find(o => !o.disabled);
+    if (chosen) {
+        suppressOutputSave = true;
+        try {
+            primarySelect.value = chosen.value;
+            primarySelect.dispatchEvent(new Event('change'));
+            if (wanted && stored?.sub && subSelect && [...subSelect.options].some(o => o.value === stored.sub)) {
+                subSelect.value = stored.sub;
+                subSelect.dispatchEvent(new Event('change'));
+            }
+        } finally {
+            suppressOutputSave = false;
+        }
+    }
+
     // Update headtracking UI
     updateHeadtrackingUI();
 }
@@ -3912,7 +4010,7 @@ window.openSettingsModal = async function() {
     try {
         const info = await window.api.getAppVersion?.();
         const el = document.getElementById('settingsVersion');
-        if (el && info?.version) el.textContent = `v${info.version} (continuation of Vireio Perception)`;
+        if (el && info?.version) el.textContent = `v${info.version}`;
     } catch {}
     switchSettingsTab('display');
 };
@@ -3951,6 +4049,34 @@ window.toggleExperimentalRoll = function(on) {
     try { localStorage.setItem(EXPERIMENTAL_ROLL_KEY, on ? 'true' : 'false'); } catch {}
     // Re-render the pill bar so the roll-included option appears/disappears.
     try { renderHtAxesPills(); } catch {}
+};
+
+// Stereopticon 0.1 is a front end for wiz3D. Other tools (Geo-11, UEVR,
+// ReShade, Vireio, ...) stay in the code but are hidden until each one has
+// been tested end to end; Settings → "Show other tools" brings them back.
+const SHOW_OTHER_TOOLS_KEY = 'stereopticon.showOtherTools';
+function isShowOtherTools() {
+    try { return localStorage.getItem(SHOW_OTHER_TOOLS_KEY) === 'true'; }
+    catch { return false; }
+}
+function isWiz3DType(type) {
+    return typeof type === 'string' && type.startsWith('wiz3d');
+}
+// The fixes a game shows on its page in the current mode.
+function applyToolMode() {
+    document.body.classList.toggle('wiz3d-only', !isShowOtherTools());
+}
+applyToolMode();
+function visibleFixes(game) {
+    const fixes = Array.isArray(game?.fixes) ? game.fixes : [];
+    return isShowOtherTools() ? fixes : fixes.filter(f => isWiz3DType(f.type));
+}
+window.toggleShowOtherTools = function(on) {
+    try { localStorage.setItem(SHOW_OTHER_TOOLS_KEY, on ? 'true' : 'false'); } catch {}
+    applyToolMode();
+    renderFilterPane();
+    renderSidebar(gamesData);
+    if (selectedGame) _continueSelectGame(selectedGame);
 };
 
 // Show-VR-only-games toggle. Off by default — most users have flat-stereo
@@ -4092,7 +4218,75 @@ document.addEventListener('DOMContentLoaded', () => {
     if (vr) vr.checked = isShowVrOnly();
     const dp = document.getElementById('showDeprecatedToggle');
     if (dp) dp.checked = isShowDeprecated();
+    const ot = document.getElementById('showOtherToolsToggle');
+    if (ot) ot.checked = isShowOtherTools();
+    refreshWiz3DStatus({ notifyUpdate: true });
 });
+
+// ── wiz3D version panel (Settings) and update notice ─────────
+// wiz3D is downloaded from its GitHub releases the first time a game needs
+// it; this shows which version is in use and offers newer releases.
+async function refreshWiz3DStatus({ notifyUpdate = false } = {}) {
+    const text = document.getElementById('wiz3dStatusText');
+    const sub  = document.getElementById('wiz3dStatusSub');
+    const btn  = document.getElementById('wiz3dUpdateBtn');
+    let st;
+    try { st = await window.api.wiz3dStatus(); }
+    catch (e) { st = { installed: null, latest: null, updateAvailable: false, error: e.message }; }
+
+    if (text) {
+        text.textContent = st.installed
+            ? `wiz3D ${st.installed.tag} installed`
+            : 'wiz3D is not downloaded yet';
+    }
+    if (sub) {
+        sub.textContent = st.error
+            ? `Could not check for updates: ${st.error}`
+            : st.updateAvailable && st.installed
+                ? `${st.latest.tag} is available (${st.latest.name}).`
+                : st.installed
+                    ? 'Up to date.'
+                    : st.latest ? `Latest release: ${st.latest.tag}. It downloads the first time you install it for a game, or now.` : '';
+    }
+    if (btn) {
+        btn.style.display = st.updateAvailable ? '' : 'none';
+        btn.textContent   = st.installed ? `Update to ${st.latest?.tag}` : 'Download now';
+        btn.disabled = false;
+    }
+    if (notifyUpdate && st.updateAvailable && st.installed) {
+        showNotice(`wiz3D ${st.latest.tag} is available. Settings → Display & Output → wiz3D to update.`);
+    }
+    return st;
+}
+
+window.updateWiz3D = async function() {
+    const btn = document.getElementById('wiz3dUpdateBtn');
+    const sub = document.getElementById('wiz3dStatusSub');
+    if (btn) btn.disabled = true;
+    const stop = window.api.onWiz3dProgress?.(p => { if (sub) sub.textContent = p.message || ''; });
+    const r = await window.api.wiz3dUpdate();
+    stop?.();
+    if (!r.success) {
+        if (sub) sub.textContent = `Download failed: ${r.message}`;
+        if (btn) btn.disabled = false;
+        return;
+    }
+    await refreshWiz3DStatus();
+    if (sub) sub.textContent = `wiz3D ${r.tag} is ready. Games already set up keep their wiz3D files until you reinstall wiz3D for them.`;
+};
+
+// A dismissible note in the corner, for news that needs no action right now.
+function showNotice(text) {
+    const el = document.createElement('div');
+    el.title = 'Click to dismiss';
+    el.style.cssText = 'position:fixed;right:12px;bottom:12px;max-width:420px;z-index:99998;' +
+        'padding:10px 12px;border-left:3px solid var(--teal);background:rgba(20,26,34,0.96);' +
+        'color:var(--text-secondary);font-size:11px;line-height:1.4;cursor:pointer;';
+    el.textContent = text;
+    el.addEventListener('click', () => el.remove());
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 15000);
+}
 
 // ── Inline tuning sliders (Phase 2d, Geo-11 first) ───────────
 // On game-page load we read the active mod's ini and surface the most-
@@ -4434,7 +4628,11 @@ function loadGlobalOutputSettings() {
         return JSON.parse(raw);
     } catch { return null; }
 }
+// Set while the selects are changed by code (rebuilding them for a new game),
+// so only a choice the user makes is saved as their global output.
+let suppressOutputSave = false;
 function saveGlobalOutputSettings() {
+    if (suppressOutputSave) return;
     const primary = document.getElementById('primaryOutput');
     const sub     = document.getElementById('subOutput');
     if (!primary) return;

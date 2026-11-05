@@ -35,6 +35,21 @@
       "source": "3D/VR Compatibility Database (Airtable)",
       "compat_rating": 5,
       "compat_mode": "3D"
+    },
+    {
+      "id": "dragon_quest_iii_hd2d_remake_uevr",
+      "name": "UEVR",
+      "type": "uevr",
+      "cost": "free",
+      "recommended": true,
+      "rendering_method": "Dual-View Rendering",
+      "headtracking": "6dof",
+      "native_outputs": [],
+      "pipeline_overrides": {},
+      "notes": "Imported from 3D/VR Compatibility Database (Airtable). Community rating: 5/5.",
+      "source": "3D/VR Compatibility Database (Airtable)",
+      "compat_rating": 5,
+      "compat_mode": "VR"
     }
   ],
   "steam_app_id": ""

@@ -92,6 +92,24 @@ function createWindow() {
         }
     });
     win.loadFile(path.join(__dirname, '../renderer/index.html'));
+
+    // Development aid: STEREOPTICON_SCREENSHOT=<file.png> saves the window a
+    // few seconds after start-up and quits. STEREOPTICON_SCREENSHOT_JS runs a
+    // script in the page first (to open a dialog, pick a game, ...).
+    if (process.env.STEREOPTICON_SCREENSHOT) {
+        win.webContents.once('did-finish-load', () => setTimeout(async () => {
+            try {
+                if (process.env.STEREOPTICON_SCREENSHOT_JS) {
+                    await win.webContents.executeJavaScript(process.env.STEREOPTICON_SCREENSHOT_JS);
+                    await new Promise(r => setTimeout(r, 2500));
+                }
+                const img = await win.webContents.capturePage();
+                fs.writeFileSync(process.env.STEREOPTICON_SCREENSHOT, img.toPNG());
+            } finally {
+                app.quit();
+            }
+        }, 6000));
+    }
 }
 
 // ── Display / monitor settings ────────────────────────────────
@@ -738,6 +756,21 @@ ipcMain.on('window:close', (e) => senderWindow(e)?.close());
 // App version — read from package.json so Settings shows the live build.
 // Continues the Vireio Perception versioning lineage (v1-v4); Stereopticon
 // is v5.0.0-alpha.X.
+// ── wiz3D itself (downloaded from its GitHub releases) ──────────
+const wiz3dManager = require('../modules/wiz3dManager');
+ipcMain.handle('wiz3d:status', async (_, { checkOnline = true } = {}) => {
+    try { return await wiz3dManager.status({ checkOnline }); }
+    catch (e) { return { installed: null, latest: null, updateAvailable: false, error: e.message }; }
+});
+ipcMain.handle('wiz3d:update', async (event) => {
+    try {
+        const r = await wiz3dManager.installRelease(null, p => event.sender.send('wiz3d:progress', p));
+        return { success: true, tag: r.tag, name: r.name };
+    } catch (e) {
+        return { success: false, message: e.message };
+    }
+});
+
 ipcMain.handle('app:version', () => {
     try {
         const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));

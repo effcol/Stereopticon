@@ -13,7 +13,7 @@
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "test": "node --test test/",
+    "test": "node --test \"test/**/*.test.js\"",
     "bundle": "node scripts/build-data-bundle.js",
     "dist": "node scripts/build-data-bundle.js && electron-builder --win",
     "setup": "node scripts/download-tools.js",

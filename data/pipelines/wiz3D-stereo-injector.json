@@ -1,0 +1,31 @@
+{
+  "id": "wiz3d_wrapper",
+  "name": "wiz3D Stereo Injector",
+  "category": "dx_injector",
+  "status": "active",
+  "cost": "free",
+  "open_source": true,
+  "url": "https://github.com/effcol/wiz3D",
+  "authors": [
+    "effcol",
+    "iZ3D (original)",
+    "bo3b (open-source release)"
+  ],
+  "rendering_method": "Dual-View Rendering",
+  "summary": "Wraps the game's Direct3D 7 to 11 renderer and generates both eyes itself. Works on any GPU.",
+  "compatibility_notes": "Output modes: half/full side-by-side, half/full top-and-bottom, red/cyan anaglyph, row/column interleaved, checkerboard and Simulated Reality weave.",
+  "graphics_apis": [
+    "dx7",
+    "dx8",
+    "dx9",
+    "dx10",
+    "dx11"
+  ],
+  "supported_outputs": {
+    "sbs": [],
+    "tab": [],
+    "anaglyph": [],
+    "interleaved": [],
+    "sr_weave": []
+  }
+}

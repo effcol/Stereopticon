@@ -427,6 +427,14 @@
         .locked-section { opacity: 0.55; }
         .locked-section input, .locked-section select { pointer-events: none; }
         .geo-lock-link:hover { color: var(--teal) !important; }
+    /* wiz3D-only mode (the default in 0.1): hide the controls that belong to
+       other tools: head tracking, the Geo-11 / ReShade mod settings, tuning. */
+    body.wiz3d-only .ht-fix-col,
+    body.wiz3d-only #htAxesBar,
+    body.wiz3d-only #headtrackingControl,
+    body.wiz3d-only #modSettingsInline,
+    body.wiz3d-only #tuningPanel { display: none !important; }
+    body.wiz3d-only .profile-selector { grid-template-columns: 1fr 1.6fr !important; }
     </style>
 </head>
 <body>
@@ -557,11 +565,22 @@
         <div style="flex:1;overflow-y:auto;min-height:0;">
             <!-- Display & Output: relocated stereo/output controls live here. -->
             <div id="settingsTabContent-display" style="display:block;">
+                <!-- wiz3D itself: installed version and updates -->
+                <div style="font-size:11px;color:var(--text-dim);font-family:var(--font-display);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:8px;">
+                    wiz3D
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--glass-border);border-radius:8px;background:rgba(237,230,218,0.02);margin-bottom:22px;">
+                    <div style="flex:1;min-width:0;">
+                        <div id="wiz3dStatusText" style="font-size:12px;color:var(--text-primary);">Checking…</div>
+                        <div id="wiz3dStatusSub" style="font-size:10.5px;color:var(--text-dim);margin-top:2px;">wiz3D is downloaded from github.com/effcol/wiz3D the first time a game needs it.</div>
+                    </div>
+                    <button id="wiz3dUpdateBtn" onclick="updateWiz3D()" style="display:none;padding:6px 12px;background:transparent;border:1px solid var(--teal-border);color:var(--teal);border-radius:6px;font-size:11px;font-family:var(--font-display);letter-spacing:0.4px;cursor:pointer;">Download</button>
+                </div>
                 <div style="font-size:11px;color:var(--text-dim);font-family:var(--font-display);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:14px;">
                     Global stereo output
                 </div>
                 <div style="font-size:11px;color:var(--text-dim);margin-bottom:18px;line-height:1.5;">
-                    Pick your display and stereo output once — these apply to every game by default. Per-game overrides come in a later build.
+                    Pick your display and stereo output once. They apply to every game unless the game has its own output override.
                 </div>
                 <div class="config-row" style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;">
                     <div class="config-item" id="displayConfigItem">
@@ -588,6 +607,13 @@
                 <!-- Library visibility + Experimental options -->
                 <div style="margin-top:22px;padding-top:14px;border-top:1px solid var(--glass-border);">
                     <div style="font-size:11px;color:var(--text-dim);font-family:var(--font-display);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:8px;">Library visibility</div>
+                    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:8px 10px;border:1px solid var(--glass-border);border-radius:8px;background:rgba(237,230,218,0.02);margin-bottom:10px;">
+                        <input type="checkbox" id="showOtherToolsToggle" onchange="toggleShowOtherTools(this.checked)" style="margin-top:2px;">
+                        <span style="flex:1;">
+                            <span style="display:block;font-size:12px;color:var(--text-primary);">Show other tools (experimental)</span>
+                            <span style="display:block;font-size:10.5px;color:var(--text-dim);margin-top:2px;">Off by default. This release supports wiz3D. Turning this on also lists Geo-11, UEVR, ReShade and other tools and the games that use them; their install and launch steps have not been tested yet.</span>
+                        </span>
+                    </label>
                     <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:8px 10px;border:1px solid var(--glass-border);border-radius:8px;background:rgba(237,230,218,0.02);margin-bottom:10px;">
                         <input type="checkbox" id="showVrOnlyToggle" onchange="toggleShowVrOnly(this.checked)" style="margin-top:2px;">
                         <span style="flex:1;">
